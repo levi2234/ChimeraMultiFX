@@ -1,0 +1,21 @@
+# Build artifacts
+.pio/
+build/
+*.o
+*.elf
+*.bin
+*.hex
+
+# IDE
+.vscode/
+*.swp
+
+# Python
+__pycache__/
+*.pyc
+venv/
+.env
+
+# OS
+.DS_Store
+Thumbs.db
