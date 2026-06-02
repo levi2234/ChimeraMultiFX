@@ -1,4 +1,0 @@
-mido
-python-rtmidi
-RPi.GPIO
-flask
