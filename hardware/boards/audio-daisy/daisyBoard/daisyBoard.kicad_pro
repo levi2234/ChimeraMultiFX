@@ -488,7 +488,7 @@
     "pinned_symbol_libs": []
   },
   "meta": {
-    "filename": "psu.kicad_pro",
+    "filename": "daisyBoard.kicad_pro",
     "version": 3
   },
   "net_settings": {
@@ -598,60 +598,12 @@
           "label": "Datasheet",
           "name": "Datasheet",
           "show": true
-        },
-        {
-          "group_by": false,
-          "label": "Sim.Library",
-          "name": "Sim.Library",
-          "show": false
-        },
-        {
-          "group_by": false,
-          "label": "Sim.Name",
-          "name": "Sim.Name",
-          "show": false
-        },
-        {
-          "group_by": false,
-          "label": "Sim.Params",
-          "name": "Sim.Params",
-          "show": false
-        },
-        {
-          "group_by": false,
-          "label": "Sim.Pins",
-          "name": "Sim.Pins",
-          "show": false
-        },
-        {
-          "group_by": false,
-          "label": "Sim.Type",
-          "name": "Sim.Type",
-          "show": false
-        },
-        {
-          "group_by": false,
-          "label": "Sim.Device",
-          "name": "Sim.Device",
-          "show": false
-        },
-        {
-          "group_by": false,
-          "label": "Description",
-          "name": "Description",
-          "show": false
-        },
-        {
-          "group_by": false,
-          "label": "#",
-          "name": "${ITEM_NUMBER}",
-          "show": false
         }
       ],
       "filter_string": "",
       "group_symbols": true,
       "include_excluded_from_bom": true,
-      "name": "",
+      "name": "Default Editing",
       "sort_asc": true,
       "sort_field": "Reference"
     },
@@ -684,14 +636,6 @@
     "meta": {
       "version": 1
     },
-    "ngspice": {
-      "fix_include_paths": true,
-      "meta": {
-        "version": 0
-      },
-      "model_mode": 3,
-      "workbook_filename": "psu.wbk"
-    },
     "page_layout_descr_file": "",
     "plot_directory": "",
     "reuse_designators": true,
@@ -699,17 +643,17 @@
     "subpart_id_separator": 0,
     "top_level_sheets": [
       {
-        "filename": "psu.kicad_sch",
+        "filename": "daisyBoard.kicad_sch",
         "name": "Root",
-        "uuid": "f02044cf-1c99-4e27-a3a3-14daddd2ee77"
+        "uuid": "f52c2822-383d-4296-bc07-76547c2833aa"
       }
     ],
-    "used_designators": "U1-2,J1,R5,#PWR1,#PWR29,C12",
+    "used_designators": "U1-4,A1,#PWR1-35,IC2,R1-21,J1-11,C1-12",
     "variants": []
   },
   "sheets": [
     [
-      "f02044cf-1c99-4e27-a3a3-14daddd2ee77",
+      "f52c2822-383d-4296-bc07-76547c2833aa",
       "Root"
     ]
   ],

@@ -1,0 +1,4 @@
+(sym_lib_table
+	(version 7)
+	(lib (name "Daisy-Boards") (type "KiCad") (uri "${KIPRJMOD}/modelfiles/DaisySeed_KiCad/Daisy-Boards.kicad_sym") (options "") (descr ""))
+)
