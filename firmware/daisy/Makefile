@@ -13,8 +13,8 @@
 # Project Name
 TARGET = ChimeraFX
 
-# Sources — set to the effect you want to build
-CPP_SOURCES = Delay.cpp
+# Sources — single entry point; effects are header-only classes
+CPP_SOURCES = main.cpp
 
 # Library Locations
 LIBDAISY_DIR = deps/libDaisy
