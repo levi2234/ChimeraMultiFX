@@ -1,21 +1,52 @@
-# Build artifacts
-.pio/
+# Build artifacts — Daisy / ARM
 build/
 *.o
 *.elf
 *.bin
 *.hex
+*.map
+*.d
+*.a
 
-# IDE
+# Build artifacts — PlatformIO / ESP32
+.pio/
+
+# IDE & editor
 .vscode/
 *.swp
+*.swo
+*~
+.idea/
 
-# Python
+# Python (scripting / tooling)
 __pycache__/
 *.pyc
+*.pyo
 venv/
 .env
+
+# KiCad generated / temporary files
+*.kicad_prl
+~*.lck
+*.000
+fp-lib-table
+sym-lib-table
+*.bak
+*.kicad_pcb-bak
+*.kicad_sch-bak
+*-backups/
+_autosave-*
+
+# KiCad fabrication outputs (keep source, ignore generated Gerbers)
+gerbers/
+*.gbr
+*.drl
+*.gko
 
 # OS
 .DS_Store
 Thumbs.db
+desktop.ini
+
+# Logs
+*.log
