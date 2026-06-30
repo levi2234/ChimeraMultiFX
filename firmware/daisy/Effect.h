@@ -1,6 +1,15 @@
 #pragma once
 #include <cstddef>
 
+// Effect category tags — used for grouping and UI.
+enum class EffectCategory {
+    Distortion,
+    Modulation,
+    Time,
+    Dynamics,
+    Filter,
+};
+
 // Base class for all ChimeraMultiFX effects.
 // Each effect implements Init() and Process() and can be hot-swapped at runtime.
 class Effect {
@@ -15,4 +24,19 @@ public:
 
     // Friendly name for display/debug purposes.
     virtual const char* GetName() const = 0;
+
+    // Which family this effect belongs to.
+    virtual EffectCategory GetCategory() const = 0;
+
+    // Per-effect bypass
+    bool IsEnabled() const     { return enabled_; }
+    void SetEnabled(bool e)    { enabled_ = e; }
+
+    // Convenience: wraps Process() with bypass check
+    float Tick(float in) {
+        return enabled_ ? Process(in) : in;
+    }
+
+protected:
+    bool enabled_ = true;
 };

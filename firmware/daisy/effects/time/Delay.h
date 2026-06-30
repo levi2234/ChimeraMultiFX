@@ -1,13 +1,12 @@
 #pragma once
 #include "daisy_seed.h"
-#include "../Effect.h"
+#include "../../Effect.h"
 #include <cstdint>
 
-// Simple delay line effect with feedback.
-// SDRAM buffer is owned by this effect — no external wiring needed.
+// Simple delay line with feedback.
 class Delay : public Effect {
 public:
-    static constexpr uint32_t MAX_DELAY_SAMPLES = 96000 * 2; // 2 seconds @ 96kHz
+    static constexpr uint32_t MAX_DELAY_SAMPLES = 96000 * 2; // 2s @ 96kHz
 
     void Init(float sample_rate) override {
         sample_rate_   = sample_rate;
@@ -19,7 +18,6 @@ public:
         if (delay_samples_ >= MAX_DELAY_SAMPLES)
             delay_samples_ = MAX_DELAY_SAMPLES - 1;
 
-        // Zero the buffer
         for (uint32_t i = 0; i < MAX_DELAY_SAMPLES; i++)
             buffer_[i] = 0.0f;
     }
@@ -33,10 +31,10 @@ public:
     }
 
     const char* GetName() const override { return "Delay"; }
+    EffectCategory GetCategory() const override { return EffectCategory::Time; }
 
-    // --- Setters for runtime control ---
-    void SetDelayTime(float seconds) {
-        delay_time_ = seconds;
+    void SetDelayTime(float sec) {
+        delay_time_ = sec;
         delay_samples_ = (uint32_t)(delay_time_ * sample_rate_);
         if (delay_samples_ >= MAX_DELAY_SAMPLES)
             delay_samples_ = MAX_DELAY_SAMPLES - 1;
@@ -52,6 +50,5 @@ private:
     uint32_t write_ptr_     = 0;
     uint32_t delay_samples_ = 0;
 
-    // SDRAM-resident delay buffer — placed in .sdram_bss by the linker
     static inline float DSY_SDRAM_BSS buffer_[MAX_DELAY_SAMPLES];
 };
