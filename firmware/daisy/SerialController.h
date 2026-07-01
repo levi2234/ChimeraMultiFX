@@ -32,7 +32,9 @@
 //   clear <lane>                             → remove all effects
 //   route <lane> <input> <output>            → set lane I/O
 //   level <lane> <value>                     → set lane level
-//   status                                   → print full router state
+//   params <lane> <slot>                     → list effect's param names
+//   status                                   → full router state as JSON
+//   info                                     → system capabilities as JSON
 //
 // Effect names: distortion, bitcrusher, chorus, tremolo, delay, compressor, lowpass
 // Input names:  in1, in2, mix, lane0, lane1, lane2, lane3
@@ -85,9 +87,9 @@ private:
         else if (strcmp(tokens[0], "get") == 0)    CmdGet(tokens, n);        else if (strcmp(tokens[0], "bypass") == 0) CmdBypass(tokens, n);
         else if (strcmp(tokens[0], "clear") == 0)  CmdClear(tokens, n);
         else if (strcmp(tokens[0], "route") == 0)  CmdRoute(tokens, n);
-        else if (strcmp(tokens[0], "level") == 0)  CmdLevel(tokens, n);
-        else if (strcmp(tokens[0], "params") == 0) CmdParams(tokens, n);
+        else if (strcmp(tokens[0], "level") == 0)  CmdLevel(tokens, n);        else if (strcmp(tokens[0], "params") == 0) CmdParams(tokens, n);
         else if (strcmp(tokens[0], "status") == 0) CmdStatus();
+        else if (strcmp(tokens[0], "info") == 0)   CmdInfo();
         else Reply("ERR unknown command\n");
     }
 
@@ -282,8 +284,18 @@ private:
             float val = fx->GetParam(tok);
             Reply("\"%s\":%.4f", tok, val);
             first = false;
-            tok = strtok(nullptr, ",");
-        }
+            tok = strtok(nullptr, ",");        }
+    }
+
+    // ─── info ────────────────────────────────────────────────────────────────
+    // Returns static system capabilities as JSON (call once at connection).
+    void CmdInfo() {
+        Reply("{\"sample_rate\":%.0f,\"max_lanes\":%d,\"max_slots\":%d,",
+              sample_rate_, Router::MAX_LANES, Router::MAX_SLOTS);
+        Reply("\"effects\":[\"distortion\",\"bitcrusher\",\"chorus\",\"tremolo\",\"delay\",\"compressor\",\"lowpass\"],");
+        Reply("\"inputs\":[\"in1\",\"in2\",\"mix\",\"lane0\",\"lane1\",\"lane2\",\"lane3\"],");
+        Reply("\"outputs\":[\"out1\",\"out2\",\"both\",\"none\"],");
+        Reply("\"commands\":[\"add\",\"insert\",\"remove\",\"swap\",\"move\",\"set\",\"get\",\"bypass\",\"clear\",\"route\",\"level\",\"params\",\"status\",\"info\"]}\n");
     }
 
     // ─── Effect Factory ──────────────────────────────────────────────────────
