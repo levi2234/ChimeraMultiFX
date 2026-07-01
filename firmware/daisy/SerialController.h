@@ -238,23 +238,52 @@ private:
 
         router_->lanes[lane].level = static_cast<float>(atof(t[2]));
         Reply("OK level lane %d = %.2f\n", lane, router_->lanes[lane].level);
-    }
-
-    // ─── status ──────────────────────────────────────────────────────────────
+    }    // ─── status ──────────────────────────────────────────────────────────────
+    // Returns full router state as a JSON string for programmatic parsing.
     void CmdStatus() {
-        Reply("=== Router Status ===\n");
+        Reply("{\"lanes\":[");
         for (int r = 0; r < Router::MAX_LANES; r++) {
             auto& lane = router_->lanes[r];
-            if (!lane.active) continue;
-            Reply("Lane %d [%s -> %s] level=%.2f\n",
-                  r, InputName(lane.input), OutputName(lane.output), lane.level);
+            if (r > 0) Reply(",");
+            Reply("{\"lane\":%d,\"active\":%s,\"input\":\"%s\",\"output\":\"%s\",\"level\":%.4f,\"effects\":[",
+                  r,
+                  lane.active ? "true" : "false",
+                  InputName(lane.input),
+                  OutputName(lane.output),
+                  lane.level);
             for (int i = 0; i < lane.count; i++) {
-                Reply("  [%d] %s %s\n", i,
-                      lane.slots[i]->GetName(),
-                      lane.slots[i]->IsEnabled() ? "" : "(bypassed)");
+                Effect* fx = lane.slots[i];
+                if (i > 0) Reply(",");
+                Reply("{\"slot\":%d,\"name\":\"%s\",\"enabled\":%s,\"params\":{",
+                      i, fx->GetName(), fx->IsEnabled() ? "true" : "false");
+                // Emit each param as key:value
+                EmitParams(fx);
+                Reply("}}");
             }
+            Reply("]}");
         }
-        Reply("=====================\n");
+        Reply("]}\n");
+    }
+
+    // Helper: emits all params as "key":value pairs inside a JSON object
+    void EmitParams(Effect* fx) {
+        const char* list = fx->GetParamList();
+        if (!list || list[0] == '\0') return;
+
+        // Parse the comma-separated param list and emit each value
+        char buf[128];
+        strncpy(buf, list, sizeof(buf) - 1);
+        buf[sizeof(buf) - 1] = '\0';
+
+        bool first = true;
+        char* tok = strtok(buf, ",");
+        while (tok) {
+            if (!first) Reply(",");
+            float val = fx->GetParam(tok);
+            Reply("\"%s\":%.4f", tok, val);
+            first = false;
+            tok = strtok(nullptr, ",");
+        }
     }
 
     // ─── Effect Factory ──────────────────────────────────────────────────────

@@ -47,7 +47,9 @@ int main(void) {
 
     // Initialize USB CDC for serial communication
     hw.usb_handle.Init(UsbHandle::FS_INTERNAL);
-    System::Delay(500);  // Give USB time to enumerate on the host PC    float sr = hw.AudioSampleRate();
+    System::Delay(500);  // Give USB time to enumerate on the host PC
+
+    float sr = hw.AudioSampleRate();
     serial.Init(&router, sr, &hw.usb_handle);
 
     // Register USB receive callback (interrupt-driven)
