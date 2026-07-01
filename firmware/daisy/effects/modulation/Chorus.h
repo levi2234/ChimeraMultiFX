@@ -1,6 +1,7 @@
 #pragma once
 #include "../../Effect.h"
 #include <cmath>
+#include <cstring>
 
 // Simple chorus using a modulated delay line.
 class Chorus : public Effect {
@@ -36,10 +37,21 @@ public:
         if (phase_ >= 1.0f) phase_ -= 1.0f;
 
         return (in * (1.0f - mix_)) + (wet * mix_);
+    }    const char* GetName() const override { return "chorus"; }
+    EffectCategory GetCategory() const override { return EffectCategory::Modulation; }
+
+    void SetParam(const char* name, float value) override {
+        if      (strcmp(name, "rate") == 0)  rate_ = value;
+        else if (strcmp(name, "depth") == 0) depth_ = value;
+        else if (strcmp(name, "mix") == 0)   mix_ = value;
     }
 
-    const char* GetName() const override { return "Chorus"; }
-    EffectCategory GetCategory() const override { return EffectCategory::Modulation; }
+    float GetParam(const char* name) override {
+        if      (strcmp(name, "rate") == 0)  return rate_;
+        else if (strcmp(name, "depth") == 0) return depth_;
+        else if (strcmp(name, "mix") == 0)   return mix_;
+        return 0.f;
+    }
 
     void SetRate(float hz)    { rate_ = hz; }
     void SetDepth(float sec)  { depth_ = sec; }

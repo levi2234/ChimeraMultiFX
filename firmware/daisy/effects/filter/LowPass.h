@@ -1,6 +1,7 @@
 #pragma once
 #include "../../Effect.h"
 #include <cmath>
+#include <cstring>
 
 // Simple one-pole resonant low-pass filter.
 class LowPass : public Effect {
@@ -20,10 +21,21 @@ public:
         x2_ = x1_; x1_ = in;
         y2_ = y1_; y1_ = wet;
         return (in * (1.0f - mix_)) + (wet * mix_);
+    }    const char* GetName() const override { return "lowpass"; }
+    EffectCategory GetCategory() const override { return EffectCategory::Filter; }
+
+    void SetParam(const char* name, float value) override {
+        if      (strcmp(name, "cutoff") == 0)    { cutoff_ = value; CalcCoeffs(); }
+        else if (strcmp(name, "resonance") == 0) { resonance_ = value; CalcCoeffs(); }
+        else if (strcmp(name, "mix") == 0)         mix_ = value;
     }
 
-    const char* GetName() const override { return "Low-Pass"; }
-    EffectCategory GetCategory() const override { return EffectCategory::Filter; }
+    float GetParam(const char* name) override {
+        if      (strcmp(name, "cutoff") == 0)    return cutoff_;
+        else if (strcmp(name, "resonance") == 0) return resonance_;
+        else if (strcmp(name, "mix") == 0)       return mix_;
+        return 0.f;
+    }
 
     void SetCutoff(float hz)   { cutoff_ = hz; CalcCoeffs(); }
     void SetResonance(float r) { resonance_ = r; CalcCoeffs(); }

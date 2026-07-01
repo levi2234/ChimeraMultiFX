@@ -1,6 +1,7 @@
 #pragma once
 #include "../../Effect.h"
 #include <cmath>
+#include <cstring>
 
 // Simple feed-forward compressor (envelope follower + gain reduction).
 class Compressor : public Effect {
@@ -32,10 +33,25 @@ public:
         }
 
         return in * gain * makeup_;
+    }    const char* GetName() const override { return "compressor"; }
+    EffectCategory GetCategory() const override { return EffectCategory::Dynamics; }
+
+    void SetParam(const char* name, float value) override {
+        if      (strcmp(name, "threshold") == 0) threshold_ = value;
+        else if (strcmp(name, "ratio") == 0)     ratio_ = (value < 1.0f) ? 1.0f : value;
+        else if (strcmp(name, "attack") == 0)    attack_ = value;
+        else if (strcmp(name, "release") == 0)   release_ = value;
+        else if (strcmp(name, "makeup") == 0)    makeup_ = value;
     }
 
-    const char* GetName() const override { return "Compressor"; }
-    EffectCategory GetCategory() const override { return EffectCategory::Dynamics; }
+    float GetParam(const char* name) override {
+        if      (strcmp(name, "threshold") == 0) return threshold_;
+        else if (strcmp(name, "ratio") == 0)     return ratio_;
+        else if (strcmp(name, "attack") == 0)    return attack_;
+        else if (strcmp(name, "release") == 0)   return release_;
+        else if (strcmp(name, "makeup") == 0)    return makeup_;
+        return 0.f;
+    }
 
     void SetThreshold(float t)  { threshold_ = t; }
     void SetRatio(float r)      { ratio_ = (r < 1.0f) ? 1.0f : r; }

@@ -1,5 +1,6 @@
 #pragma once
 #include <cstddef>
+#include <cstring>
 
 // Effect category tags — used for grouping and UI.
 enum class EffectCategory {
@@ -27,6 +28,10 @@ public:
 
     // Which family this effect belongs to.
     virtual EffectCategory GetCategory() const = 0;
+
+    // Parameter access by name — override in each effect for serial control
+    virtual void  SetParam(const char* name, float value) { (void)name; (void)value; }
+    virtual float GetParam(const char* name) { (void)name; return 0.f; }
 
     // Per-effect bypass
     bool IsEnabled() const     { return enabled_; }

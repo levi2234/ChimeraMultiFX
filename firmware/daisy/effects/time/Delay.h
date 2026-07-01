@@ -2,6 +2,7 @@
 #include "daisy_seed.h"
 #include "../../Effect.h"
 #include <cstdint>
+#include <cstring>
 
 // Simple delay line with feedback.
 class Delay : public Effect {
@@ -28,10 +29,21 @@ public:
         buffer_[write_ptr_] = in + (wet * feedback_);
         write_ptr_ = (write_ptr_ + 1) % MAX_DELAY_SAMPLES;
         return (in * (1.0f - mix_)) + (wet * mix_);
+    }    const char* GetName() const override { return "delay"; }
+    EffectCategory GetCategory() const override { return EffectCategory::Time; }
+
+    void SetParam(const char* name, float value) override {
+        if      (strcmp(name, "time") == 0)     SetDelayTime(value);
+        else if (strcmp(name, "feedback") == 0) feedback_ = value;
+        else if (strcmp(name, "mix") == 0)      mix_ = value;
     }
 
-    const char* GetName() const override { return "Delay"; }
-    EffectCategory GetCategory() const override { return EffectCategory::Time; }
+    float GetParam(const char* name) override {
+        if      (strcmp(name, "time") == 0)     return delay_time_;
+        else if (strcmp(name, "feedback") == 0) return feedback_;
+        else if (strcmp(name, "mix") == 0)      return mix_;
+        return 0.f;
+    }
 
     void SetDelayTime(float sec) {
         delay_time_ = sec;

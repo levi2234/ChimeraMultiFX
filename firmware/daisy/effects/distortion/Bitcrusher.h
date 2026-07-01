@@ -1,6 +1,7 @@
 #pragma once
 #include "../../Effect.h"
 #include <cmath>
+#include <cstring>
 
 // Reduces bit depth and sample rate for lo-fi grit.
 class Bitcrusher : public Effect {
@@ -23,10 +24,21 @@ public:
             hold_ = roundf(in * levels) / levels;
         }
         return (in * (1.0f - mix_)) + (hold_ * mix_);
+    }    const char* GetName() const override { return "bitcrusher"; }
+    EffectCategory GetCategory() const override { return EffectCategory::Distortion; }
+
+    void SetParam(const char* name, float value) override {
+        if      (strcmp(name, "bits") == 0)    bit_depth_ = value;
+        else if (strcmp(name, "rate") == 0)    rate_reduce_ = (int)value;
+        else if (strcmp(name, "mix") == 0)     mix_ = value;
     }
 
-    const char* GetName() const override { return "Bitcrusher"; }
-    EffectCategory GetCategory() const override { return EffectCategory::Distortion; }
+    float GetParam(const char* name) override {
+        if      (strcmp(name, "bits") == 0)    return bit_depth_;
+        else if (strcmp(name, "rate") == 0)    return (float)rate_reduce_;
+        else if (strcmp(name, "mix") == 0)     return mix_;
+        return 0.f;
+    }
 
     void SetBitDepth(float bits) { bit_depth_ = bits; }
     void SetRateReduce(int n)    { rate_reduce_ = (n < 1) ? 1 : n; }
