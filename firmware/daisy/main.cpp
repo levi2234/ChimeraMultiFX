@@ -6,6 +6,7 @@
 // =============================================================================
 #include "daisy_seed.h"
 #include "Effect.h"
+#include "Router.h"
 
 // Distortion
 #include "effects/distortion/TanhDistortion.h"
@@ -28,7 +29,7 @@ using namespace daisy;
 static DaisySeed hw;
 
 // ==========================================
-// Effect Chain
+// Effect Instances
 // ==========================================
 static TanhDistortion fx_distortion;
 static Bitcrusher     fx_bitcrusher;
@@ -38,30 +39,19 @@ static Delay          fx_delay;
 static Compressor     fx_compressor;
 static LowPass        fx_lowpass;
 
-// Signal flows through the chain in array order.
-// Rearrange, add, or remove entries to shape your sound.
-static constexpr int NUM_EFFECTS = 7;
-static Effect* chain[NUM_EFFECTS] = {
-    &fx_compressor,   // Dynamics — tame input peaks first
-    &fx_distortion,   // Distortion — tanh saturation
-    &fx_bitcrusher,   // Distortion — lo-fi crush
-    &fx_chorus,       // Modulation — chorus
-    &fx_tremolo,      // Modulation — tremolo
-    &fx_delay,        // Time — echo
-    &fx_lowpass,      // Filter — tone shaping
-};
+// ==========================================
+// Router
+// ==========================================
+static Router router;
 
 // ==========================================
 // Audio Callback
 // ==========================================
 void AudioCallback(AudioHandle::InputBuffer in, AudioHandle::OutputBuffer out, size_t size) {
     for (size_t i = 0; i < size; i++) {
-        float sample = in[0][i];        // Signal flows through each effect in order (Tick respects bypass and processes the sample through the effect)
-        for (int fx = 0; fx < NUM_EFFECTS; fx++) {
-            sample = chain[fx]->Tick(sample); //
-        }
-        out[0][i] = sample;
-        out[1][i] = sample;
+        auto result = router.Process(in[0][i], in[1][i]);
+        out[0][i] = result.out1;
+        out[1][i] = result.out2;
     }
 }
 
@@ -71,11 +61,21 @@ void AudioCallback(AudioHandle::InputBuffer in, AudioHandle::OutputBuffer out, s
 int main(void) {
     hw.Init();
     hw.SetAudioSampleRate(SaiHandle::Config::SampleRate::SAI_96KHZ);
-    float sample_rate = hw.AudioSampleRate();   
-    // Initialize all effects in the chain
-    for (int i = 0; i < NUM_EFFECTS; i++) {
-        chain[i]->Init(sample_rate);
-    }
+
+    // ── Build the routing grid ──────────────────────────────
+    // Single lane: Input 1 → all effects → both outputs
+    router.lanes[0].input  = InputSource::In_1;
+    router.lanes[0].output = OutputDest::Out_Both;
+    router.lanes[0].Add(&fx_compressor);
+    router.lanes[0].Add(&fx_distortion);
+    router.lanes[0].Add(&fx_bitcrusher);
+    router.lanes[0].Add(&fx_chorus);
+    router.lanes[0].Add(&fx_tremolo);
+    router.lanes[0].Add(&fx_delay);
+    router.lanes[0].Add(&fx_lowpass);
+
+    // Initialize all effects in all lanes
+    router.Init(hw.AudioSampleRate());
 
     // Start audio processing
     hw.StartAudio(AudioCallback);
