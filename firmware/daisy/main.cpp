@@ -56,11 +56,10 @@ static Effect* chain[NUM_EFFECTS] = {
 // ==========================================
 void AudioCallback(AudioHandle::InputBuffer in, AudioHandle::OutputBuffer out, size_t size) {
     for (size_t i = 0; i < size; i++) {
-        float sample = in[0][i];        // Signal flows through each effect in order (Tick respects bypass)
+        float sample = in[0][i];        // Signal flows through each effect in order (Tick respects bypass and processes the sample through the effect)
         for (int fx = 0; fx < NUM_EFFECTS; fx++) {
-            sample = chain[fx]->Tick(sample); //Tick respects bypass and processes the sample through the effect
+            sample = chain[fx]->Tick(sample); //
         }
-
         out[0][i] = sample;
         out[1][i] = sample;
     }
