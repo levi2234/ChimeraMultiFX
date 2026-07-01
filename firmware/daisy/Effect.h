@@ -27,11 +27,16 @@ public:
     virtual const char* GetName() const = 0;
 
     // Which family this effect belongs to.
-    virtual EffectCategory GetCategory() const = 0;
-
-    // Parameter access by name — override in each effect for serial control
+    virtual EffectCategory GetCategory() const = 0;    // Parameter access by name — override in each effect for serial control
     virtual void  SetParam(const char* name, float value) { (void)name; (void)value; }
     virtual float GetParam(const char* name) { (void)name; return 0.f; }
+
+    // Boolean parameter access — override for toggle-style params (e.g. "enabled")
+    virtual void SetBoolParam(const char* name, bool value) { (void)name; (void)value; }
+    virtual bool GetBoolParam(const char* name) { (void)name; return false; }
+
+    // Returns a comma-separated list of parameter names (e.g. "drive,mix,level")
+    virtual const char* GetParamList() const { return ""; }
 
     // Per-effect bypass
     bool IsEnabled() const     { return enabled_; }

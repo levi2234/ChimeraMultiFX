@@ -31,14 +31,14 @@ public:
         if      (strcmp(name, "bits") == 0)    bit_depth_ = value;
         else if (strcmp(name, "rate") == 0)    rate_reduce_ = (int)value;
         else if (strcmp(name, "mix") == 0)     mix_ = value;
-    }
-
-    float GetParam(const char* name) override {
+    }    float GetParam(const char* name) override {
         if      (strcmp(name, "bits") == 0)    return bit_depth_;
         else if (strcmp(name, "rate") == 0)    return (float)rate_reduce_;
         else if (strcmp(name, "mix") == 0)     return mix_;
         return 0.f;
     }
+
+    const char* GetParamList() const override { return "bits,rate,mix"; }
 
     void SetBitDepth(float bits) { bit_depth_ = bits; }
     void SetRateReduce(int n)    { rate_reduce_ = (n < 1) ? 1 : n; }

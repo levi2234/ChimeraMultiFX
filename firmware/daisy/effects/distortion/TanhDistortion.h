@@ -23,14 +23,14 @@ public:
         if      (strcmp(name, "drive") == 0) drive_ = value;
         else if (strcmp(name, "mix") == 0)   mix_ = value;
         else if (strcmp(name, "level") == 0) level_ = value;
-    }
-
-    float GetParam(const char* name) override {
+    }    float GetParam(const char* name) override {
         if      (strcmp(name, "drive") == 0) return drive_;
         else if (strcmp(name, "mix") == 0)   return mix_;
         else if (strcmp(name, "level") == 0) return level_;
         return 0.f;
     }
+
+    const char* GetParamList() const override { return "drive,mix,level"; }
 
     void SetDrive(float d) { drive_ = d; }
     void SetMix(float m)   { mix_ = m; }

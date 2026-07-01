@@ -42,9 +42,10 @@
 
 class SerialController {
 public:
-    void Init(Router* router, float sample_rate) {
+    void Init(Router* router, float sample_rate, daisy::UsbHandle* usb = nullptr) {
         router_ = router;
         sample_rate_ = sample_rate;
+        usb_ = usb;
         buf_pos_ = 0;
     }
 
@@ -63,10 +64,9 @@ public:
 
 private:
     static constexpr int MAX_CMD_LEN = 128;
-    static constexpr int MAX_TOKENS  = 8;
-
-    Router* router_ = nullptr;
+    static constexpr int MAX_TOKENS  = 8;    Router* router_ = nullptr;
     float   sample_rate_ = 48000.f;
+    daisy::UsbHandle* usb_ = nullptr;
     char    buf_[MAX_CMD_LEN] = {};
     int     buf_pos_ = 0;
 
@@ -82,11 +82,11 @@ private:
         else if (strcmp(tokens[0], "swap") == 0)   CmdSwap(tokens, n);
         else if (strcmp(tokens[0], "move") == 0)   CmdMove(tokens, n);
         else if (strcmp(tokens[0], "set") == 0)    CmdSet(tokens, n);
-        else if (strcmp(tokens[0], "get") == 0)    CmdGet(tokens, n);
-        else if (strcmp(tokens[0], "bypass") == 0) CmdBypass(tokens, n);
+        else if (strcmp(tokens[0], "get") == 0)    CmdGet(tokens, n);        else if (strcmp(tokens[0], "bypass") == 0) CmdBypass(tokens, n);
         else if (strcmp(tokens[0], "clear") == 0)  CmdClear(tokens, n);
         else if (strcmp(tokens[0], "route") == 0)  CmdRoute(tokens, n);
         else if (strcmp(tokens[0], "level") == 0)  CmdLevel(tokens, n);
+        else if (strcmp(tokens[0], "params") == 0) CmdParams(tokens, n);
         else if (strcmp(tokens[0], "status") == 0) CmdStatus();
         else Reply("ERR unknown command\n");
     }
@@ -153,18 +153,25 @@ private:
 
         router_->MoveEffect(fl, fs, tl, ts);
         Reply("OK moved %d:%d -> %d:%d\n", fl, fs, tl, ts);
-    }
-
-    // ─── set <lane> <slot> <param> <value> ───────────────────────────────────
+    }    // ─── set <lane> <slot> <param> <value> ───────────────────────────────────
     void CmdSet(char** t, int n) {
         if (n < 5) { Reply("ERR usage: set <lane> <slot> <param> <value>\n"); return; }
         int lane = atoi(t[1]);
         int slot = atoi(t[2]);
         if (!ValidLane(lane) || !ValidSlot(lane, slot)) return;
 
-        float val = static_cast<float>(atof(t[4]));
-        router_->lanes[lane].slots[slot]->SetParam(t[3], val);
-        Reply("OK %s = %.4f\n", t[3], val);
+        Effect* fx = router_->lanes[lane].slots[slot];
+
+        // Check if value is a boolean string
+        if (IsBoolStr(t[4])) {
+            bool val = ParseBool(t[4]);
+            fx->SetBoolParam(t[3], val);
+            Reply("OK %s = %s\n", t[3], val ? "true" : "false");
+        } else {
+            float val = static_cast<float>(atof(t[4]));
+            fx->SetParam(t[3], val);
+            Reply("OK %s = %.4f\n", t[3], val);
+        }
     }
 
     // ─── get <lane> <slot> <param> ───────────────────────────────────────────
@@ -172,10 +179,19 @@ private:
         if (n < 4) { Reply("ERR usage: get <lane> <slot> <param>\n"); return; }
         int lane = atoi(t[1]);
         int slot = atoi(t[2]);
+        if (!ValidLane(lane) || !ValidSlot(lane, slot)) return;        float val = router_->lanes[lane].slots[slot]->GetParam(t[3]);
+        Reply("VAL %s = %.4f\n", t[3], val);
+    }
+
+    // ─── params <lane> <slot> ────────────────────────────────────────────────
+    void CmdParams(char** t, int n) {
+        if (n < 3) { Reply("ERR usage: params <lane> <slot>\n"); return; }
+        int lane = atoi(t[1]);
+        int slot = atoi(t[2]);
         if (!ValidLane(lane) || !ValidSlot(lane, slot)) return;
 
-        float val = router_->lanes[lane].slots[slot]->GetParam(t[3]);
-        Reply("VAL %s = %.4f\n", t[3], val);
+        Effect* fx = router_->lanes[lane].slots[slot];
+        Reply("PARAMS [%s] %s\n", fx->GetName(), fx->GetParamList());
     }
 
     // ─── bypass <lane> <slot> <0|1> ─────────────────────────────────────────
@@ -317,9 +333,16 @@ private:
             return false;
         }
         return true;
+    }    // ─── Utilities ───────────────────────────────────────────────────────────
+    bool IsBoolStr(const char* s) {
+        return strcmp(s, "true") == 0 || strcmp(s, "false") == 0
+            || strcmp(s, "on") == 0   || strcmp(s, "off") == 0;
     }
 
-    // ─── Utilities ───────────────────────────────────────────────────────────
+    bool ParseBool(const char* s) {
+        return strcmp(s, "true") == 0 || strcmp(s, "on") == 0;
+    }
+
     int Tokenize(char* str, char** tokens, int max) {
         int count = 0;
         char* tok = strtok(str, " \t");
@@ -328,14 +351,14 @@ private:
             tok = strtok(nullptr, " \t");
         }
         return count;
-    }
-
-    void Reply(const char* fmt, ...) {
+    }void Reply(const char* fmt, ...) {
         char out[128];
         va_list args;
         va_start(args, fmt);
-        vsnprintf(out, sizeof(out), fmt, args);
+        int len = vsnprintf(out, sizeof(out), fmt, args);
         va_end(args);
-        daisy::DaisySeed::PrintLine(out);
+        if (usb_ && len > 0) {
+            usb_->TransmitInternal(reinterpret_cast<uint8_t*>(out), static_cast<size_t>(len));
+        }
     }
 };

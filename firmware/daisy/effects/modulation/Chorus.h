@@ -48,10 +48,11 @@ public:
 
     float GetParam(const char* name) override {
         if      (strcmp(name, "rate") == 0)  return rate_;
-        else if (strcmp(name, "depth") == 0) return depth_;
-        else if (strcmp(name, "mix") == 0)   return mix_;
+        else if (strcmp(name, "depth") == 0) return depth_;        else if (strcmp(name, "mix") == 0)   return mix_;
         return 0.f;
     }
+
+    const char* GetParamList() const override { return "rate,depth,mix"; }
 
     void SetRate(float hz)    { rate_ = hz; }
     void SetDepth(float sec)  { depth_ = sec; }

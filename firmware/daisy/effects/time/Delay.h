@@ -36,14 +36,14 @@ public:
         if      (strcmp(name, "time") == 0)     SetDelayTime(value);
         else if (strcmp(name, "feedback") == 0) feedback_ = value;
         else if (strcmp(name, "mix") == 0)      mix_ = value;
-    }
-
-    float GetParam(const char* name) override {
+    }    float GetParam(const char* name) override {
         if      (strcmp(name, "time") == 0)     return delay_time_;
         else if (strcmp(name, "feedback") == 0) return feedback_;
         else if (strcmp(name, "mix") == 0)      return mix_;
         return 0.f;
     }
+
+    const char* GetParamList() const override { return "time,feedback,mix"; }
 
     void SetDelayTime(float sec) {
         delay_time_ = sec;

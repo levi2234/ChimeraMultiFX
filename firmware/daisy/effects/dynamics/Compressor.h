@@ -48,10 +48,11 @@ public:
         if      (strcmp(name, "threshold") == 0) return threshold_;
         else if (strcmp(name, "ratio") == 0)     return ratio_;
         else if (strcmp(name, "attack") == 0)    return attack_;
-        else if (strcmp(name, "release") == 0)   return release_;
-        else if (strcmp(name, "makeup") == 0)    return makeup_;
+        else if (strcmp(name, "release") == 0)   return release_;        else if (strcmp(name, "makeup") == 0)    return makeup_;
         return 0.f;
     }
+
+    const char* GetParamList() const override { return "threshold,ratio,attack,release,makeup"; }
 
     void SetThreshold(float t)  { threshold_ = t; }
     void SetRatio(float r)      { ratio_ = (r < 1.0f) ? 1.0f : r; }

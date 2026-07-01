@@ -28,14 +28,14 @@ public:
         if      (strcmp(name, "cutoff") == 0)    { cutoff_ = value; CalcCoeffs(); }
         else if (strcmp(name, "resonance") == 0) { resonance_ = value; CalcCoeffs(); }
         else if (strcmp(name, "mix") == 0)         mix_ = value;
-    }
-
-    float GetParam(const char* name) override {
+    }    float GetParam(const char* name) override {
         if      (strcmp(name, "cutoff") == 0)    return cutoff_;
         else if (strcmp(name, "resonance") == 0) return resonance_;
         else if (strcmp(name, "mix") == 0)       return mix_;
         return 0.f;
     }
+
+    const char* GetParamList() const override { return "cutoff,resonance,mix"; }
 
     void SetCutoff(float hz)   { cutoff_ = hz; CalcCoeffs(); }
     void SetResonance(float r) { resonance_ = r; CalcCoeffs(); }

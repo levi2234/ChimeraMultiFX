@@ -44,12 +44,13 @@ void AudioCallback(AudioHandle::InputBuffer in, AudioHandle::OutputBuffer out, s
 int main(void) {
     hw.Init();
     hw.SetAudioSampleRate(SaiHandle::Config::SampleRate::SAI_96KHZ);
-    hw.StartLog();  // Enable USB serial (CDC)
 
-    float sr = hw.AudioSampleRate();
-    serial.Init(&router, sr);
+    // Initialize USB CDC for serial communication
+    hw.usb_handle.Init(UsbHandle::FS_INTERNAL);
+    System::Delay(500);  // Give USB time to enumerate on the host PC    float sr = hw.AudioSampleRate();
+    serial.Init(&router, sr, &hw.usb_handle);
 
-    // Register USB receive callback
+    // Register USB receive callback (interrupt-driven)
     hw.usb_handle.SetReceiveCallback(UsbRxCallback, UsbHandle::FS_INTERNAL);
 
     // Start audio processing

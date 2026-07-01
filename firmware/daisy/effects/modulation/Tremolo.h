@@ -28,13 +28,13 @@ public:
     void SetParam(const char* name, float value) override {
         if      (strcmp(name, "rate") == 0)  rate_ = value;
         else if (strcmp(name, "depth") == 0) depth_ = value;
-    }
-
-    float GetParam(const char* name) override {
+    }    float GetParam(const char* name) override {
         if      (strcmp(name, "rate") == 0)  return rate_;
         else if (strcmp(name, "depth") == 0) return depth_;
         return 0.f;
     }
+
+    const char* GetParamList() const override { return "rate,depth"; }
 
     void SetRate(float hz)   { rate_ = hz; }
     void SetDepth(float d)   { depth_ = d; }
