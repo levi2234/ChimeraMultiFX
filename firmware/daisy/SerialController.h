@@ -178,7 +178,7 @@ private:
         } else {
             float val = static_cast<float>(atof(t[4]));
             fx->SetParam(t[3], val);
-            Reply("OK %s = %.4f\n", t[3], val);
+            ReplyFloat("OK %s = ", t[3], val, 4, "\n");
         }
     }
 
@@ -187,8 +187,9 @@ private:
         if (n < 4) { Reply("ERR usage: get <lane> <slot> <param>\n"); return; }
         int lane = atoi(t[1]);
         int slot = atoi(t[2]);
-        if (!ValidLane(lane) || !ValidSlot(lane, slot)) return;        float val = router_->lanes[lane].slots[slot]->GetParam(t[3]);
-        Reply("VAL %s = %.4f\n", t[3], val);
+        if (!ValidLane(lane) || !ValidSlot(lane, slot)) return;
+        float val = router_->lanes[lane].slots[slot]->GetParam(t[3]);
+        ReplyFloat("VAL %s = ", t[3], val, 4, "\n");
     }
 
     // ─── params <lane> <slot> ────────────────────────────────────────────────
@@ -245,7 +246,7 @@ private:
         if (!ValidLane(lane)) return;
 
         router_->lanes[lane].level = static_cast<float>(atof(t[2]));
-        Reply("OK level lane %d = %.2f\n", lane, router_->lanes[lane].level);
+        ReplyLevel(lane, router_->lanes[lane].level);
     }
 
     // ─── status ──────────────────────────────────────────────────────────────
@@ -257,12 +258,13 @@ private:
             auto& lane = router_->lanes[r];
             if (r > 0) Append(json_buf_, JSON_BUF_LEN, pos, ",");
             Append(json_buf_, JSON_BUF_LEN, pos,
-                   "{\"lane\":%d,\"active\":%s,\"input\":\"%s\",\"output\":\"%s\",\"level\":%.4f,\"effects\":[",
+                     "{\"lane\":%d,\"active\":%s,\"input\":\"%s\",\"output\":\"%s\",\"level\":",
                    r,
                    lane.active ? "true" : "false",
                    InputName(lane.input),
-                   OutputName(lane.output),
-                   lane.level);
+                     OutputName(lane.output));
+                 AppendFloat(json_buf_, JSON_BUF_LEN, pos, lane.level, 4);
+                 Append(json_buf_, JSON_BUF_LEN, pos, ",\"effects\":[");
             for (int i = 0; i < lane.count; i++) {
                 Effect* fx = lane.slots[i];
                 if (i > 0) Append(json_buf_, JSON_BUF_LEN, pos, ",");
@@ -293,7 +295,8 @@ private:
         while (tok) {
             if (!first) Append(out, max, pos, ",");
             float val = fx->GetParam(tok);
-            Append(out, max, pos, "\"%s\":%.4f", tok, val);
+            Append(out, max, pos, "\"%s\":", tok);
+            AppendFloat(out, max, pos, val, 4);
             first = false;
             tok = strtok(nullptr, ",");
         }
@@ -304,8 +307,11 @@ private:
     void CmdInfo() {
          int pos = 0;
          Append(json_buf_, JSON_BUF_LEN, pos,
-             "{\"sample_rate\":%.0f,\"max_lanes\":%d,\"max_slots\":%d,",
-             sample_rate_, Router::MAX_LANES, Router::MAX_SLOTS);
+             "{\"sample_rate\":");
+         AppendFloat(json_buf_, JSON_BUF_LEN, pos, sample_rate_, 0);
+         Append(json_buf_, JSON_BUF_LEN, pos,
+             ",\"max_lanes\":%d,\"max_slots\":%d,",
+             Router::MAX_LANES, Router::MAX_SLOTS);
          Append(json_buf_, JSON_BUF_LEN, pos,
              "\"effects\":[\"distortion\",\"bitcrusher\",\"chorus\",\"tremolo\",\"delay\",\"compressor\",\"lowpass\"],");
          Append(json_buf_, JSON_BUF_LEN, pos,
@@ -427,6 +433,22 @@ private:
         SendBuffer(tx_buf_, len);
     }
 
+    void ReplyFloat(const char* prefix_fmt, const char* name, float value, int decimals, const char* suffix) {
+        int pos = 0;
+        Append(tx_buf_, TX_BUF_LEN, pos, prefix_fmt, name);
+        AppendFloat(tx_buf_, TX_BUF_LEN, pos, value, decimals);
+        Append(tx_buf_, TX_BUF_LEN, pos, "%s", suffix);
+        SendBuffer(tx_buf_, pos);
+    }
+
+    void ReplyLevel(int lane, float value) {
+        int pos = 0;
+        Append(tx_buf_, TX_BUF_LEN, pos, "OK level lane %d = ", lane);
+        AppendFloat(tx_buf_, TX_BUF_LEN, pos, value, 2);
+        Append(tx_buf_, TX_BUF_LEN, pos, "\n");
+        SendBuffer(tx_buf_, pos);
+    }
+
     void Append(char* out, int max, int& pos, const char* fmt, ...) {
         if (pos >= max - 1) return;
 
@@ -441,6 +463,30 @@ private:
             out[pos] = '\0';
         } else {
             pos += len;
+        }
+    }
+
+    void AppendFloat(char* out, int max, int& pos, float value, int decimals) {
+        if (pos >= max - 1) return;
+        if (decimals < 0) decimals = 0;
+        if (decimals > 4) decimals = 4;
+
+        if (value < 0.0f) {
+            Append(out, max, pos, "-");
+            value = -value;
+        }
+
+        int scale = 1;
+        for (int i = 0; i < decimals; i++) scale *= 10;
+
+        int scaled = static_cast<int>((value * scale) + 0.5f);
+        int whole = scaled / scale;
+        int frac = scaled % scale;
+
+        if (decimals == 0) {
+            Append(out, max, pos, "%d", whole);
+        } else {
+            Append(out, max, pos, "%d.%0*d", whole, decimals, frac);
         }
     }
 
