@@ -5,6 +5,7 @@
 // Effect includes — the name→type mapping lives here
 #include "effects/distortion/TanhDistortion.h"
 #include "effects/distortion/Bitcrusher.h"
+#include "effects/distortion/overdrive.h"
 #include "effects/modulation/Chorus.h"
 #include "effects/modulation/Tremolo.h"
 #include "effects/time/Delay.h"
@@ -37,7 +38,7 @@
 //   info                                     → system capabilities as JSON
 //   effect <effect>                          → effect parameter metadata as JSON
 //
-// Effect names: distortion, bitcrusher, chorus, tremolo, delay, compressor, lowpass
+// Effect names: distortion, bitcrusher, overdrive, chorus, tremolo, delay, compressor, lowpass
 // Input names:  in1, in2, mix, lane0, lane1, lane2, lane3
 // Output names: out1, out2, both, none
 //
@@ -337,7 +338,7 @@ private:
              ",\"max_lanes\":%d,\"max_slots\":%d,",
              Router::MAX_LANES, Router::MAX_SLOTS);
          Append(json_buf_, JSON_BUF_LEN, pos,
-             "\"effects\":[\"distortion\",\"bitcrusher\",\"chorus\",\"tremolo\",\"delay\",\"compressor\",\"lowpass\"],");
+             "\"effects\":[\"distortion\",\"bitcrusher\",\"overdrive\",\"chorus\",\"tremolo\",\"delay\",\"compressor\",\"lowpass\"],");
          Append(json_buf_, JSON_BUF_LEN, pos,
              "\"inputs\":[\"in1\",\"in2\",\"mix\",\"lane0\",\"lane1\",\"lane2\",\"lane3\"],");
          Append(json_buf_, JSON_BUF_LEN, pos,
@@ -376,6 +377,7 @@ private:
 
         if      (strcmp(name, "distortion") == 0) fx = new TanhDistortion();
         else if (strcmp(name, "bitcrusher") == 0) fx = new Bitcrusher();
+        else if (strcmp(name, "overdrive") == 0)  fx = new Overdrive();
         else if (strcmp(name, "chorus") == 0)     fx = new Chorus();
         else if (strcmp(name, "tremolo") == 0)    fx = new Tremolo();
         else if (strcmp(name, "delay") == 0)      fx = new Delay();

@@ -8,9 +8,9 @@ class Bitcrusher : public Effect {
 public:
     void Init(float sample_rate) override {
         sample_rate_  = sample_rate;
-        bit_depth_    = 8.0f;    // 1–16
-        rate_reduce_  = 4;       // keep every Nth sample
-        mix_          = 1.0f;
+        bit_depth_    = 12.0f;
+        rate_reduce_  = 1;
+        mix_          = 0.5f;
         hold_         = 0.0f;
         counter_      = 0;
     }
@@ -43,9 +43,9 @@ public:
     int GetParamCount() const override { return 3; }
     bool GetParamInfo(int index, EffectParamInfo& info) const override {
         switch (index) {
-            case 0: info = {"bits", "Bits", "", "int", "linear", 1.0f, 16.0f, 8.0f, 1.0f}; return true;
-            case 1: info = {"rate", "Rate Divide", "samples", "int", "linear", 1.0f, 256.0f, 4.0f, 1.0f}; return true;
-            case 2: info = {"mix", "Mix", "", "float", "linear", 0.0f, 1.0f, 1.0f, 0.01f}; return true;
+            case 0: info = {"bits", "Bits", "", "int", "linear", 1.0f, 16.0f, 12.0f, 1.0f}; return true;
+            case 1: info = {"rate", "Rate Divide", "samples", "int", "linear", 1.0f, 256.0f, 1.0f, 1.0f}; return true;
+            case 2: info = {"mix", "Mix", "", "float", "linear", 0.0f, 1.0f, 0.5f, 0.01f}; return true;
             default: return false;
         }
     }
