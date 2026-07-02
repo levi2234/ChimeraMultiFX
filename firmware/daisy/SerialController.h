@@ -392,12 +392,18 @@ private:
             tok = strtok(nullptr, " \t");
         }
         return count;
-    }void Reply(const char* fmt, ...) {
+    }
+
+    void Reply(const char* fmt, ...) {
         char out[128];
         va_list args;
         va_start(args, fmt);
         int len = vsnprintf(out, sizeof(out), fmt, args);
         va_end(args);
+        if (len < 0) return;
+        if (len >= static_cast<int>(sizeof(out))) {
+            len = static_cast<int>(sizeof(out)) - 1;
+        }
         if (usb_ && len > 0) {
             usb_->TransmitInternal(reinterpret_cast<uint8_t*>(out), static_cast<size_t>(len));
         }

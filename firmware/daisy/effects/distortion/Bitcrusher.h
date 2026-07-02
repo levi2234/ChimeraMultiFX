@@ -28,9 +28,9 @@ public:
     EffectCategory GetCategory() const override { return EffectCategory::Distortion; }
 
     void SetParam(const char* name, float value) override {
-        if      (strcmp(name, "bits") == 0)    bit_depth_ = value;
-        else if (strcmp(name, "rate") == 0)    rate_reduce_ = (int)value;
-        else if (strcmp(name, "mix") == 0)     mix_ = value;
+        if      (strcmp(name, "bits") == 0)    SetBitDepth(value);
+        else if (strcmp(name, "rate") == 0)    SetRateReduce((int)value);
+        else if (strcmp(name, "mix") == 0)     SetMix(value);
     }    float GetParam(const char* name) override {
         if      (strcmp(name, "bits") == 0)    return bit_depth_;
         else if (strcmp(name, "rate") == 0)    return (float)rate_reduce_;
@@ -40,11 +40,23 @@ public:
 
     const char* GetParamList() const override { return "bits,rate,mix"; }
 
-    void SetBitDepth(float bits) { bit_depth_ = bits; }
-    void SetRateReduce(int n)    { rate_reduce_ = (n < 1) ? 1 : n; }
-    void SetMix(float m)         { mix_ = m; }
+    void SetBitDepth(float bits) { bit_depth_ = Clamp(bits, 1.0f, 16.0f); }
+    void SetRateReduce(int n)    { rate_reduce_ = ClampInt(n, 1, 256); }
+    void SetMix(float m)         { mix_ = Clamp(m, 0.0f, 1.0f); }
 
 private:
+    static float Clamp(float value, float min, float max) {
+        if (value < min) return min;
+        if (value > max) return max;
+        return value;
+    }
+
+    static int ClampInt(int value, int min, int max) {
+        if (value < min) return min;
+        if (value > max) return max;
+        return value;
+    }
+
     float sample_rate_;
     float bit_depth_;
     int   rate_reduce_;

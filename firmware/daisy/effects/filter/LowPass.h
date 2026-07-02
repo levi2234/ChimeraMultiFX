@@ -25,9 +25,9 @@ public:
     EffectCategory GetCategory() const override { return EffectCategory::Filter; }
 
     void SetParam(const char* name, float value) override {
-        if      (strcmp(name, "cutoff") == 0)    { cutoff_ = value; CalcCoeffs(); }
-        else if (strcmp(name, "resonance") == 0) { resonance_ = value; CalcCoeffs(); }
-        else if (strcmp(name, "mix") == 0)         mix_ = value;
+        if      (strcmp(name, "cutoff") == 0)    SetCutoff(value);
+        else if (strcmp(name, "resonance") == 0) SetResonance(value);
+        else if (strcmp(name, "mix") == 0)       SetMix(value);
     }    float GetParam(const char* name) override {
         if      (strcmp(name, "cutoff") == 0)    return cutoff_;
         else if (strcmp(name, "resonance") == 0) return resonance_;
@@ -37,11 +37,17 @@ public:
 
     const char* GetParamList() const override { return "cutoff,resonance,mix"; }
 
-    void SetCutoff(float hz)   { cutoff_ = hz; CalcCoeffs(); }
-    void SetResonance(float r) { resonance_ = r; CalcCoeffs(); }
-    void SetMix(float m)       { mix_ = m; }
+    void SetCutoff(float hz)   { cutoff_ = Clamp(hz, 20.0f, (sample_rate_ * 0.5f) - 100.0f); CalcCoeffs(); }
+    void SetResonance(float r) { resonance_ = Clamp(r, 0.0f, 0.99f); CalcCoeffs(); }
+    void SetMix(float m)       { mix_ = Clamp(m, 0.0f, 1.0f); }
 
 private:
+    static float Clamp(float value, float min, float max) {
+        if (value < min) return min;
+        if (value > max) return max;
+        return value;
+    }
+
     void CalcCoeffs() {
         float w0    = 2.0f * 3.14159265f * cutoff_ / sample_rate_;
         float alpha = sinf(w0) / (2.0f * (1.0f - resonance_ * 0.99f)); // Q from resonance

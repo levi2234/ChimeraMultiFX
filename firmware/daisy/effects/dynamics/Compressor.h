@@ -37,11 +37,11 @@ public:
     EffectCategory GetCategory() const override { return EffectCategory::Dynamics; }
 
     void SetParam(const char* name, float value) override {
-        if      (strcmp(name, "threshold") == 0) threshold_ = value;
-        else if (strcmp(name, "ratio") == 0)     ratio_ = (value < 1.0f) ? 1.0f : value;
-        else if (strcmp(name, "attack") == 0)    attack_ = value;
-        else if (strcmp(name, "release") == 0)   release_ = value;
-        else if (strcmp(name, "makeup") == 0)    makeup_ = value;
+        if      (strcmp(name, "threshold") == 0) SetThreshold(value);
+        else if (strcmp(name, "ratio") == 0)     SetRatio(value);
+        else if (strcmp(name, "attack") == 0)    SetAttack(value);
+        else if (strcmp(name, "release") == 0)   SetRelease(value);
+        else if (strcmp(name, "makeup") == 0)    SetMakeup(value);
     }
 
     float GetParam(const char* name) override {
@@ -54,13 +54,19 @@ public:
 
     const char* GetParamList() const override { return "threshold,ratio,attack,release,makeup"; }
 
-    void SetThreshold(float t)  { threshold_ = t; }
-    void SetRatio(float r)      { ratio_ = (r < 1.0f) ? 1.0f : r; }
-    void SetAttack(float sec)   { attack_ = sec; }
-    void SetRelease(float sec)  { release_ = sec; }
-    void SetMakeup(float g)     { makeup_ = g; }
+    void SetThreshold(float t)  { threshold_ = Clamp(t, 0.0001f, 1.0f); }
+    void SetRatio(float r)      { ratio_ = Clamp(r, 1.0f, 20.0f); }
+    void SetAttack(float sec)   { attack_ = Clamp(sec, 0.0001f, 2.0f); }
+    void SetRelease(float sec)  { release_ = Clamp(sec, 0.0001f, 5.0f); }
+    void SetMakeup(float g)     { makeup_ = Clamp(g, 0.0f, 8.0f); }
 
 private:
+    static float Clamp(float value, float min, float max) {
+        if (value < min) return min;
+        if (value > max) return max;
+        return value;
+    }
+
     float sample_rate_;
     float threshold_, ratio_;
     float attack_, release_;

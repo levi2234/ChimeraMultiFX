@@ -41,9 +41,9 @@ public:
     EffectCategory GetCategory() const override { return EffectCategory::Modulation; }
 
     void SetParam(const char* name, float value) override {
-        if      (strcmp(name, "rate") == 0)  rate_ = value;
-        else if (strcmp(name, "depth") == 0) depth_ = value;
-        else if (strcmp(name, "mix") == 0)   mix_ = value;
+        if      (strcmp(name, "rate") == 0)  SetRate(value);
+        else if (strcmp(name, "depth") == 0) SetDepth(value);
+        else if (strcmp(name, "mix") == 0)   SetMix(value);
     }
 
     float GetParam(const char* name) override {
@@ -54,11 +54,17 @@ public:
 
     const char* GetParamList() const override { return "rate,depth,mix"; }
 
-    void SetRate(float hz)    { rate_ = hz; }
-    void SetDepth(float sec)  { depth_ = sec; }
-    void SetMix(float m)      { mix_ = m; }
+    void SetRate(float hz)    { rate_ = Clamp(hz, 0.01f, 20.0f); }
+    void SetDepth(float sec)  { depth_ = Clamp(sec, 0.0f, (MAX_BUF - 2) / sample_rate_); }
+    void SetMix(float m)      { mix_ = Clamp(m, 0.0f, 1.0f); }
 
 private:
+    static float Clamp(float value, float min, float max) {
+        if (value < min) return min;
+        if (value > max) return max;
+        return value;
+    }
+
     float sample_rate_;
     float rate_, depth_, mix_;
     float phase_;

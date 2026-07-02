@@ -13,9 +13,9 @@ using namespace daisy;
 // ==========================================
 // Hardware & Global State
 // ==========================================
-static DaisySeed hw;
-static Router router;
-static SerialController serial;
+static DaisySeed hw; 
+static Router router; // Audio routing engine that manages lanes and effects
+static SerialController serial; // UART command interface that allows dynamic control of the router and effects
 
 // ==========================================
 // USB CDC Receive Callback
@@ -44,12 +44,13 @@ void AudioCallback(AudioHandle::InputBuffer in, AudioHandle::OutputBuffer out, s
 int main(void) {
     hw.Init();
     hw.SetAudioSampleRate(SaiHandle::Config::SampleRate::SAI_96KHZ);
+    float sr = hw.AudioSampleRate();
 
     // Initialize USB CDC for serial communication
     hw.usb_handle.Init(UsbHandle::FS_INTERNAL);
     System::Delay(500);  // Give USB time to enumerate on the host PC
 
-    float sr = hw.AudioSampleRate();
+
     serial.Init(&router, sr, &hw.usb_handle);
 
     // Register USB receive callback (interrupt-driven)

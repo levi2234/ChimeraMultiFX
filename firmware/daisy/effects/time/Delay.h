@@ -34,8 +34,8 @@ public:
 
     void SetParam(const char* name, float value) override {
         if      (strcmp(name, "time") == 0)     SetDelayTime(value);
-        else if (strcmp(name, "feedback") == 0) feedback_ = value;
-        else if (strcmp(name, "mix") == 0)      mix_ = value;
+        else if (strcmp(name, "feedback") == 0) SetFeedback(value);
+        else if (strcmp(name, "mix") == 0)      SetMix(value);
     }    float GetParam(const char* name) override {
         if      (strcmp(name, "time") == 0)     return delay_time_;
         else if (strcmp(name, "feedback") == 0) return feedback_;
@@ -46,15 +46,21 @@ public:
     const char* GetParamList() const override { return "time,feedback,mix"; }
 
     void SetDelayTime(float sec) {
-        delay_time_ = sec;
+        delay_time_ = Clamp(sec, 0.001f, (MAX_DELAY_SAMPLES - 1) / sample_rate_);
         delay_samples_ = (uint32_t)(delay_time_ * sample_rate_);
         if (delay_samples_ >= MAX_DELAY_SAMPLES)
             delay_samples_ = MAX_DELAY_SAMPLES - 1;
     }
-    void SetFeedback(float fb) { feedback_ = fb; }
-    void SetMix(float m)       { mix_ = m; }
+    void SetFeedback(float fb) { feedback_ = Clamp(fb, 0.0f, 0.95f); }
+    void SetMix(float m)       { mix_ = Clamp(m, 0.0f, 1.0f); }
 
 private:
+    static float Clamp(float value, float min, float max) {
+        if (value < min) return min;
+        if (value > max) return max;
+        return value;
+    }
+
     float    sample_rate_   = 96000.f;
     float    delay_time_    = 0.5f;
     float    feedback_      = 0.6f;
