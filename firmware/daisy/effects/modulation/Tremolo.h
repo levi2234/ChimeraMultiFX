@@ -36,6 +36,15 @@ public:
 
     const char* GetParamList() const override { return "rate,depth"; }
 
+    int GetParamCount() const override { return 2; }
+    bool GetParamInfo(int index, EffectParamInfo& info) const override {
+        switch (index) {
+            case 0: info = {"rate", "Rate", "Hz", "float", "linear", 0.0f, 20.0f, 5.0f, 0.01f}; return true;
+            case 1: info = {"depth", "Depth", "", "float", "linear", 0.0f, 1.0f, 0.8f, 0.01f}; return true;
+            default: return false;
+        }
+    }
+
     void SetRate(float hz)   { rate_ = Clamp(hz, 0.0f, 20.0f); }
     void SetDepth(float d)   { depth_ = Clamp(d, 0.0f, 1.0f); }
 

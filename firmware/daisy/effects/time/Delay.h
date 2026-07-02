@@ -45,6 +45,16 @@ public:
 
     const char* GetParamList() const override { return "time,feedback,mix"; }
 
+    int GetParamCount() const override { return 3; }
+    bool GetParamInfo(int index, EffectParamInfo& info) const override {
+        switch (index) {
+            case 0: info = {"time", "Time", "s", "float", "linear", 0.001f, (MAX_DELAY_SAMPLES - 1) / sample_rate_, 0.5f, 0.001f}; return true;
+            case 1: info = {"feedback", "Feedback", "", "float", "linear", 0.0f, 0.95f, 0.6f, 0.01f}; return true;
+            case 2: info = {"mix", "Mix", "", "float", "linear", 0.0f, 1.0f, 0.4f, 0.01f}; return true;
+            default: return false;
+        }
+    }
+
     void SetDelayTime(float sec) {
         delay_time_ = Clamp(sec, 0.001f, (MAX_DELAY_SAMPLES - 1) / sample_rate_);
         delay_samples_ = (uint32_t)(delay_time_ * sample_rate_);

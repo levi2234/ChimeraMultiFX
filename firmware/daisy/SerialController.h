@@ -35,6 +35,7 @@
 //   params <lane> <slot>                     → list effect's param names
 //   status                                   → full router state as JSON
 //   info                                     → system capabilities as JSON
+//   effect <effect>                          → effect parameter metadata as JSON
 //
 // Effect names: distortion, bitcrusher, chorus, tremolo, delay, compressor, lowpass
 // Input names:  in1, in2, mix, lane0, lane1, lane2, lane3
@@ -96,6 +97,7 @@ private:
         else if (strcmp(tokens[0], "level") == 0)  CmdLevel(tokens, n);        else if (strcmp(tokens[0], "params") == 0) CmdParams(tokens, n);
         else if (strcmp(tokens[0], "status") == 0) CmdStatus();
         else if (strcmp(tokens[0], "info") == 0)   CmdInfo();
+        else if (strcmp(tokens[0], "effect") == 0) CmdEffectInfo(tokens, n);
         else Reply("ERR unknown command\n");
     }
 
@@ -268,8 +270,8 @@ private:
             for (int i = 0; i < lane.count; i++) {
                 Effect* fx = lane.slots[i];
                 if (i > 0) Append(json_buf_, JSON_BUF_LEN, pos, ",");
-                Append(json_buf_, JSON_BUF_LEN, pos,
-                       "{\"slot\":%d,\"name\":\"%s\",\"enabled\":%s,\"params\":{",
+                  Append(json_buf_, JSON_BUF_LEN, pos,
+                      "{\"slot\":%d,\"name\":\"%s\",\"enabled\":%s,\"params\":{",
                        i, fx->GetName(), fx->IsEnabled() ? "true" : "false");
                 EmitParams(json_buf_, JSON_BUF_LEN, pos, fx);
                 Append(json_buf_, JSON_BUF_LEN, pos, "}}");
@@ -302,6 +304,28 @@ private:
         }
     }
 
+    void EmitParamInfo(char* out, int max, int& pos, Effect* fx) {
+        bool first = true;
+        for (int i = 0; i < fx->GetParamCount(); i++) {
+            EffectParamInfo info;
+            if (!fx->GetParamInfo(i, info)) continue;
+
+            if (!first) Append(out, max, pos, ",");
+            Append(out, max, pos,
+                   "\"%s\":{\"label\":\"%s\",\"type\":\"%s\",\"unit\":\"%s\",\"scale\":\"%s\",\"min\":",
+                   info.name, info.label, info.kind, info.unit, info.scale);
+            AppendFloat(out, max, pos, info.min, 4);
+            Append(out, max, pos, ",\"max\":");
+            AppendFloat(out, max, pos, info.max, 4);
+            Append(out, max, pos, ",\"default\":");
+            AppendFloat(out, max, pos, info.default_value, 4);
+            Append(out, max, pos, ",\"step\":");
+            AppendFloat(out, max, pos, info.step, 4);
+            Append(out, max, pos, "}");
+            first = false;
+        }
+    }
+
     // ─── info ────────────────────────────────────────────────────────────────
     // Returns static system capabilities as JSON (call once at connection).
     void CmdInfo() {
@@ -319,8 +343,30 @@ private:
          Append(json_buf_, JSON_BUF_LEN, pos,
              "\"outputs\":[\"out1\",\"out2\",\"both\",\"none\"],");
          Append(json_buf_, JSON_BUF_LEN, pos,
-             "\"commands\":[\"add\",\"insert\",\"remove\",\"swap\",\"move\",\"set\",\"get\",\"bypass\",\"clear\",\"route\",\"level\",\"params\",\"status\",\"info\"]}\n");
+             "\"commands\":[\"add\",\"insert\",\"remove\",\"swap\",\"move\",\"set\",\"get\",\"bypass\",\"clear\",\"route\",\"level\",\"params\",\"status\",\"info\",\"effect\"]}\n");
          SendBuffer(json_buf_, pos);
+    }
+
+    void CmdEffectInfo(char** t, int n) {
+        if (n < 2) { Reply("ERR usage: effect <effect>\n"); return; }
+
+        int pos = 0;
+        EmitRegisteredEffectInfo(json_buf_, JSON_BUF_LEN, pos, t[1]);
+        Append(json_buf_, JSON_BUF_LEN, pos, "\n");
+        SendBuffer(json_buf_, pos);
+    }
+
+    void EmitRegisteredEffectInfo(char* out, int max, int& pos, const char* name) {
+        Effect* fx = CreateFromName(name);
+        if (!fx) {
+            Append(out, max, pos, "\"%s\":{\"category\":\"unknown\",\"params\":{}}", name);
+            return;
+        }
+
+        Append(out, max, pos, "\"%s\":{\"category\":\"%s\",\"params\":{", name, CategoryName(fx->GetCategory()));
+        EmitParamInfo(out, max, pos, fx);
+        Append(out, max, pos, "}}");
+        delete fx;
     }
 
     // ─── Effect Factory ──────────────────────────────────────────────────────
@@ -381,6 +427,17 @@ private:
             case OutputDest::Out_Both: return "both";
             case OutputDest::Out_None: return "none";
             default: return "?";
+        }
+    }
+
+    const char* CategoryName(EffectCategory category) {
+        switch (category) {
+            case EffectCategory::Distortion: return "distortion";
+            case EffectCategory::Modulation: return "modulation";
+            case EffectCategory::Time:       return "time";
+            case EffectCategory::Dynamics:   return "dynamics";
+            case EffectCategory::Filter:     return "filter";
+            default: return "unknown";
         }
     }
 

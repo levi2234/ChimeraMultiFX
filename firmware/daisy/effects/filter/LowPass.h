@@ -37,6 +37,16 @@ public:
 
     const char* GetParamList() const override { return "cutoff,resonance,mix"; }
 
+    int GetParamCount() const override { return 3; }
+    bool GetParamInfo(int index, EffectParamInfo& info) const override {
+        switch (index) {
+            case 0: info = {"cutoff", "Cutoff", "Hz", "float", "log", 20.0f, (sample_rate_ * 0.5f) - 100.0f, 2000.0f, 1.0f}; return true;
+            case 1: info = {"resonance", "Resonance", "", "float", "linear", 0.0f, 0.99f, 0.5f, 0.01f}; return true;
+            case 2: info = {"mix", "Mix", "", "float", "linear", 0.0f, 1.0f, 1.0f, 0.01f}; return true;
+            default: return false;
+        }
+    }
+
     void SetCutoff(float hz)   { cutoff_ = Clamp(hz, 20.0f, (sample_rate_ * 0.5f) - 100.0f); CalcCoeffs(); }
     void SetResonance(float r) { resonance_ = Clamp(r, 0.0f, 0.99f); CalcCoeffs(); }
     void SetMix(float m)       { mix_ = Clamp(m, 0.0f, 1.0f); }

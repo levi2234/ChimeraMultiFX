@@ -11,6 +11,18 @@ enum class EffectCategory {
     Filter,
 };
 
+struct EffectParamInfo {
+    const char* name;
+    const char* label;
+    const char* unit;
+    const char* kind;
+    const char* scale;
+    float min;
+    float max;
+    float default_value;
+    float step;
+};
+
 // Base class for all ChimeraMultiFX effects.
 // Each effect implements Init() and Process() and can be hot-swapped at runtime.
 class Effect {
@@ -37,6 +49,9 @@ public:
 
     // Returns a comma-separated list of parameter names (e.g. "drive,mix,level")
     virtual const char* GetParamList() const { return ""; }
+
+    virtual int GetParamCount() const { return 0; }
+    virtual bool GetParamInfo(int index, EffectParamInfo& info) const { (void)index; (void)info; return false; }
 
     // Per-effect bypass
     bool IsEnabled() const     { return enabled_; }

@@ -54,6 +54,18 @@ public:
 
     const char* GetParamList() const override { return "threshold,ratio,attack,release,makeup"; }
 
+    int GetParamCount() const override { return 5; }
+    bool GetParamInfo(int index, EffectParamInfo& info) const override {
+        switch (index) {
+            case 0: info = {"threshold", "Threshold", "", "float", "linear", 0.0001f, 1.0f, 0.3f, 0.001f}; return true;
+            case 1: info = {"ratio", "Ratio", ":1", "float", "linear", 1.0f, 20.0f, 4.0f, 0.1f}; return true;
+            case 2: info = {"attack", "Attack", "s", "float", "log", 0.0001f, 2.0f, 0.01f, 0.0001f}; return true;
+            case 3: info = {"release", "Release", "s", "float", "log", 0.0001f, 5.0f, 0.1f, 0.0001f}; return true;
+            case 4: info = {"makeup", "Makeup", "", "float", "linear", 0.0f, 8.0f, 1.5f, 0.01f}; return true;
+            default: return false;
+        }
+    }
+
     void SetThreshold(float t)  { threshold_ = Clamp(t, 0.0001f, 1.0f); }
     void SetRatio(float r)      { ratio_ = Clamp(r, 1.0f, 20.0f); }
     void SetAttack(float sec)   { attack_ = Clamp(sec, 0.0001f, 2.0f); }

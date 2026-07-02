@@ -32,6 +32,16 @@ public:
 
     const char* GetParamList() const override { return "drive,mix,level"; }
 
+    int GetParamCount() const override { return 3; }
+    bool GetParamInfo(int index, EffectParamInfo& info) const override {
+        switch (index) {
+            case 0: info = {"drive", "Drive", "", "float", "linear", 0.0f, 40.0f, 8.0f, 0.1f}; return true;
+            case 1: info = {"mix", "Mix", "", "float", "linear", 0.0f, 1.0f, 1.0f, 0.01f}; return true;
+            case 2: info = {"level", "Level", "", "float", "linear", 0.0f, 2.0f, 0.7f, 0.01f}; return true;
+            default: return false;
+        }
+    }
+
     void SetDrive(float d) { drive_ = Clamp(d, 0.0f, 40.0f); }
     void SetMix(float m)   { mix_ = Clamp(m, 0.0f, 1.0f); }
     void SetLevel(float l) { level_ = Clamp(l, 0.0f, 2.0f); }

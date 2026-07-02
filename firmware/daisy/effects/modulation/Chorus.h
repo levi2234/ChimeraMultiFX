@@ -54,6 +54,16 @@ public:
 
     const char* GetParamList() const override { return "rate,depth,mix"; }
 
+    int GetParamCount() const override { return 3; }
+    bool GetParamInfo(int index, EffectParamInfo& info) const override {
+        switch (index) {
+            case 0: info = {"rate", "Rate", "Hz", "float", "linear", 0.01f, 20.0f, 1.5f, 0.01f}; return true;
+            case 1: info = {"depth", "Depth", "s", "float", "linear", 0.0f, (MAX_BUF - 2) / sample_rate_, 0.003f, 0.0001f}; return true;
+            case 2: info = {"mix", "Mix", "", "float", "linear", 0.0f, 1.0f, 0.5f, 0.01f}; return true;
+            default: return false;
+        }
+    }
+
     void SetRate(float hz)    { rate_ = Clamp(hz, 0.01f, 20.0f); }
     void SetDepth(float sec)  { depth_ = Clamp(sec, 0.0f, (MAX_BUF - 2) / sample_rate_); }
     void SetMix(float m)      { mix_ = Clamp(m, 0.0f, 1.0f); }

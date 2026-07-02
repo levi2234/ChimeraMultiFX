@@ -40,6 +40,16 @@ public:
 
     const char* GetParamList() const override { return "bits,rate,mix"; }
 
+    int GetParamCount() const override { return 3; }
+    bool GetParamInfo(int index, EffectParamInfo& info) const override {
+        switch (index) {
+            case 0: info = {"bits", "Bits", "", "int", "linear", 1.0f, 16.0f, 8.0f, 1.0f}; return true;
+            case 1: info = {"rate", "Rate Divide", "samples", "int", "linear", 1.0f, 256.0f, 4.0f, 1.0f}; return true;
+            case 2: info = {"mix", "Mix", "", "float", "linear", 0.0f, 1.0f, 1.0f, 0.01f}; return true;
+            default: return false;
+        }
+    }
+
     void SetBitDepth(float bits) { bit_depth_ = Clamp(bits, 1.0f, 16.0f); }
     void SetRateReduce(int n)    { rate_reduce_ = ClampInt(n, 1, 256); }
     void SetMix(float m)         { mix_ = Clamp(m, 0.0f, 1.0f); }
