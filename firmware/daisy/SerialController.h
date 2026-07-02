@@ -66,10 +66,16 @@ public:
 
 private:
     static constexpr int MAX_CMD_LEN = 128;
-    static constexpr int MAX_TOKENS  = 8;    Router* router_ = nullptr;
+    static constexpr int MAX_TOKENS  = 8;
+    static constexpr int TX_BUF_LEN  = 256;
+    static constexpr int JSON_BUF_LEN = 4096;
+
+    Router* router_ = nullptr;
     float   sample_rate_ = 48000.f;
     daisy::UsbHandle* usb_ = nullptr;
     char    buf_[MAX_CMD_LEN] = {};
+    char    tx_buf_[TX_BUF_LEN] = {};
+    char    json_buf_[JSON_BUF_LEN] = {};
     int     buf_pos_ = 0;
 
     // ─── Command Dispatch ────────────────────────────────────────────────────
@@ -240,35 +246,40 @@ private:
 
         router_->lanes[lane].level = static_cast<float>(atof(t[2]));
         Reply("OK level lane %d = %.2f\n", lane, router_->lanes[lane].level);
-    }    // ─── status ──────────────────────────────────────────────────────────────
+    }
+
+    // ─── status ──────────────────────────────────────────────────────────────
     // Returns full router state as a JSON string for programmatic parsing.
     void CmdStatus() {
-        Reply("{\"lanes\":[");
+        int pos = 0;
+        Append(json_buf_, JSON_BUF_LEN, pos, "{\"lanes\":[");
         for (int r = 0; r < Router::MAX_LANES; r++) {
             auto& lane = router_->lanes[r];
-            if (r > 0) Reply(",");
-            Reply("{\"lane\":%d,\"active\":%s,\"input\":\"%s\",\"output\":\"%s\",\"level\":%.4f,\"effects\":[",
-                  r,
-                  lane.active ? "true" : "false",
-                  InputName(lane.input),
-                  OutputName(lane.output),
-                  lane.level);
+            if (r > 0) Append(json_buf_, JSON_BUF_LEN, pos, ",");
+            Append(json_buf_, JSON_BUF_LEN, pos,
+                   "{\"lane\":%d,\"active\":%s,\"input\":\"%s\",\"output\":\"%s\",\"level\":%.4f,\"effects\":[",
+                   r,
+                   lane.active ? "true" : "false",
+                   InputName(lane.input),
+                   OutputName(lane.output),
+                   lane.level);
             for (int i = 0; i < lane.count; i++) {
                 Effect* fx = lane.slots[i];
-                if (i > 0) Reply(",");
-                Reply("{\"slot\":%d,\"name\":\"%s\",\"enabled\":%s,\"params\":{",
-                      i, fx->GetName(), fx->IsEnabled() ? "true" : "false");
-                // Emit each param as key:value
-                EmitParams(fx);
-                Reply("}}");
+                if (i > 0) Append(json_buf_, JSON_BUF_LEN, pos, ",");
+                Append(json_buf_, JSON_BUF_LEN, pos,
+                       "{\"slot\":%d,\"name\":\"%s\",\"enabled\":%s,\"params\":{",
+                       i, fx->GetName(), fx->IsEnabled() ? "true" : "false");
+                EmitParams(json_buf_, JSON_BUF_LEN, pos, fx);
+                Append(json_buf_, JSON_BUF_LEN, pos, "}}");
             }
-            Reply("]}");
+            Append(json_buf_, JSON_BUF_LEN, pos, "]}");
         }
-        Reply("]}\n");
+        Append(json_buf_, JSON_BUF_LEN, pos, "]}\n");
+        SendBuffer(json_buf_, pos);
     }
 
     // Helper: emits all params as "key":value pairs inside a JSON object
-    void EmitParams(Effect* fx) {
+    void EmitParams(char* out, int max, int& pos, Effect* fx) {
         const char* list = fx->GetParamList();
         if (!list || list[0] == '\0') return;
 
@@ -280,22 +291,30 @@ private:
         bool first = true;
         char* tok = strtok(buf, ",");
         while (tok) {
-            if (!first) Reply(",");
+            if (!first) Append(out, max, pos, ",");
             float val = fx->GetParam(tok);
-            Reply("\"%s\":%.4f", tok, val);
+            Append(out, max, pos, "\"%s\":%.4f", tok, val);
             first = false;
-            tok = strtok(nullptr, ",");        }
+            tok = strtok(nullptr, ",");
+        }
     }
 
     // ─── info ────────────────────────────────────────────────────────────────
     // Returns static system capabilities as JSON (call once at connection).
     void CmdInfo() {
-        Reply("{\"sample_rate\":%.0f,\"max_lanes\":%d,\"max_slots\":%d,",
-              sample_rate_, Router::MAX_LANES, Router::MAX_SLOTS);
-        Reply("\"effects\":[\"distortion\",\"bitcrusher\",\"chorus\",\"tremolo\",\"delay\",\"compressor\",\"lowpass\"],");
-        Reply("\"inputs\":[\"in1\",\"in2\",\"mix\",\"lane0\",\"lane1\",\"lane2\",\"lane3\"],");
-        Reply("\"outputs\":[\"out1\",\"out2\",\"both\",\"none\"],");
-        Reply("\"commands\":[\"add\",\"insert\",\"remove\",\"swap\",\"move\",\"set\",\"get\",\"bypass\",\"clear\",\"route\",\"level\",\"params\",\"status\",\"info\"]}\n");
+         int pos = 0;
+         Append(json_buf_, JSON_BUF_LEN, pos,
+             "{\"sample_rate\":%.0f,\"max_lanes\":%d,\"max_slots\":%d,",
+             sample_rate_, Router::MAX_LANES, Router::MAX_SLOTS);
+         Append(json_buf_, JSON_BUF_LEN, pos,
+             "\"effects\":[\"distortion\",\"bitcrusher\",\"chorus\",\"tremolo\",\"delay\",\"compressor\",\"lowpass\"],");
+         Append(json_buf_, JSON_BUF_LEN, pos,
+             "\"inputs\":[\"in1\",\"in2\",\"mix\",\"lane0\",\"lane1\",\"lane2\",\"lane3\"],");
+         Append(json_buf_, JSON_BUF_LEN, pos,
+             "\"outputs\":[\"out1\",\"out2\",\"both\",\"none\"],");
+         Append(json_buf_, JSON_BUF_LEN, pos,
+             "\"commands\":[\"add\",\"insert\",\"remove\",\"swap\",\"move\",\"set\",\"get\",\"bypass\",\"clear\",\"route\",\"level\",\"params\",\"status\",\"info\"]}\n");
+         SendBuffer(json_buf_, pos);
     }
 
     // ─── Effect Factory ──────────────────────────────────────────────────────
@@ -374,7 +393,9 @@ private:
             return false;
         }
         return true;
-    }    // ─── Utilities ───────────────────────────────────────────────────────────
+    }
+
+    // ─── Utilities ───────────────────────────────────────────────────────────
     bool IsBoolStr(const char* s) {
         return strcmp(s, "true") == 0 || strcmp(s, "false") == 0
             || strcmp(s, "on") == 0   || strcmp(s, "off") == 0;
@@ -395,15 +416,35 @@ private:
     }
 
     void Reply(const char* fmt, ...) {
-        char out[128];
         va_list args;
         va_start(args, fmt);
-        int len = vsnprintf(out, sizeof(out), fmt, args);
+        int len = vsnprintf(tx_buf_, sizeof(tx_buf_), fmt, args);
         va_end(args);
         if (len < 0) return;
-        if (len >= static_cast<int>(sizeof(out))) {
-            len = static_cast<int>(sizeof(out)) - 1;
+        if (len >= static_cast<int>(sizeof(tx_buf_))) {
+            len = static_cast<int>(sizeof(tx_buf_)) - 1;
         }
+        SendBuffer(tx_buf_, len);
+    }
+
+    void Append(char* out, int max, int& pos, const char* fmt, ...) {
+        if (pos >= max - 1) return;
+
+        va_list args;
+        va_start(args, fmt);
+        int len = vsnprintf(out + pos, static_cast<size_t>(max - pos), fmt, args);
+        va_end(args);
+
+        if (len < 0) return;
+        if (len >= max - pos) {
+            pos = max - 1;
+            out[pos] = '\0';
+        } else {
+            pos += len;
+        }
+    }
+
+    void SendBuffer(char* out, int len) {
         if (usb_ && len > 0) {
             usb_->TransmitInternal(reinterpret_cast<uint8_t*>(out), static_cast<size_t>(len));
         }

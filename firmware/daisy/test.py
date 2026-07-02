@@ -2,6 +2,25 @@ import serial
 import time
 import sys
 
+
+def drain_response(ser, timeout=0.75, idle_timeout=0.15):
+    deadline = time.time() + timeout
+    idle_deadline = time.time() + idle_timeout
+    chunks = []
+
+    while time.time() < deadline:
+        waiting = ser.in_waiting
+        if waiting > 0:
+            chunks.append(ser.read(waiting))
+            idle_deadline = time.time() + idle_timeout
+        elif chunks and time.time() >= idle_deadline:
+            break
+        else:
+            time.sleep(0.01)
+
+    if chunks:
+        print(b''.join(chunks).decode('utf-8', errors='replace'), end='')
+
 # Open the serial port
 # Adjust 'COM9' or 115200 to match your device setup
 try:
@@ -38,9 +57,7 @@ try:
             if not command.endswith('\n'):
                 command += '\n'
             ser.write(command.encode('utf-8'))
-            
-            # Give the device a brief moment to process and reply before the next loop
-            time.sleep(0.1)
+            drain_response(ser)
 
 except KeyboardInterrupt:
     print("\nStopping live terminal...")
