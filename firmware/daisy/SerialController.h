@@ -37,6 +37,7 @@
 //   status                                   → full router state as JSON
 //   info                                     → system capabilities as JSON
 //   effect <effect>                          → effect parameter metadata as JSON
+//   dfu                                      → reboot into STM32 DFU bootloader
 //
 // Effect names: distortion, bitcrusher, overdrive, chorus, tremolo, delay, compressor, lowpass
 // Input names:  in1, in2, mix, lane0, lane1, lane2, lane3
@@ -66,6 +67,14 @@ public:
         }
     }
 
+    void ProcessPendingActions() {
+        if (dfu_requested_) {
+            dfu_requested_ = false;
+            daisy::System::Delay(250);
+            daisy::System::ResetToBootloader(daisy::System::BootloaderMode::STM);
+        }
+    }
+
 private:
     static constexpr int MAX_CMD_LEN = 128;
     static constexpr int MAX_TOKENS  = 8;
@@ -79,6 +88,7 @@ private:
     char    tx_buf_[TX_BUF_LEN] = {};
     char    json_buf_[JSON_BUF_LEN] = {};
     int     buf_pos_ = 0;
+    volatile bool dfu_requested_ = false;
 
     // ─── Command Dispatch ────────────────────────────────────────────────────
     void Execute(char* cmd) {
@@ -99,6 +109,7 @@ private:
         else if (strcmp(tokens[0], "status") == 0) CmdStatus();
         else if (strcmp(tokens[0], "info") == 0)   CmdInfo();
         else if (strcmp(tokens[0], "effect") == 0) CmdEffectInfo(tokens, n);
+        else if (strcmp(tokens[0], "dfu") == 0)    CmdDfu();
         else Reply("ERR unknown command\n");
     }
 
@@ -344,7 +355,7 @@ private:
          Append(json_buf_, JSON_BUF_LEN, pos,
              "\"outputs\":[\"out1\",\"out2\",\"both\",\"none\"],");
          Append(json_buf_, JSON_BUF_LEN, pos,
-             "\"commands\":[\"add\",\"insert\",\"remove\",\"swap\",\"move\",\"set\",\"get\",\"bypass\",\"clear\",\"route\",\"level\",\"params\",\"status\",\"info\",\"effect\"]}\n");
+             "\"commands\":[\"add\",\"insert\",\"remove\",\"swap\",\"move\",\"set\",\"get\",\"bypass\",\"clear\",\"route\",\"level\",\"params\",\"status\",\"info\",\"effect\",\"dfu\"]}\n");
          SendBuffer(json_buf_, pos);
     }
 
@@ -355,6 +366,11 @@ private:
         EmitRegisteredEffectInfo(json_buf_, JSON_BUF_LEN, pos, t[1]);
         Append(json_buf_, JSON_BUF_LEN, pos, "\n");
         SendBuffer(json_buf_, pos);
+    }
+
+    void CmdDfu() {
+        Reply("OK rebooting to DFU\n");
+        dfu_requested_ = true;
     }
 
     void EmitRegisteredEffectInfo(char* out, int max, int& pos, const char* name) {

@@ -61,6 +61,7 @@ int main(void) {
 
     // Main loop — nothing else needed, USB rx is interrupt-driven
     while (1) {
+        serial.ProcessPendingActions();
         System::Delay(10);
     }
 }
