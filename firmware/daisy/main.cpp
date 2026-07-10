@@ -16,6 +16,7 @@ using namespace daisy;
 static DaisySeed hw; 
 static Router router; // Audio routing engine that manages lanes and effects
 static SerialController serial; // UART command interface that allows dynamic control of the router and effects
+static UartHandler esp_uart;
 
 // ==========================================
 // USB CDC Receive Callback
@@ -50,8 +51,15 @@ int main(void) {
     hw.usb_handle.Init(UsbHandle::FS_INTERNAL);
     System::Delay(500);  // Give USB time to enumerate on the host PC
 
+    UartHandler::Config esp_uart_config;
+    esp_uart_config.periph = UartHandler::Config::Peripheral::USART_1;
+    esp_uart_config.mode = UartHandler::Config::Mode::TX_RX;
+    esp_uart_config.baudrate = 115200;
+    esp_uart_config.pin_config.tx = seed::D13; // Physical pin 14 / PB6 / USART1_TX, wire to ESP32 GPIO16 RX
+    esp_uart_config.pin_config.rx = seed::D14; // Physical pin 15 / PB7 / USART1_RX, wire from ESP32 GPIO17 TX
+    esp_uart.Init(esp_uart_config);
 
-    serial.Init(&router, sr, &hw.usb_handle);
+    serial.Init(&router, sr, &hw.usb_handle, &esp_uart);
 
     // Register USB receive callback (interrupt-driven)
     hw.usb_handle.SetReceiveCallback(UsbRxCallback, UsbHandle::FS_INTERNAL);
@@ -59,9 +67,15 @@ int main(void) {
     // Start audio processing
     hw.StartAudio(AudioCallback);
 
-    // Main loop — nothing else needed, USB rx is interrupt-driven
+    uint8_t esp_uart_byte = 0;
+
+    // Main loop — USB rx is interrupt-driven; ESP32 UART is polled with a short
+    // timeout so command bursts from the ESP32 are drained before overrun.
     while (1) {
+        while (esp_uart.BlockingReceive(&esp_uart_byte, 1, 1) == UartHandler::Result::OK) {
+            serial.Feed(static_cast<char>(esp_uart_byte));
+        }
         serial.ProcessPendingActions();
-        System::Delay(10);
+        System::Delay(1);
     }
 }

@@ -80,6 +80,37 @@ Output binaries are placed in `build/` (ignored by `.gitignore`).
 
 ---
 
+## Serial Control
+
+The firmware accepts newline-terminated ASCII commands through both USB CDC and
+a hardware UART for the ESP32 control bridge. Both paths feed the same
+`SerialController::Feed()` parser, and replies are sent back to both enabled
+links.
+
+Default ESP32 UART wiring:
+
+- Daisy Seed physical pin 14 / `D13` / `PB6` / USART1 TX -> ESP32 GPIO16 / UART2 RX
+- Daisy Seed physical pin 15 / `D14` / `PB7` / USART1 RX <- ESP32 GPIO17 / UART2 TX
+- Daisy GND -> ESP32 GND
+- Baud rate: `115200`
+
+Before reconnecting the Daisy to a freshly flashed ESP32 bridge, test the ESP32
+UART2 pins alone by disconnecting the Daisy, jumpering ESP32 GPIO17 to GPIO16,
+and opening `http://192.168.4.1/api/uart2/loopback`. Only reconnect the Daisy
+after that endpoint returns `OK uart2 loopback`.
+
+The ESP32 bridge exposes HTTP endpoints that forward commands such as `info`,
+`status`, and `add 0 delay` over this UART link.
+
+Use `Utils/bridge_protocol_test.py` to validate the link. With the Daisy plugged
+into the PC over USB serial, `python Utils/bridge_protocol_test.py --serial-port
+COM9` tests the parser directly. Add `--with-http` to run the ESP32 bridge checks
+after direct serial. With the ESP32 flashed and your PC connected to
+the `ChimeraMultiFX` AP, `python Utils/bridge_protocol_test.py` tests `/health`,
+`/api/bridge/selftest`, and forwarded Daisy commands.
+
+---
+
 ## Flash
 
 ### Via USB DFU (recommended)

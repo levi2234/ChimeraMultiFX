@@ -37,6 +37,7 @@
 //   status                                   → full router state as JSON
 //   info                                     → system capabilities as JSON
 //   effect <effect>                          → effect parameter metadata as JSON
+//   ping                                     → protocol/link test
 //   dfu                                      → reboot into STM32 DFU bootloader
 //
 // Effect names: distortion, bitcrusher, overdrive, chorus, tremolo, delay, compressor, lowpass
@@ -47,10 +48,14 @@
 
 class SerialController {
 public:
-    void Init(Router* router, float sample_rate, daisy::UsbHandle* usb = nullptr) {
+    void Init(Router* router,
+              float sample_rate,
+              daisy::UsbHandle* usb = nullptr,
+              daisy::UartHandler* uart = nullptr) {
         router_ = router;
         sample_rate_ = sample_rate;
         usb_ = usb;
+        uart_ = uart;
         buf_pos_ = 0;
     }
 
@@ -84,6 +89,7 @@ private:
     Router* router_ = nullptr;
     float   sample_rate_ = 48000.f;
     daisy::UsbHandle* usb_ = nullptr;
+    daisy::UartHandler* uart_ = nullptr;
     char    buf_[MAX_CMD_LEN] = {};
     char    tx_buf_[TX_BUF_LEN] = {};
     char    json_buf_[JSON_BUF_LEN] = {};
@@ -109,6 +115,7 @@ private:
         else if (strcmp(tokens[0], "status") == 0) CmdStatus();
         else if (strcmp(tokens[0], "info") == 0)   CmdInfo();
         else if (strcmp(tokens[0], "effect") == 0) CmdEffectInfo(tokens, n);
+        else if (strcmp(tokens[0], "ping") == 0)   CmdPing();
         else if (strcmp(tokens[0], "dfu") == 0)    CmdDfu();
         else Reply("ERR unknown command\n");
     }
@@ -355,7 +362,7 @@ private:
          Append(json_buf_, JSON_BUF_LEN, pos,
              "\"outputs\":[\"out1\",\"out2\",\"both\",\"none\"],");
          Append(json_buf_, JSON_BUF_LEN, pos,
-             "\"commands\":[\"add\",\"insert\",\"remove\",\"swap\",\"move\",\"set\",\"get\",\"bypass\",\"clear\",\"route\",\"level\",\"params\",\"status\",\"info\",\"effect\",\"dfu\"]}\n");
+             "\"commands\":[\"add\",\"insert\",\"remove\",\"swap\",\"move\",\"set\",\"get\",\"bypass\",\"clear\",\"route\",\"level\",\"params\",\"status\",\"info\",\"effect\",\"ping\",\"dfu\"]}\n");
          SendBuffer(json_buf_, pos);
     }
 
@@ -366,6 +373,10 @@ private:
         EmitRegisteredEffectInfo(json_buf_, JSON_BUF_LEN, pos, t[1]);
         Append(json_buf_, JSON_BUF_LEN, pos, "\n");
         SendBuffer(json_buf_, pos);
+    }
+
+    void CmdPing() {
+        Reply("PONG ChimeraMultiFX\n");
     }
 
     void CmdDfu() {
@@ -568,6 +579,9 @@ private:
     void SendBuffer(char* out, int len) {
         if (usb_ && len > 0) {
             usb_->TransmitInternal(reinterpret_cast<uint8_t*>(out), static_cast<size_t>(len));
+        }
+        if (uart_ && len > 0) {
+            uart_->BlockingTransmit(reinterpret_cast<uint8_t*>(out), static_cast<size_t>(len), 100);
         }
     }
 };
