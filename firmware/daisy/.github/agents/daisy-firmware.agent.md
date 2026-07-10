@@ -1,6 +1,6 @@
 ---
 name: Daisy Firmware Agent
-description: Use when working on ChimeraMultiFX Daisy firmware, routing, serial commands, effects, USB CDC, DFU, libDaisy, DaisySP, or real-time audio behavior.
+description: Use when working on ChimeraMultiFX Daisy firmware, routing, serial commands, USB CDC, ESP32 UART bridge communication, DFU, libDaisy, DaisySP, or real-time audio behavior.
 tools: [read, search, edit, execute, todo]
 ---
 
@@ -8,13 +8,13 @@ tools: [read, search, edit, execute, todo]
 
 ## Project Purpose
 
-This workspace contains the Daisy Seed firmware for ChimeraMultiFX: a real-time, USB-serial-controlled multi-effect audio router for the Electrosmith Daisy Seed / STM32H750.
+This workspace contains the Daisy Seed firmware for ChimeraMultiFX: a real-time, serial-controlled multi-effect audio router for the Electrosmith Daisy Seed / STM32H750.
 
-The firmware is built around dynamically adding, removing, routing, and parameterizing mono effects at runtime over USB CDC serial. The audio callback is intentionally small: it reads stereo input, asks the router to process it, and writes stereo output.
+The firmware is built around dynamically adding, removing, routing, and parameterizing mono effects at runtime over a shared serial command profile. The same newline-terminated ASCII protocol is accepted from USB CDC and from the ESP32 control bridge over USART1. The audio callback is intentionally small: it reads stereo input, asks the router to process it, and writes stereo output.
 
 ## Main Entry Points
 
-- `main.cpp`: hardware initialization, USB CDC receive callback, audio callback, main loop, deferred serial actions.
+- `main.cpp`: hardware initialization, USB CDC receive callback, ESP32 UART polling, audio callback, main loop, deferred serial actions.
 - `SerialController.h`: human-readable USB serial command parser and dispatcher.
 - `Router.h`: four-lane effect routing engine, lane input/output selection, lane-to-lane feeds, effect slot management.
 - `Effect.h`: base effect interface and parameter metadata contract.
@@ -30,12 +30,13 @@ The firmware is built around dynamically adding, removing, routing, and paramete
 - `Router router`
 - `SerialController serial`
 
-USB receive flow:
+Serial receive flow:
 
-1. `UsbRxCallback()` receives bytes from `hw.usb_handle`.
-2. Each byte is passed to `serial.Feed()`.
-3. `SerialController` buffers until newline or carriage return.
-4. A complete command is tokenized and dispatched.
+1. USB CDC bytes arrive through `UsbRxCallback()` from `hw.usb_handle`.
+2. ESP32 bridge bytes are polled from `esp_uart` in the main loop.
+3. Both transports pass each byte to `serial.Feed()`.
+4. `SerialController` buffers until newline or carriage return.
+5. A complete command is tokenized and dispatched through the same code path.
 
 Audio flow:
 
@@ -52,7 +53,7 @@ Deferred actions:
 
 ## Serial Command Interface
 
-Commands are newline-terminated ASCII strings. Current command families:
+Commands are newline-terminated ASCII strings. They are transport-neutral: USB CDC direct tests, ESP32 UART bridge forwarding, and ESP32 HTTP endpoints should all exercise the same command parser on the Daisy. Current command families:
 
 - `add <lane> <effect>`
 - `insert <lane> <slot> <effect>`
@@ -69,6 +70,7 @@ Commands are newline-terminated ASCII strings. Current command families:
 - `status`
 - `info`
 - `effect <effect>`
+- `ping`
 - `dfu`
 
 Effect names currently advertised by `info`:
@@ -93,10 +95,26 @@ Output names:
 Important serial implementation notes:
 
 - `SerialController::MAX_TOKENS` is 8, so keep new commands short or increase it deliberately.
-- Replies are sent with `UsbHandle::TransmitInternal()` through `SendBuffer()`.
-- `status` and `info` emit JSON-like single-line responses for host tooling.
+- Replies are sent through `SendBuffer()` to every enabled transport: `UsbHandle::TransmitInternal()` for USB CDC and `UartHandler::BlockingTransmit()` for the ESP32 bridge UART.
+- `status`, `info`, and `effect <effect>` should emit valid single-line JSON for host tooling.
 - `effect <effect>` returns parameter metadata for one effect.
+- `ping` is the cheapest link check and should reply with `PONG`.
 - The `dfu` command should only request DFU, not reset immediately from the USB callback.
+
+## Daisy Communication Profile
+
+Use this profile when interpreting Daisy/ESP32 bridge behavior:
+
+- USB CDC and ESP32 UART are peer command transports into the same `SerialController::Feed()` parser.
+- The ESP32 bridge forwards HTTP commands such as `ping`, `info`, `status`, and `add 0 delay` to the Daisy over UART, then returns the Daisy reply body.
+- Command framing is newline or carriage-return terminated ASCII; there is no binary packet framing on the Daisy side.
+- Replies must be short, newline-terminated text. JSON replies should stay on one line so bridge clients can read exactly one response.
+- Daisy USART1 is configured at 115200 baud with Daisy `D13` / `PB6` as TX and `D14` / `PB7` as RX.
+- Current intended wiring is Daisy physical pin 14 / `D13` / `PB6` / USART1 TX -> ESP32 GPIO16 / UART2 RX, Daisy physical pin 15 / `D14` / `PB7` / USART1 RX <- ESP32 GPIO17 / UART2 TX, plus shared GND.
+- If bridge commands fail, distinguish parser failures from transport failures: test direct Daisy USB serial first, then ESP32 UART2 loopback, then ESP32 HTTP forwarding.
+- Before reconnecting Daisy after flashing ESP32 bridge firmware, disconnect Daisy and jumper ESP32 GPIO17 to GPIO16, then check `http://192.168.4.1/api/uart2/loopback` for `OK uart2 loopback`.
+- Use `Utils/bridge_protocol_test.py` for validation. With direct Daisy USB serial, run `python Utils/bridge_protocol_test.py --serial-port COM9` from `firmware/daisy` and adjust the COM port as needed. Add `--with-http` to include ESP32 bridge checks. With the PC connected to the `ChimeraMultiFX` AP, `python Utils/bridge_protocol_test.py` checks `/health`, `/api/bridge/selftest`, and forwarded Daisy commands.
+- Repository memory may contain older UART0 wiring notes; prefer the checked-in Daisy README and `main.cpp` if they differ.
 
 ## Router Contract
 
