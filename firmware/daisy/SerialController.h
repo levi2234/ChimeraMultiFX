@@ -85,7 +85,7 @@ private:
     static constexpr int MAX_CMD_LEN = 128;
     static constexpr int MAX_TOKENS  = 8;
     static constexpr int TX_BUF_LEN  = 256;
-    static constexpr int JSON_BUF_LEN = 4096;
+    static constexpr int JSON_BUF_LEN = 12288;
 
     Router* router_ = nullptr;
     float   sample_rate_ = 48000.f;
@@ -627,7 +627,7 @@ private:
             usb_->TransmitInternal(reinterpret_cast<uint8_t*>(out), static_cast<size_t>(len));
         }
         if (uart_ && len > 0) {
-            uart_->BlockingTransmit(reinterpret_cast<uint8_t*>(out), static_cast<size_t>(len), 100);
+            uart_->BlockingTransmit(reinterpret_cast<uint8_t*>(out), static_cast<size_t>(len), 1000);
         }
     }
 

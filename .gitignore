@@ -35,6 +35,8 @@ __pycache__/
 *.pyc
 *.pyo
 venv/
+Lib/
+firmware/esp32/Scripts/
 
 # KiCad generated / temporary files
 *.kicad_prl

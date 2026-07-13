@@ -13,7 +13,7 @@ constexpr uint32_t DaisyResponseTimeoutMs = 2000;
 constexpr uint32_t LoopbackTimeoutMs = 250;
 constexpr uint32_t WifiConnectTimeoutMs = 20000;
 constexpr uint32_t WifiReconnectIntervalMs = 5000;
-constexpr size_t DaisyResponseMaxLen = 4096;
+constexpr size_t DaisyResponseMaxLen = 12288;
 constexpr size_t DaisyCommandMaxLen = 127;
 
 WebServer server(80);
