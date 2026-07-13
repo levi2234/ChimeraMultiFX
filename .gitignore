@@ -12,6 +12,17 @@ build/
 .pio/
 firmware/esp32/src/wifi_credentials.h
 
+# Frontend dependencies and build output
+node_modules/
+frontend/dist/
+.vite/
+*.tsbuildinfo
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
 # IDE & editor
 .vscode/
 *.swp
@@ -24,7 +35,6 @@ __pycache__/
 *.pyc
 *.pyo
 venv/
-.env
 
 # KiCad generated / temporary files
 *.kicad_prl

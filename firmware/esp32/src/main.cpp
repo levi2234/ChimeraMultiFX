@@ -1,5 +1,7 @@
 #include <Arduino.h>
+#include <LittleFS.h>
 #include <WebServer.h>
+#include <WebSocketsServer.h>
 #include <WiFi.h>
 #include "wifi_credentials.h"
 
@@ -12,8 +14,10 @@ constexpr uint32_t LoopbackTimeoutMs = 250;
 constexpr uint32_t WifiConnectTimeoutMs = 20000;
 constexpr uint32_t WifiReconnectIntervalMs = 5000;
 constexpr size_t DaisyResponseMaxLen = 4096;
+constexpr size_t DaisyCommandMaxLen = 127;
 
 WebServer server(80);
+WebSocketsServer webSocket(81);
 HardwareSerial daisySerial(2);
 
 struct DaisyReply {
@@ -23,7 +27,7 @@ struct DaisyReply {
 
 void sendCorsHeaders() {
 	server.sendHeader("Access-Control-Allow-Origin", "*");
-	server.sendHeader("Access-Control-Allow-Methods", "GET");
+	server.sendHeader("Access-Control-Allow-Methods", "GET, OPTIONS");
 	server.sendHeader("Access-Control-Allow-Headers", "Content-Type");
 }
 
@@ -107,7 +111,13 @@ bool requestedGpio(uint8_t& pin) {
 
 void handleRoot() {
 	sendCorsHeaders();
-	server.send(200, "text/plain", "ChimeraMultiFX ESP32 control surface\n");
+	File index = LittleFS.open("/index.html", "r");
+	if (!index) {
+		server.send(503, "text/plain", "UI not installed. Run: pio run --target uploadfs\n");
+		return;
+	}
+	server.streamFile(index, "text/html");
+	index.close();
 }
 
 void handleHealth() {
@@ -150,6 +160,7 @@ void handleGpioWrite() {
 	daisySerial.end();
 	pinMode(pin, OUTPUT);
 	digitalWrite(pin, value ? HIGH : LOW);
+	configureDaisyUart(DaisyUartRxPin, DaisyUartTxPin);
 	server.send(200, "application/json",
 		"{\"pin\":" + String(pin) + ",\"value\":" + String(value ? 1 : 0) + "}");
 }
@@ -235,8 +246,42 @@ void handleNotFound() {
 	server.send(404, "application/json", "{\"error\":\"not_found\"}");
 }
 
+void handleOptions() {
+	sendCorsHeaders();
+	server.send(204);
+}
+
+void handleWebSocketEvent(uint8_t client,
+	WStype_t type,
+	uint8_t* payload,
+	size_t length) {
+	if (type != WStype_TEXT) return;
+
+	String command;
+	command.reserve(length);
+	for (size_t i = 0; i < length; ++i) command += static_cast<char>(payload[i]);
+	command.trim();
+
+	if (command.isEmpty() || command.length() > DaisyCommandMaxLen
+		|| command.indexOf('\n') >= 0 || command.indexOf('\r') >= 0) {
+		webSocket.sendTXT(client, "ERR invalid command");
+		return;
+	}
+
+	const DaisyReply reply = transactDaisyCommand(command);
+	if (reply.body.isEmpty()) {
+		webSocket.sendTXT(client, "ERR daisy_timeout");
+	} else if (!reply.complete) {
+		webSocket.sendTXT(client, "ERR daisy_incomplete_response");
+	} else {
+		String body = reply.body;
+		webSocket.sendTXT(client, body);
+	}
+}
+
 void setupRoutes() {
 	server.on("/", HTTP_GET, handleRoot);
+	server.on("/", HTTP_OPTIONS, handleOptions);
 	server.on("/health", HTTP_GET, handleHealth);
 	server.on("/api/bridge/pins", HTTP_GET, handleBridgePins);
 	server.on("/api/gpio/read", HTTP_GET, handleGpioRead);
@@ -244,6 +289,8 @@ void setupRoutes() {
 	server.on("/api/uart2/loopback", HTTP_GET, handleUartLoopback);
 	server.on("/api/bridge/selftest", HTTP_GET, handleBridgeSelfTest);
 	server.on("/api/daisy/command", HTTP_GET, handleDaisyCommand);
+	server.serveStatic("/app/", LittleFS, "/app/", "max-age=3600");
+	server.serveStatic("/assets/", LittleFS, "/assets/", "max-age=3600");
 	server.onNotFound(handleNotFound);
 }
 
@@ -280,12 +327,18 @@ void setup() {
 	Serial.println("ChimeraMultiFX bridge boot");
 	connectWifi();
 	configureDaisyUart(DaisyUartRxPin, DaisyUartTxPin);
+	if (!LittleFS.begin(true)) {
+		Serial.println("LittleFS mount failed");
+	}
 	setupRoutes();
 	server.begin();
-	Serial.println("HTTP server started");
+	webSocket.begin();
+	webSocket.onEvent(handleWebSocketEvent);
+	Serial.println("HTTP server started on port 80; WebSocket on port 81");
 }
 
 void loop() {
+	webSocket.loop();
 	server.handleClient();
 	static uint32_t lastStatusMs = 0;
 	if (millis() - lastStatusMs >= 5000) {

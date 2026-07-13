@@ -374,8 +374,9 @@ private:
         if (n < 2) { Reply("ERR usage: effect <effect>\n"); return; }
 
         int pos = 0;
+        Append(json_buf_, JSON_BUF_LEN, pos, "{");
         EmitRegisteredEffectInfo(json_buf_, JSON_BUF_LEN, pos, t[1]);
-        Append(json_buf_, JSON_BUF_LEN, pos, "\n");
+        Append(json_buf_, JSON_BUF_LEN, pos, "}\n");
         SendBuffer(json_buf_, pos);
     }
 
