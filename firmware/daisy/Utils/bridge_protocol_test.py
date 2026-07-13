@@ -29,7 +29,7 @@ def read_serial_line(serial_port, timeout):
     return line.decode("utf-8", errors="replace") if line else ""
 
 
-def run_serial_tests(port, baudrate, timeout, commands):
+def run_serial_tests(port, baudrate, timeout, commands, uart_loopback):
     try:
         import serial
     except ImportError:
@@ -38,7 +38,11 @@ def run_serial_tests(port, baudrate, timeout, commands):
 
     with serial.Serial(port, baudrate, timeout=0.05) as serial_port:
         serial_port.reset_input_buffer()
-        for command in commands:
+        serial_commands = list(commands)
+        if uart_loopback and "loopback" not in serial_commands:
+            serial_commands.append("loopback")
+
+        for command in serial_commands:
             serial_port.write((command.strip() + "\n").encode("utf-8"))
             reply = read_serial_line(serial_port, timeout)
             print(f"serial {command!r} -> {reply.rstrip()!r}")
@@ -47,6 +51,9 @@ def run_serial_tests(port, baudrate, timeout, commands):
                 return 1
             if command == "ping" and not reply.startswith("PONG"):
                 print(f"expected PONG, got {reply.rstrip()!r}", file=sys.stderr)
+                return 1
+            if command == "loopback" and not reply.startswith("OK uart loopback"):
+                print(f"expected OK uart loopback, got {reply.rstrip()!r}", file=sys.stderr)
                 return 1
 
     return 0
@@ -99,6 +106,7 @@ def main():
     parser.add_argument("--base-url", default="http://192.168.4.1", help="ESP32 bridge URL")
     parser.add_argument("--serial-port", help="Daisy USB serial port, for direct parser tests")
     parser.add_argument("--with-http", action="store_true", help="also run ESP32 HTTP bridge tests after serial tests")
+    parser.add_argument("--uart-loopback", action="store_true", help="run Daisy USART1 loopback test; short D13 TX to D14 RX first")
     parser.add_argument("--baudrate", type=int, default=115200)
     parser.add_argument("--timeout", type=float, default=2.0)
     parser.add_argument("commands", nargs="*", default=DEFAULT_COMMANDS)
@@ -106,7 +114,7 @@ def main():
 
     exit_code = 0
     if args.serial_port:
-        exit_code = run_serial_tests(args.serial_port, args.baudrate, args.timeout, args.commands)
+        exit_code = run_serial_tests(args.serial_port, args.baudrate, args.timeout, args.commands, args.uart_loopback)
         if exit_code != 0:
             return exit_code
         if not args.with_http:

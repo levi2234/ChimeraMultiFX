@@ -39,6 +39,7 @@
 //   effect <effect>                          → effect parameter metadata as JSON
 //   ping                                     → protocol/link test
 //   dfu                                      → reboot into STM32 DFU bootloader
+//   setpin <pin> <0|1>                       → set GPIO pin high/low
 //
 // Effect names: distortion, bitcrusher, overdrive, chorus, tremolo, delay, compressor, lowpass
 // Input names:  in1, in2, mix, lane0, lane1, lane2, lane3
@@ -117,6 +118,7 @@ private:
         else if (strcmp(tokens[0], "effect") == 0) CmdEffectInfo(tokens, n);
         else if (strcmp(tokens[0], "ping") == 0)   CmdPing();
         else if (strcmp(tokens[0], "dfu") == 0)    CmdDfu();
+        else if (strcmp(tokens[0], "setpin") == 0)  CmdSetPin(tokens, n);
         else Reply("ERR unknown command\n");
     }
 
@@ -362,7 +364,7 @@ private:
          Append(json_buf_, JSON_BUF_LEN, pos,
              "\"outputs\":[\"out1\",\"out2\",\"both\",\"none\"],");
          Append(json_buf_, JSON_BUF_LEN, pos,
-             "\"commands\":[\"add\",\"insert\",\"remove\",\"swap\",\"move\",\"set\",\"get\",\"bypass\",\"clear\",\"route\",\"level\",\"params\",\"status\",\"info\",\"effect\",\"ping\",\"dfu\"]}\n");
+             "\"commands\":[\"add\",\"insert\",\"remove\",\"swap\",\"move\",\"set\",\"get\",\"bypass\",\"clear\",\"route\",\"level\",\"params\",\"status\",\"info\",\"effect\",\"ping\",\"loopback\",\"dfu\"]}\n");
          SendBuffer(json_buf_, pos);
     }
 
@@ -377,6 +379,20 @@ private:
 
     void CmdPing() {
         Reply("PONG ChimeraMultiFX\n");
+    }
+
+    void CmdSetPin(char** t, int n) {
+        if (n < 3) { Reply("ERR usage: setpin <pin> <0|1>\n"); return; }
+        int pin = atoi(t[1]);
+        if (pin < 0 || pin > 31) { Reply("ERR invalid pin %d\n", pin); return; }
+        bool val = (atoi(t[2]) != 0);
+        dsy_gpio gpio;
+        gpio.pin = daisy::DaisySeed::GetPin(static_cast<uint8_t>(pin));
+        gpio.mode = DSY_GPIO_MODE_OUTPUT_PP;
+        gpio.pull = DSY_GPIO_NOPULL;
+        dsy_gpio_init(&gpio);
+        dsy_gpio_write(&gpio, val ? 1 : 0);
+        Reply("OK set pin %d = %s\n", pin, val ? "high" : "low");
     }
 
     void CmdDfu() {
@@ -519,6 +535,13 @@ private:
         SendBuffer(tx_buf_, len);
     }
 
+    void ReplyUsbOnly(const char* message) {
+        int len = static_cast<int>(strlen(message));
+        if (usb_ && len > 0) {
+            usb_->TransmitInternal(reinterpret_cast<uint8_t*>(const_cast<char*>(message)), static_cast<size_t>(len));
+        }
+    }
+
     void ReplyFloat(const char* prefix_fmt, const char* name, float value, int decimals, const char* suffix) {
         int pos = 0;
         Append(tx_buf_, TX_BUF_LEN, pos, prefix_fmt, name);
@@ -583,5 +606,12 @@ private:
         if (uart_ && len > 0) {
             uart_->BlockingTransmit(reinterpret_cast<uint8_t*>(out), static_cast<size_t>(len), 100);
         }
+    }
+
+    void DrainUart() {
+        if (!uart_) return;
+
+        uint8_t ignored = 0;
+        while (uart_->BlockingReceive(&ignored, 1, 1) == daisy::UartHandler::Result::OK) {}
     }
 };
