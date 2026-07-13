@@ -1,0 +1,20 @@
+The project is a daisy seed esp32 process -control combo microcontroller setup. 
+Herein i want to establish a communication protocol betwen the two to eventually allow the esp32 to send commands to the daisy seed and the diay seed to respond.
+I have been having trouble with getting it to work. Sometimes getting a response but more than not having the daisy seed time out on responses. 
+I want you to programmatically test this but in the end also provide me with an api web endpoint hosted through a wifi on the esp32 thourough which i can send commands and get the responses back
+Think about this thouroughly and keep going until you found a reliable implementation
+
+What i want from you:
+- Keep the current communciation protocol with the same commands on the daisy seed side
+- change what you need to the actual uart/serial communication where needed to make it work. 
+- Setup a reliable serial cummunication between the daisy seed and the esp32
+
+
+Technical details:
+
+    - The daisy seed and esp32 are connected as follows D16(ESP32) -> D13/UART1Tx (Daisy), D17(ESP32) -> D14/UART1Tx (Daisy) , GND(ESP32) -> AGND(Daisy)
+    - Esp 32 can be built and uploaded through platformio
+    - Daisy seed can be put in DFU mode (needed for upload) through the firmware/daisy/Utils/enter_dfu.py and firmware is uploaded by running the build_and_program_dfu cmake task
+    -ESP32 exists on COM12
+    - Daisy seed exists on COM9
+    - You have the autonomy to upload to these devices and test wheter your implementations work

@@ -29,7 +29,7 @@ def read_serial_line(serial_port, timeout):
     return line.decode("utf-8", errors="replace") if line else ""
 
 
-def run_serial_tests(port, baudrate, timeout, commands, uart_loopback):
+def run_serial_tests(port, baudrate, timeout, commands, uart_loopback, repeat):
     try:
         import serial
     except ImportError:
@@ -42,19 +42,29 @@ def run_serial_tests(port, baudrate, timeout, commands, uart_loopback):
         if uart_loopback and "loopback" not in serial_commands:
             serial_commands.append("loopback")
 
-        for command in serial_commands:
-            serial_port.write((command.strip() + "\n").encode("utf-8"))
-            reply = read_serial_line(serial_port, timeout)
-            print(f"serial {command!r} -> {reply.rstrip()!r}")
-            if not reply:
-                print(f"timeout waiting for {command!r}", file=sys.stderr)
-                return 1
-            if command == "ping" and not reply.startswith("PONG"):
-                print(f"expected PONG, got {reply.rstrip()!r}", file=sys.stderr)
-                return 1
-            if command == "loopback" and not reply.startswith("OK uart loopback"):
-                print(f"expected OK uart loopback, got {reply.rstrip()!r}", file=sys.stderr)
-                return 1
+        completed = 0
+        for iteration in range(repeat):
+            for command in serial_commands:
+                serial_port.write((command.strip() + "\n").encode("utf-8"))
+                reply = read_serial_line(serial_port, timeout)
+                if repeat == 1:
+                    print(f"serial {command!r} -> {reply.rstrip()!r}")
+                if not reply:
+                    print(f"timeout waiting for {command!r} on iteration {iteration + 1}", file=sys.stderr)
+                    return 1
+                if not reply.endswith("\n"):
+                    print(f"incomplete reply for {command!r}: {reply!r}", file=sys.stderr)
+                    return 1
+                if command == "ping" and not reply.startswith("PONG"):
+                    print(f"expected PONG, got {reply.rstrip()!r}", file=sys.stderr)
+                    return 1
+                if command == "loopback" and not reply.startswith("OK uart loopback"):
+                    print(f"expected OK uart loopback, got {reply.rstrip()!r}", file=sys.stderr)
+                    return 1
+                completed += 1
+
+        if repeat > 1:
+            print(f"serial stress passed: {completed}/{completed} complete replies")
 
     return 0
 
@@ -66,37 +76,46 @@ def http_get(base_url, path, timeout):
         return response.status, response.read().decode("utf-8", errors="replace")
 
 
-def run_http_tests(base_url, timeout, commands):
-    checks = [("health", "/health"), ("bridge selftest", "/api/bridge/selftest")]
-    for name, path in checks:
-        try:
-            status, body = http_get(base_url, path, timeout)
-        except urllib.error.URLError as error:
-            print(f"http {name} failed: {error}", file=sys.stderr)
-            return 1
-        print(f"http {name} -> {status} {body.rstrip()!r}")
-        if status != 200:
-            return 1
-
-    for command in commands:
-        query = urllib.parse.urlencode({"cmd": command})
-        try:
-            status, body = http_get(base_url, f"/api/daisy/command?{query}", timeout)
-        except urllib.error.URLError as error:
-            print(f"http command {command!r} failed: {error}", file=sys.stderr)
-            return 1
-        print(f"http command {command!r} -> {status} {body.rstrip()!r}")
-        if status != 200:
-            return 1
-        if command == "ping" and not body.startswith("PONG"):
-            print(f"expected PONG, got {body.rstrip()!r}", file=sys.stderr)
-            return 1
-        if command in {"info", "status"}:
+def run_http_tests(base_url, timeout, commands, repeat):
+    completed = 0
+    for iteration in range(repeat):
+        checks = [("health", "/health"), ("bridge selftest", "/api/bridge/selftest")]
+        for name, path in checks:
             try:
-                json.loads(body)
-            except json.JSONDecodeError as error:
-                print(f"{command!r} did not return valid JSON: {error}", file=sys.stderr)
+                status, body = http_get(base_url, path, timeout)
+            except (urllib.error.URLError, TimeoutError) as error:
+                print(f"http {name} failed on iteration {iteration + 1}: {error}", file=sys.stderr)
                 return 1
+            if repeat == 1:
+                print(f"http {name} -> {status} {body.rstrip()!r}")
+            if status != 200:
+                return 1
+            completed += 1
+
+        for command in commands:
+            query = urllib.parse.urlencode({"cmd": command})
+            try:
+                status, body = http_get(base_url, f"/api/daisy/command?{query}", timeout)
+            except (urllib.error.URLError, TimeoutError) as error:
+                print(f"http command {command!r} failed on iteration {iteration + 1}: {error}", file=sys.stderr)
+                return 1
+            if repeat == 1:
+                print(f"http command {command!r} -> {status} {body.rstrip()!r}")
+            if status != 200:
+                return 1
+            if command == "ping" and not body.startswith("PONG"):
+                print(f"expected PONG, got {body.rstrip()!r}", file=sys.stderr)
+                return 1
+            if command in {"info", "status"}:
+                try:
+                    json.loads(body)
+                except json.JSONDecodeError as error:
+                    print(f"{command!r} did not return valid JSON: {error}", file=sys.stderr)
+                    return 1
+            completed += 1
+
+    if repeat > 1:
+        print(f"http stress passed: {completed}/{completed} successful requests")
 
     return 0
 
@@ -109,18 +128,24 @@ def main():
     parser.add_argument("--uart-loopback", action="store_true", help="run Daisy USART1 loopback test; short D13 TX to D14 RX first")
     parser.add_argument("--baudrate", type=int, default=115200)
     parser.add_argument("--timeout", type=float, default=2.0)
+    parser.add_argument("--repeat", type=int, default=1, help="repeat the complete test sequence")
     parser.add_argument("commands", nargs="*", default=DEFAULT_COMMANDS)
     args = parser.parse_args()
 
+    if args.repeat < 1:
+        parser.error("--repeat must be at least 1")
+
     exit_code = 0
     if args.serial_port:
-        exit_code = run_serial_tests(args.serial_port, args.baudrate, args.timeout, args.commands, args.uart_loopback)
+        exit_code = run_serial_tests(
+            args.serial_port, args.baudrate, args.timeout, args.commands, args.uart_loopback, args.repeat
+        )
         if exit_code != 0:
             return exit_code
         if not args.with_http:
             return 0
 
-    return run_http_tests(args.base_url, args.timeout, args.commands)
+    return run_http_tests(args.base_url, args.timeout, args.commands, args.repeat)
 
 
 if __name__ == "__main__":

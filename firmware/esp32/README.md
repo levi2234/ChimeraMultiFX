@@ -2,8 +2,8 @@
 
 Minimal ESP32 control surface for ChimeraMultiFX.
 
-This firmware starts a WiFi access point and exposes a small HTTP surface for
-health checks and Daisy Seed command forwarding.
+This firmware joins a local 2.4 GHz WiFi network and exposes a small HTTP
+surface for health checks and Daisy Seed command forwarding.
 
 The Daisy Seed serial handler remains in the Daisy firmware. The ESP32 forwards
 newline-terminated ASCII commands to the Daisy over UART2 and returns the first
@@ -11,11 +11,11 @@ newline-terminated Daisy response.
 
 ## WiFi
 
-The ESP32 creates an access point:
+Copy `src/wifi_credentials.example.h` to `src/wifi_credentials.h` and enter the
+local 2.4 GHz WiFi credentials. The credentials file is ignored by Git.
 
-- SSID: `ChimeraMultiFX`
-- Password: `chimerafx`
-- Default URL: `http://192.168.4.1/`
+After boot, the ESP32 prints its DHCP address to the `115200` baud serial
+monitor. Use that address for the API, for example `http://192.168.1.42/`.
 
 ## Endpoints
 
@@ -41,7 +41,26 @@ http://192.168.4.1/api/daisy/command?cmd=status
 ```
 
 The endpoint returns `400` for a missing or empty `cmd` parameter and `504` if
-the Daisy does not return a line before the bridge timeout.
+the Daisy does not return a complete newline-terminated response before the
+bridge timeout. Partial responses are never returned as successful commands.
+
+## Protocol tests
+
+From `firmware/daisy`, test the Daisy parser directly over USB:
+
+```bash
+python Utils/bridge_protocol_test.py --serial-port COM9 --repeat 100 ping info status
+```
+
+With the PC on the same local network, stress the ESP32 HTTP-to-UART bridge:
+
+```bash
+python Utils/bridge_protocol_test.py --base-url http://<esp32-ip> --repeat 100 ping info status
+```
+
+The HTTP run checks `/health`, `/api/bridge/selftest`, and each forwarded
+command on every iteration. JSON replies are parsed and incomplete serial
+frames fail the test.
 
 If `/api/daisy/command?cmd=ping` returns `daisy_timeout`:
 

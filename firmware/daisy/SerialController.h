@@ -117,8 +117,10 @@ private:
         else if (strcmp(tokens[0], "info") == 0)   CmdInfo();
         else if (strcmp(tokens[0], "effect") == 0) CmdEffectInfo(tokens, n);
         else if (strcmp(tokens[0], "ping") == 0)   CmdPing();
+        else if (strcmp(tokens[0], "uartdiag") == 0) CmdUartDiag();
         else if (strcmp(tokens[0], "dfu") == 0)    CmdDfu();
         else if (strcmp(tokens[0], "setpin") == 0)  CmdSetPin(tokens, n);
+        else if (strcmp(tokens[0], "getpin") == 0)  CmdGetPin(tokens, n);
         else Reply("ERR unknown command\n");
     }
 
@@ -381,6 +383,14 @@ private:
         Reply("PONG ChimeraMultiFX\n");
     }
 
+    void CmdUartDiag() {
+        if (!uart_) {
+            Reply("UART unavailable\n");
+            return;
+        }
+        Reply("UART listening=%d error=%d\n", uart_->IsListening() ? 1 : 0, uart_->CheckError());
+    }
+
     void CmdSetPin(char** t, int n) {
         if (n < 3) { Reply("ERR usage: setpin <pin> <0|1>\n"); return; }
         int pin = atoi(t[1]);
@@ -393,6 +403,18 @@ private:
         dsy_gpio_init(&gpio);
         dsy_gpio_write(&gpio, val ? 1 : 0);
         Reply("OK set pin %d = %s\n", pin, val ? "high" : "low");
+    }
+
+    void CmdGetPin(char** t, int n) {
+        if (n < 2) { Reply("ERR usage: getpin <pin>\n"); return; }
+        int pin = atoi(t[1]);
+        if (pin < 0 || pin > 31) { Reply("ERR invalid pin %d\n", pin); return; }
+        dsy_gpio gpio;
+        gpio.pin = daisy::DaisySeed::GetPin(static_cast<uint8_t>(pin));
+        gpio.mode = DSY_GPIO_MODE_INPUT;
+        gpio.pull = DSY_GPIO_PULLDOWN;
+        dsy_gpio_init(&gpio);
+        Reply("PIN %d = %d\n", pin, dsy_gpio_read(&gpio) ? 1 : 0);
     }
 
     void CmdDfu() {

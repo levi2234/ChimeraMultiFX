@@ -10,6 +10,7 @@ build/
 
 # Build artifacts — PlatformIO / ESP32
 .pio/
+firmware/esp32/src/wifi_credentials.h
 
 # IDE & editor
 .vscode/

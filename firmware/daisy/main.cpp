@@ -69,13 +69,12 @@ int main(void) {
 
     uint8_t esp_uart_byte = 0;
 
-    // Main loop — USB rx is interrupt-driven; ESP32 UART is polled with a short
-    // timeout so command bursts from the ESP32 are drained before overrun.
+    // Once the first byte arrives, drain the command continuously. Avoiding an
+    // extra loop delay prevents USART1 overruns between bytes.
     while (1) {
         while (esp_uart.BlockingReceive(&esp_uart_byte, 1, 1) == UartHandler::Result::OK) {
             serial.Feed(static_cast<char>(esp_uart_byte));
         }
         serial.ProcessPendingActions();
-        System::Delay(1);
     }
 }

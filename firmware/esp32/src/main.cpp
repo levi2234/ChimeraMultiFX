@@ -1,25 +1,25 @@
 #include <Arduino.h>
 #include <WebServer.h>
 #include <WiFi.h>
+#include "wifi_credentials.h"
 
 namespace {
-constexpr uint8_t ApChannel = 6;
-constexpr uint8_t ApMaxClients = 4;
 constexpr uint8_t DaisyUartRxPin = 16;
 constexpr uint8_t DaisyUartTxPin = 17;
 constexpr uint32_t DaisyUartBaud = 115200;
 constexpr uint32_t DaisyResponseTimeoutMs = 2000;
 constexpr uint32_t LoopbackTimeoutMs = 250;
+constexpr uint32_t WifiConnectTimeoutMs = 20000;
+constexpr uint32_t WifiReconnectIntervalMs = 5000;
 constexpr size_t DaisyResponseMaxLen = 4096;
-
-const char* ApSsid = "ChimeraMultiFX";
-const char* ApPassword = "chimerafx";
-IPAddress ApIp(192, 168, 4, 1);
-IPAddress ApGateway(192, 168, 4, 1);
-IPAddress ApSubnet(255, 255, 255, 0);
 
 WebServer server(80);
 HardwareSerial daisySerial(2);
+
+struct DaisyReply {
+	String body;
+	bool complete;
+};
 
 void sendCorsHeaders() {
 	server.sendHeader("Access-Control-Allow-Origin", "*");
@@ -39,7 +39,7 @@ void clearDaisyInput() {
 	}
 }
 
-String readDaisyLine(uint32_t timeoutMs) {
+DaisyReply readDaisyLine(uint32_t timeoutMs) {
 	String response;
 	response.reserve(256);
 	const uint32_t startMs = millis();
@@ -48,7 +48,7 @@ String readDaisyLine(uint32_t timeoutMs) {
 		while (daisySerial.available() > 0) {
 			const char character = static_cast<char>(daisySerial.read());
 			if (character == '\n') {
-				return response;
+				return {response, true};
 			}
 			if (character != '\r' && response.length() < DaisyResponseMaxLen - 1) {
 				response += character;
@@ -57,10 +57,10 @@ String readDaisyLine(uint32_t timeoutMs) {
 		delay(1);
 	}
 
-	return response;
+	return {response, false};
 }
 
-String transactDaisyCommand(const String& command) {
+DaisyReply transactDaisyCommand(const String& command) {
 	clearDaisyInput();
 	daisySerial.print(command);
 	daisySerial.print('\n');
@@ -91,6 +91,20 @@ bool requestedPins(uint8_t& rxPin, uint8_t& txPin) {
 	return true;
 }
 
+bool requestedGpio(uint8_t& pin) {
+	if (!server.hasArg("pin")) {
+		server.send(400, "application/json", "{\"error\":\"missing_pin\"}");
+		return false;
+	}
+	const int value = server.arg("pin").toInt();
+	if (value < 0 || value > 39) {
+		server.send(400, "application/json", "{\"error\":\"invalid_pin\"}");
+		return false;
+	}
+	pin = static_cast<uint8_t>(value);
+	return true;
+}
+
 void handleRoot() {
 	sendCorsHeaders();
 	server.send(200, "text/plain", "ChimeraMultiFX ESP32 control surface\n");
@@ -109,6 +123,37 @@ void handleBridgePins() {
 	server.send(200, "application/json", response);
 }
 
+void handleGpioRead() {
+	sendCorsHeaders();
+	uint8_t pin;
+	if (!requestedGpio(pin)) return;
+
+	daisySerial.end();
+	pinMode(pin, INPUT_PULLDOWN);
+	delay(1);
+	const int value = digitalRead(pin);
+	configureDaisyUart(DaisyUartRxPin, DaisyUartTxPin);
+	server.send(200, "application/json",
+		"{\"pin\":" + String(pin) + ",\"value\":" + String(value) + "}");
+}
+
+void handleGpioWrite() {
+	sendCorsHeaders();
+	uint8_t pin;
+	if (!requestedGpio(pin)) return;
+	if (!server.hasArg("value")) {
+		server.send(400, "application/json", "{\"error\":\"missing_value\"}");
+		return;
+	}
+
+	const bool value = server.arg("value").toInt() != 0;
+	daisySerial.end();
+	pinMode(pin, OUTPUT);
+	digitalWrite(pin, value ? HIGH : LOW);
+	server.send(200, "application/json",
+		"{\"pin\":" + String(pin) + ",\"value\":" + String(value ? 1 : 0) + "}");
+}
+
 void handleUartLoopback() {
 	sendCorsHeaders();
 	uint8_t rxPin;
@@ -122,13 +167,13 @@ void handleUartLoopback() {
 	clearDaisyInput();
 	daisySerial.print("LOOPBACK_TEST\n");
 	daisySerial.flush();
-	const String response = readDaisyLine(LoopbackTimeoutMs);
+	const DaisyReply reply = readDaisyLine(LoopbackTimeoutMs);
 	configureDaisyUart(DaisyUartRxPin, DaisyUartTxPin);
 
-	if (response == "LOOPBACK_TEST") {
+	if (reply.complete && reply.body == "LOOPBACK_TEST") {
 		server.send(200, "text/plain", "OK uart2 loopback");
 	} else {
-		server.send(500, "text/plain", "FAIL loopback expected 'LOOPBACK_TEST' but got '" + response + "'");
+		server.send(500, "text/plain", "FAIL loopback expected 'LOOPBACK_TEST' but got '" + reply.body + "'");
 	}
 }
 
@@ -141,15 +186,17 @@ void handleBridgeSelfTest() {
 	}
 
 	configureDaisyUart(rxPin, txPin);
-	const String response = transactDaisyCommand("ping");
+	const DaisyReply reply = transactDaisyCommand("ping");
 	configureDaisyUart(DaisyUartRxPin, DaisyUartTxPin);
 
-	if (response.startsWith("PONG")) {
-		server.send(200, "text/plain", response);
-	} else if (response.isEmpty()) {
+	if (reply.complete && reply.body.startsWith("PONG")) {
+		server.send(200, "text/plain", reply.body);
+	} else if (reply.body.isEmpty()) {
 		server.send(504, "text/plain", "daisy_timeout");
+	} else if (!reply.complete) {
+		server.send(504, "text/plain", "daisy_incomplete_response");
 	} else {
-		server.send(502, "text/plain", "unexpected: " + response);
+		server.send(502, "text/plain", "unexpected: " + reply.body);
 	}
 }
 
@@ -167,16 +214,20 @@ void handleDaisyCommand() {
 		return;
 	}
 
-	const String response = transactDaisyCommand(command);
-	if (response.isEmpty()) {
+	const DaisyReply reply = transactDaisyCommand(command);
+	if (reply.body.isEmpty()) {
 		server.send(504, "application/json", "{\"error\":\"daisy_timeout\"}");
 		return;
 	}
+	if (!reply.complete) {
+		server.send(504, "application/json", "{\"error\":\"daisy_incomplete_response\"}");
+		return;
+	}
 
-	const char* contentType = response.startsWith("{") || response.startsWith("[")
+	const char* contentType = reply.body.startsWith("{") || reply.body.startsWith("[")
 		? "application/json"
 		: "text/plain";
-	server.send(200, contentType, response);
+	server.send(200, contentType, reply.body);
 }
 
 void handleNotFound() {
@@ -188,30 +239,63 @@ void setupRoutes() {
 	server.on("/", HTTP_GET, handleRoot);
 	server.on("/health", HTTP_GET, handleHealth);
 	server.on("/api/bridge/pins", HTTP_GET, handleBridgePins);
+	server.on("/api/gpio/read", HTTP_GET, handleGpioRead);
+	server.on("/api/gpio/write", HTTP_GET, handleGpioWrite);
 	server.on("/api/uart2/loopback", HTTP_GET, handleUartLoopback);
 	server.on("/api/bridge/selftest", HTTP_GET, handleBridgeSelfTest);
 	server.on("/api/daisy/command", HTTP_GET, handleDaisyCommand);
 	server.onNotFound(handleNotFound);
 }
 
-void setupAccessPoint() {
+void connectWifi() {
 	WiFi.persistent(false);
 	WiFi.disconnect(true, true);
-	WiFi.mode(WIFI_AP);
+	WiFi.mode(WIFI_STA);
 	WiFi.setSleep(false);
-	WiFi.softAPConfig(ApIp, ApGateway, ApSubnet);
-	WiFi.softAP(ApSsid, ApPassword, ApChannel, false, ApMaxClients);
+	WiFi.setAutoReconnect(true);
+	WiFi.begin(CHIMERA_WIFI_SSID, CHIMERA_WIFI_PASSWORD);
+
+	Serial.printf("Connecting to WiFi %s", CHIMERA_WIFI_SSID);
+	const uint32_t startMs = millis();
+	while (WiFi.status() != WL_CONNECTED && millis() - startMs < WifiConnectTimeoutMs) {
+		Serial.print('.');
+		delay(250);
+	}
+	Serial.println();
+
+	if (WiFi.status() == WL_CONNECTED) {
+		Serial.printf("WiFi connected ip=%s rssi=%d dBm\n",
+			WiFi.localIP().toString().c_str(),
+			WiFi.RSSI());
+	} else {
+		Serial.printf("WiFi connection failed status=%d; reconnecting in background\n",
+			static_cast<int>(WiFi.status()));
+	}
 }
 }
 
 void setup() {
-	setupAccessPoint();
+	Serial.begin(115200);
+	delay(200);
+	Serial.println("ChimeraMultiFX bridge boot");
+	connectWifi();
 	configureDaisyUart(DaisyUartRxPin, DaisyUartTxPin);
 	setupRoutes();
 	server.begin();
+	Serial.println("HTTP server started");
 }
 
 void loop() {
 	server.handleClient();
+	static uint32_t lastStatusMs = 0;
+	if (millis() - lastStatusMs >= 5000) {
+		lastStatusMs = millis();
+		if (WiFi.status() != WL_CONNECTED) {
+			WiFi.reconnect();
+		}
+		Serial.printf("bridge alive wifi_status=%d ip=%s\n",
+			static_cast<int>(WiFi.status()),
+			WiFi.localIP().toString().c_str());
+	}
 	delay(1);
 }
