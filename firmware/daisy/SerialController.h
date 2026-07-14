@@ -95,6 +95,8 @@ public:
         for (size_t i = 0; i < size; i++) {
             const uint16_t next = static_cast<uint16_t>((uart_rx_head_ + 1) % UART_RX_QUEUE_LEN);
             if (next == uart_rx_tail_) {
+
+                // Drop excess bytes rather than overwrite an in-flight command.
                 continue;
             }
             uart_rx_queue_[uart_rx_head_] = data[i];
@@ -718,6 +720,9 @@ private:
             usb_->TransmitInternal(reinterpret_cast<uint8_t*>(out), static_cast<size_t>(len));
         }
         if (uart_ && len > 0) {
+            // libDaisy keeps UART TX busy while RX DMA is active. Pause RX for
+            // this bounded reply, then restore the listener before accepting
+            // the next command.
             uart_->DmaListenStop();
             uart_->BlockingTransmit(reinterpret_cast<uint8_t*>(out),
                                     static_cast<size_t>(len),

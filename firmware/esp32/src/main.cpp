@@ -10,6 +10,7 @@ constexpr uint8_t DaisyUartRxPin = 16;
 constexpr uint8_t DaisyUartTxPin = 17;
 constexpr uint32_t DaisyUartBaud = 115200;
 constexpr uint32_t DaisyResponseTimeoutMs = 5000;
+constexpr uint32_t DaisyRetryDelayMs = 2;
 constexpr uint32_t LoopbackTimeoutMs = 250;
 constexpr uint32_t WifiConnectTimeoutMs = 20000;
 constexpr uint32_t WifiReconnectIntervalMs = 5000;
@@ -64,26 +65,32 @@ DaisyReply readDaisyLine(uint32_t timeoutMs) {
 	return {response, false};
 }
 
-DaisyReply transactDaisyCommand(const String& command) {
+DaisyReply sendDaisyCommand(const String& command) {
 	clearDaisyInput();
 	daisySerial.print(command);
 	daisySerial.print('\n');
 	daisySerial.flush();
-	DaisyReply reply = readDaisyLine(DaisyResponseTimeoutMs);
-	const bool retryable = command == "ping"
+	return readDaisyLine(DaisyResponseTimeoutMs);
+}
+
+bool isRetryableDaisyCommand(const String& command) {
+	return command == "ping"
 		|| command == "info"
 		|| command == "status"
 		|| command == "uartdiag"
 		|| command.startsWith("get ")
 		|| command.startsWith("params ")
 		|| command.startsWith("effect ");
-	if (retryable && !reply.complete) {
-		delay(2);
-		clearDaisyInput();
-		daisySerial.print(command);
-		daisySerial.print('\n');
-		daisySerial.flush();
-		reply = readDaisyLine(DaisyResponseTimeoutMs);
+}
+
+DaisyReply transactDaisyCommand(const String& command) {
+	DaisyReply reply = sendDaisyCommand(command);
+	// Retrying is limited to read-only commands so a lost reply cannot duplicate a mutation.
+	if (isRetryableDaisyCommand(command) && !reply.complete) {
+		delay(DaisyRetryDelayMs);
+		configureDaisyUart(DaisyUartRxPin, DaisyUartTxPin);
+		delay(DaisyRetryDelayMs);
+		reply = sendDaisyCommand(command);
 	}
 	return reply;
 }
