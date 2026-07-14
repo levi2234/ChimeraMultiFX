@@ -32,7 +32,7 @@ void UsbRxCallback(uint8_t* buf, uint32_t* len) {
 // Audio Callback
 // ==========================================
 void AudioCallback(AudioHandle::InputBuffer in, AudioHandle::OutputBuffer out, size_t size) {
-    const uint32_t start_ticks = System::GetTick();
+    serial.BeginAudioCallback(size);
 
     for (size_t i = 0; i < size; i++) {
         auto result = router.Process(in[0][i], in[1][i]);
@@ -40,7 +40,7 @@ void AudioCallback(AudioHandle::InputBuffer in, AudioHandle::OutputBuffer out, s
         out[1][i] = result.out2;
     }
 
-    serial.RecordAudioCallback(System::GetTick() - start_ticks, size);
+    serial.RecordAudioCallback();
 }
 
 // ==========================================

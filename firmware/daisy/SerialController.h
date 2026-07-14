@@ -1,5 +1,6 @@
 #pragma once
 #include "daisy_seed.h"
+#include "util/CpuLoadMeter.h"
 #include "Router.h"
 
 // Effect includes — the name→type mapping lives here
@@ -58,7 +59,6 @@ public:
         sample_rate_ = sample_rate;
         usb_ = usb;
         uart_ = uart;
-        audio_tick_frequency_ = daisy::System::GetTickFreq();
         buf_pos_ = 0;
     }
 
@@ -83,15 +83,20 @@ public:
         }
     }
 
-    void RecordAudioCallback(uint32_t elapsed_ticks, size_t samples) {
+    void BeginAudioCallback(size_t samples) {
         if (samples == 0 || sample_rate_ <= 0.0f) return;
+        if (!cpu_load_meter_initialized_) {
+            cpu_load_meter_.Init(sample_rate_, static_cast<int>(samples));
+            cpu_load_meter_initialized_ = true;
+        }
+        cpu_load_meter_.OnBlockStart();
+    }
 
-        if (audio_tick_frequency_ == 0) return;
+    void RecordAudioCallback() {
+        if (!cpu_load_meter_initialized_) return;
 
-        const float callback_seconds = static_cast<float>(elapsed_ticks)
-                         / static_cast<float>(audio_tick_frequency_);
-        const float block_seconds = static_cast<float>(samples) / sample_rate_;
-        const float cpu_usage = (callback_seconds / block_seconds) * 100.0f;
+        cpu_load_meter_.OnBlockEnd();
+        const float cpu_usage = cpu_load_meter_.GetAvgCpuLoad() * 100.0f;
         if (!std::isfinite(cpu_usage) || cpu_usage < 0.0f) {
             audio_cpu_usage_hundredths_ = 0;
             return;
@@ -121,7 +126,8 @@ private:
     int     buf_pos_ = 0;
     volatile bool dfu_requested_ = false;
     volatile uint32_t audio_cpu_usage_hundredths_ = 0;
-    uint32_t audio_tick_frequency_ = 0;
+    daisy::CpuLoadMeter cpu_load_meter_;
+    bool cpu_load_meter_initialized_ = false;
 
     // ─── Command Dispatch ────────────────────────────────────────────────────
     void Execute(char* cmd) {
