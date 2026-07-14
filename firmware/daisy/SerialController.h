@@ -2,16 +2,9 @@
 #include "daisy_seed.h"
 #include "util/CpuLoadMeter.h"
 #include "Router.h"
-
-// Effect includes — the name→type mapping lives here
-#include "effects/distortion/TanhDistortion.h"
-#include "effects/distortion/Bitcrusher.h"
-#include "effects/distortion/overdrive.h"
-#include "effects/modulation/Chorus.h"
-#include "effects/modulation/Tremolo.h"
-#include "effects/time/Delay.h"
-#include "effects/dynamics/Compressor.h"
-#include "effects/filter/LowPass.h"
+#include "include/core/SerialTransport.h"
+#include "include/core/EffectRegistry.h"
+#include "include/core/SerialResponseBuilder.h"
 
 #include <cstring>
 #include <cstdio>
@@ -62,6 +55,7 @@ public:
         sample_rate_ = sample_rate;
         usb_ = usb;
         uart_ = uart;
+        transport_.Init(usb, uart);
         buf_pos_ = 0;
     }
 
@@ -87,34 +81,18 @@ public:
     }
 
     void ProcessPendingUart() {
-        char c = 0;
-        while (DequeueUartByte(c)) Feed(c);
+        transport_.ProcessPending(HandleTransportByte, this);
     }
 
     void QueueUartBytes(const uint8_t* data, size_t size) {
-        for (size_t i = 0; i < size; i++) {
-            const uint16_t next = static_cast<uint16_t>((uart_rx_head_ + 1) % UART_RX_QUEUE_LEN);
-            if (next == uart_rx_tail_) {
-
-                // Drop excess bytes rather than overwrite an in-flight command.
-                continue;
-            }
-            uart_rx_queue_[uart_rx_head_] = data[i];
-            uart_rx_head_ = next;
-        }
+        transport_.QueueUartBytes(data, size);
     }
 
     void StartUartDmaReceive(uint8_t* buffer,
                              size_t size,
                              daisy::UartHandler::CircularRxCallbackFunctionPtr callback,
                              void* context) {
-        uart_rx_dma_buffer_ = buffer;
-        uart_rx_dma_buffer_size_ = size;
-        uart_rx_dma_callback_ = callback;
-        uart_rx_dma_context_ = context;
-        if (uart_) {
-            uart_->DmaListenStart(buffer, size, callback, context);
-        }
+        transport_.StartUartDmaReceive(buffer, size, callback, context);
     }
 
     void BeginAudioCallback(size_t samples) {
@@ -149,8 +127,6 @@ private:
     static constexpr int MAX_TOKENS  = 8;
     static constexpr int TX_BUF_LEN  = 256;
     static constexpr int JSON_BUF_LEN = 16384;
-    static constexpr uint16_t UART_RX_QUEUE_LEN = 512;
-
     Router* router_ = nullptr;
     float   sample_rate_ = 48000.f;
     daisy::UsbHandle* usb_ = nullptr;
@@ -163,13 +139,7 @@ private:
     volatile uint32_t audio_cpu_usage_hundredths_ = 0;
     daisy::CpuLoadMeter cpu_load_meter_;
     bool cpu_load_meter_initialized_ = false;
-    uint8_t uart_rx_queue_[UART_RX_QUEUE_LEN] = {};
-    volatile uint16_t uart_rx_head_ = 0;
-    volatile uint16_t uart_rx_tail_ = 0;
-    uint8_t* uart_rx_dma_buffer_ = nullptr;
-    size_t uart_rx_dma_buffer_size_ = 0;
-    daisy::UartHandler::CircularRxCallbackFunctionPtr uart_rx_dma_callback_ = nullptr;
-    void* uart_rx_dma_context_ = nullptr;
+    SerialTransport transport_;
 
     // ─── Command Dispatch ────────────────────────────────────────────────────
     void Execute(char* cmd) {
@@ -200,11 +170,10 @@ private:
         else Reply("ERR unknown command\n");
     }
 
-    bool DequeueUartByte(char& c) {
-        if (uart_rx_tail_ == uart_rx_head_) return false;
-        c = static_cast<char>(uart_rx_queue_[uart_rx_tail_]);
-        uart_rx_tail_ = static_cast<uint16_t>((uart_rx_tail_ + 1) % UART_RX_QUEUE_LEN);
-        return true;
+    static void HandleTransportByte(char byte, void* context) {
+        if (context) {
+            static_cast<SerialController*>(context)->Feed(byte);
+        }
     }
 
     // ─── add <lane> <effect> ─────────────────────────────────────────────────
@@ -393,48 +362,12 @@ private:
         SendBuffer(json_buf_, pos);
     }
 
-    // Helper: emits all params as "key":value pairs inside a JSON object
-    void EmitParams(char* out, int max, int& pos, Effect* fx) {
-        const char* list = fx->GetParamList();
-        if (!list || list[0] == '\0') return;
-
-        // Parse the comma-separated param list and emit each value
-        char buf[128];
-        strncpy(buf, list, sizeof(buf) - 1);
-        buf[sizeof(buf) - 1] = '\0';
-
-        bool first = true;
-        char* tok = strtok(buf, ",");
-        while (tok) {
-            if (!first) Append(out, max, pos, ",");
-            float val = fx->GetParam(tok);
-            Append(out, max, pos, "\"%s\":", tok);
-            AppendFloat(out, max, pos, val, 4);
-            first = false;
-            tok = strtok(nullptr, ",");
-        }
+    void EmitParams(char* out, int max, int& pos, Effect* effect) {
+        SerialResponseBuilder::EmitParams(out, max, pos, effect);
     }
 
-    void EmitParamInfo(char* out, int max, int& pos, Effect* fx) {
-        bool first = true;
-        for (int i = 0; i < fx->GetParamCount(); i++) {
-            EffectParamInfo info;
-            if (!fx->GetParamInfo(i, info)) continue;
-
-            if (!first) Append(out, max, pos, ",");
-            Append(out, max, pos,
-                   "\"%s\":{\"label\":\"%s\",\"type\":\"%s\",\"unit\":\"%s\",\"scale\":\"%s\",\"min\":",
-                   info.name, info.label, info.kind, info.unit, info.scale);
-            AppendFloat(out, max, pos, info.min, 4);
-            Append(out, max, pos, ",\"max\":");
-            AppendFloat(out, max, pos, info.max, 4);
-            Append(out, max, pos, ",\"default\":");
-            AppendFloat(out, max, pos, info.default_value, 4);
-            Append(out, max, pos, ",\"step\":");
-            AppendFloat(out, max, pos, info.step, 4);
-            Append(out, max, pos, "}");
-            first = false;
-        }
+    void EmitParamInfo(char* out, int max, int& pos, Effect* effect) {
+        SerialResponseBuilder::EmitParamInfo(out, max, pos, effect);
     }
 
     // ─── info ────────────────────────────────────────────────────────────────
@@ -448,7 +381,7 @@ private:
              ",\"max_lanes\":%d,\"max_slots\":%d,",
              Router::MAX_LANES, Router::MAX_SLOTS);
          Append(json_buf_, JSON_BUF_LEN, pos,
-             "\"effects\":[\"distortion\",\"bitcrusher\",\"overdrive\",\"chorus\",\"tremolo\",\"delay\",\"compressor\",\"lowpass\"],");
+             "\"effects\":%s,", EffectRegistry::NamesJson());
          Append(json_buf_, JSON_BUF_LEN, pos,
              "\"inputs\":[\"in1\",\"in2\",\"mix\",\"lane0\",\"lane1\",\"lane2\",\"lane3\"],");
          Append(json_buf_, JSON_BUF_LEN, pos,
@@ -532,20 +465,7 @@ private:
     // ─── Effect Factory ──────────────────────────────────────────────────────
     // This is the single place that maps a name string to a concrete type.
     Effect* CreateFromName(const char* name) {
-        Effect* fx = nullptr;
-
-        if      (strcmp(name, "distortion") == 0) fx = new TanhDistortion();
-        else if (strcmp(name, "bitcrusher") == 0) fx = new Bitcrusher();
-        else if (strcmp(name, "overdrive") == 0)  fx = new Overdrive();
-        else if (strcmp(name, "chorus") == 0)     fx = new Chorus();
-        else if (strcmp(name, "tremolo") == 0)    fx = new Tremolo();
-        else if (strcmp(name, "delay") == 0)      fx = new Delay();
-        else if (strcmp(name, "compressor") == 0) fx = new Compressor();
-        else if (strcmp(name, "lowpass") == 0)    fx = new LowPass();
-        else return nullptr;
-
-        fx->Init(sample_rate_);
-        return fx;
+        return EffectRegistry::Create(name, sample_rate_);
     }
 
     // ─── Parsers ─────────────────────────────────────────────────────────────
@@ -592,14 +512,7 @@ private:
     }
 
     const char* CategoryName(EffectCategory category) {
-        switch (category) {
-            case EffectCategory::Distortion: return "distortion";
-            case EffectCategory::Modulation: return "modulation";
-            case EffectCategory::Time:       return "time";
-            case EffectCategory::Dynamics:   return "dynamics";
-            case EffectCategory::Filter:     return "filter";
-            default: return "unknown";
-        }
+        return EffectRegistry::CategoryName(category);
     }
 
     // ─── Validation ──────────────────────────────────────────────────────────
@@ -675,65 +588,20 @@ private:
     }
 
     void Append(char* out, int max, int& pos, const char* fmt, ...) {
-        if (pos >= max - 1) return;
-
         va_list args;
         va_start(args, fmt);
-        int len = vsnprintf(out + pos, static_cast<size_t>(max - pos), fmt, args);
+        char formatted[256];
+        vsnprintf(formatted, sizeof(formatted), fmt, args);
         va_end(args);
-
-        if (len < 0) return;
-        if (len >= max - pos) {
-            pos = max - 1;
-            out[pos] = '\0';
-        } else {
-            pos += len;
-        }
+        SerialResponseBuilder::Append(out, max, pos, "%s", formatted);
     }
 
     void AppendFloat(char* out, int max, int& pos, float value, int decimals) {
-        if (pos >= max - 1) return;
-        if (decimals < 0) decimals = 0;
-        if (decimals > 4) decimals = 4;
-
-        if (value < 0.0f) {
-            Append(out, max, pos, "-");
-            value = -value;
-        }
-
-        int scale = 1;
-        for (int i = 0; i < decimals; i++) scale *= 10;
-
-        int scaled = static_cast<int>((value * scale) + 0.5f);
-        int whole = scaled / scale;
-        int frac = scaled % scale;
-
-        if (decimals == 0) {
-            Append(out, max, pos, "%d", whole);
-        } else {
-            Append(out, max, pos, "%d.%0*d", whole, decimals, frac);
-        }
+        SerialResponseBuilder::AppendFloat(out, max, pos, value, decimals);
     }
 
     void SendBuffer(char* out, int len) {
-        if (usb_ && len > 0) {
-            usb_->TransmitInternal(reinterpret_cast<uint8_t*>(out), static_cast<size_t>(len));
-        }
-        if (uart_ && len > 0) {
-            // libDaisy keeps UART TX busy while RX DMA is active. Pause RX for
-            // this bounded reply, then restore the listener before accepting
-            // the next command.
-            uart_->DmaListenStop();
-            uart_->BlockingTransmit(reinterpret_cast<uint8_t*>(out),
-                                    static_cast<size_t>(len),
-                                    2000);
-            if (uart_rx_dma_buffer_ && uart_rx_dma_callback_) {
-                uart_->DmaListenStart(uart_rx_dma_buffer_,
-                                      uart_rx_dma_buffer_size_,
-                                      uart_rx_dma_callback_,
-                                      uart_rx_dma_context_);
-            }
-        }
+        transport_.Send(out, static_cast<size_t>(len));
     }
 
     void DrainUart() {
