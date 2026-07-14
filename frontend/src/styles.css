@@ -88,7 +88,7 @@ button:active { transform: scale(.97); }
 .parameter-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 14px; }
 .parameter-control { display: grid; min-width: 0; place-items: center; gap: 5px; padding: 8px 12px; border-radius: 14px; background: #19191e; }
 .parameter-name { color: #b7b7bd; font-size: .68rem; font-weight: 850; letter-spacing: .08em; text-transform: uppercase; }
-.knob { position: relative; display: grid; width: 72px; height: 72px; place-items: center; border-radius: 50%; background: conic-gradient(from 225deg, var(--violet) 0deg, var(--violet) var(--knob-progress), #303037 var(--knob-progress), #303037 270deg, transparent 270deg); }
+.knob { position: relative; display: grid; width: 72px; height: 72px; place-items: center; border-radius: 50%; background: conic-gradient(from 225deg, var(--violet) 0deg, var(--violet) var(--knob-progress), #303037 var(--knob-progress), #303037 270deg, transparent 270deg); cursor: ew-resize; touch-action: none; }
 .knob::before { position: absolute; width: 60px; height: 60px; border-radius: 50%; background: linear-gradient(145deg, #37373e, #17171b); box-shadow: 0 5px 10px #0008; content: ''; }
 .knob-cap { position: relative; width: 3px; height: 26px; border-radius: 3px; background: white; transform: rotate(var(--knob-turn)); transform-origin: 50% 100%; translate: 0 -11px; }
 .parameter-control input { width: 100%; height: 28px; margin: 0; accent-color: var(--violet); touch-action: pan-x; }

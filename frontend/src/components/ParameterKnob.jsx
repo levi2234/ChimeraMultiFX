@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'preact/hooks';
+import { useEffect, useRef, useState } from 'preact/hooks';
 
 function normalize(value, info) {
   const min = Number(info.min);
@@ -26,23 +26,66 @@ function format(value, info) {
 
 export function ParameterKnob({ name, value, info, onCommit }) {
   const [localValue, setLocalValue] = useState(Number(value));
+  const dragRef = useRef(null);
   useEffect(() => setLocalValue(Number(value)), [value]);
   const position = Math.min(1, Math.max(0, normalize(localValue, info)));
   const turn = -135 + position * 270;
 
-  const updateFromSlider = (event) => {
-    setLocalValue(denormalize(Number(event.currentTarget.value) / 1000, info));
+  const setValueFromPosition = (nextPosition) => {
+    const clampedPosition = Math.min(1, Math.max(0, nextPosition));
+    const nextValue = denormalize(clampedPosition, info);
+    setLocalValue(nextValue);
   };
+
+  const updateFromSlider = (event) => {
+    setValueFromPosition(Number(event.currentTarget.value) / 1000);
+  };
+
   const commit = (event) => {
     const committedValue = denormalize(Number(event.currentTarget.value) / 1000, info);
     setLocalValue(committedValue);
     onCommit(name, committedValue);
   };
 
+  const handlePointerDown = (event) => {
+    if (event.button !== undefined && event.button !== 0) return;
+    dragRef.current = {
+      pointerId: event.pointerId,
+      startX: event.clientX,
+      startPosition: position,
+    };
+    event.currentTarget.setPointerCapture(event.pointerId);
+  };
+
+  const handlePointerMove = (event) => {
+    const drag = dragRef.current;
+    if (!drag || drag.pointerId !== event.pointerId) return;
+    const deltaX = event.clientX - drag.startX;
+    const nextPosition = drag.startPosition + deltaX / 220;
+    setValueFromPosition(nextPosition);
+  };
+
+  const handlePointerRelease = (event) => {
+    const drag = dragRef.current;
+    if (!drag || drag.pointerId !== event.pointerId) return;
+    const committedValue = denormalize(position, info);
+    setLocalValue(committedValue);
+    onCommit(name, committedValue);
+    dragRef.current = null;
+  };
+
   return (
     <label class="parameter-control">
       <span class="parameter-name">{info.label || name}</span>
-      <span class="knob" style={{ '--knob-turn': `${turn}deg`, '--knob-progress': `${position * 270}deg` }} aria-hidden="true">
+      <span
+        class="knob"
+        style={{ '--knob-turn': `${turn}deg`, '--knob-progress': `${position * 270}deg` }}
+        aria-hidden="true"
+        onPointerDown={handlePointerDown}
+        onPointerMove={handlePointerMove}
+        onPointerUp={handlePointerRelease}
+        onPointerCancel={handlePointerRelease}
+      >
         <span class="knob-cap" />
       </span>
       <input
