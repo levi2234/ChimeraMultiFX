@@ -16,6 +16,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstdarg>
+#include <cmath>
 
 // =============================================================================
 // SerialController — Human-readable UART command interface
@@ -57,6 +58,7 @@ public:
         sample_rate_ = sample_rate;
         usb_ = usb;
         uart_ = uart;
+        audio_tick_frequency_ = daisy::System::GetTickFreq();
         buf_pos_ = 0;
     }
 
@@ -81,6 +83,28 @@ public:
         }
     }
 
+    void RecordAudioCallback(uint32_t elapsed_ticks, size_t samples) {
+        if (samples == 0 || sample_rate_ <= 0.0f) return;
+
+        if (audio_tick_frequency_ == 0) return;
+
+        const float callback_seconds = static_cast<float>(elapsed_ticks)
+                         / static_cast<float>(audio_tick_frequency_);
+        const float block_seconds = static_cast<float>(samples) / sample_rate_;
+        const float cpu_usage = (callback_seconds / block_seconds) * 100.0f;
+        if (!std::isfinite(cpu_usage) || cpu_usage < 0.0f) {
+            audio_cpu_usage_hundredths_ = 0;
+            return;
+        }
+
+        const float rounded_hundredths = (cpu_usage * 100.0f) + 0.5f;
+        if (rounded_hundredths >= 4294967295.0f) {
+            audio_cpu_usage_hundredths_ = 0xffffffffu;
+        } else {
+            audio_cpu_usage_hundredths_ = static_cast<uint32_t>(rounded_hundredths);
+        }
+    }
+
 private:
     static constexpr int MAX_CMD_LEN = 128;
     static constexpr int MAX_TOKENS  = 8;
@@ -96,6 +120,8 @@ private:
     char    json_buf_[JSON_BUF_LEN] = {};
     int     buf_pos_ = 0;
     volatile bool dfu_requested_ = false;
+    volatile uint32_t audio_cpu_usage_hundredths_ = 0;
+    uint32_t audio_tick_frequency_ = 0;
 
     // ─── Command Dispatch ────────────────────────────────────────────────────
     void Execute(char* cmd) {
@@ -121,6 +147,7 @@ private:
         else if (strcmp(tokens[0], "dfu") == 0)    CmdDfu();
         else if (strcmp(tokens[0], "setpin") == 0)  CmdSetPin(tokens, n);
         else if (strcmp(tokens[0], "getpin") == 0)  CmdGetPin(tokens, n);
+        else if (strcmp(tokens[0], "cpu_usage") == 0)  CmdCpuUsage();
         else Reply("ERR unknown command\n");
     }
 
@@ -390,6 +417,11 @@ private:
             return;
         }
         Reply("UART listening=%d error=%d\n", uart_->IsListening() ? 1 : 0, uart_->CheckError());
+    }
+
+    void CmdCpuUsage() {
+        const uint32_t usage = audio_cpu_usage_hundredths_;
+        Reply("CPU Usage: %u.%02u%%\n", usage / 100, usage % 100);
     }
 
     void CmdSetPin(char** t, int n) {

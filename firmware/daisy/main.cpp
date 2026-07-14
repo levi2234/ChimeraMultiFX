@@ -32,11 +32,15 @@ void UsbRxCallback(uint8_t* buf, uint32_t* len) {
 // Audio Callback
 // ==========================================
 void AudioCallback(AudioHandle::InputBuffer in, AudioHandle::OutputBuffer out, size_t size) {
+    const uint32_t start_ticks = System::GetTick();
+
     for (size_t i = 0; i < size; i++) {
         auto result = router.Process(in[0][i], in[1][i]);
         out[0][i] = result.out1;
         out[1][i] = result.out2;
     }
+
+    serial.RecordAudioCallback(System::GetTick() - start_ticks, size);
 }
 
 // ==========================================
@@ -44,7 +48,7 @@ void AudioCallback(AudioHandle::InputBuffer in, AudioHandle::OutputBuffer out, s
 // ==========================================
 int main(void) {
     hw.Init();
-    hw.SetAudioSampleRate(SaiHandle::Config::SampleRate::SAI_96KHZ);
+    hw.SetAudioSampleRate(SaiHandle::Config::SampleRate::SAI_48KHZ);
     float sr = hw.AudioSampleRate();
 
     // Initialize USB CDC for serial communication
