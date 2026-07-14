@@ -41,6 +41,7 @@
 //   effect <effect>                          → effect parameter metadata as JSON
 //   ping                                     → protocol/link test
 //   dfu                                      → reboot into STM32 DFU bootloader
+//   reset                                    → software-reset the Daisy Seed
 //   setpin <pin> <0|1>                       → set GPIO pin high/low
 //
 // Effect names: distortion, bitcrusher, overdrive, chorus, tremolo, delay, compressor, lowpass
@@ -51,6 +52,8 @@
 
 class SerialController {
 public:
+    static constexpr size_t UART_RX_DMA_BUFFER_LEN = 256;
+
     void Init(Router* router,
               float sample_rate,
               daisy::UsbHandle* usb = nullptr,
@@ -80,6 +83,35 @@ public:
             dfu_requested_ = false;
             daisy::System::Delay(250);
             daisy::System::ResetToBootloader(daisy::System::BootloaderMode::STM);
+        }
+    }
+
+    void ProcessPendingUart() {
+        char c = 0;
+        while (DequeueUartByte(c)) Feed(c);
+    }
+
+    void QueueUartBytes(const uint8_t* data, size_t size) {
+        for (size_t i = 0; i < size; i++) {
+            const uint16_t next = static_cast<uint16_t>((uart_rx_head_ + 1) % UART_RX_QUEUE_LEN);
+            if (next == uart_rx_tail_) {
+                continue;
+            }
+            uart_rx_queue_[uart_rx_head_] = data[i];
+            uart_rx_head_ = next;
+        }
+    }
+
+    void StartUartDmaReceive(uint8_t* buffer,
+                             size_t size,
+                             daisy::UartHandler::CircularRxCallbackFunctionPtr callback,
+                             void* context) {
+        uart_rx_dma_buffer_ = buffer;
+        uart_rx_dma_buffer_size_ = size;
+        uart_rx_dma_callback_ = callback;
+        uart_rx_dma_context_ = context;
+        if (uart_) {
+            uart_->DmaListenStart(buffer, size, callback, context);
         }
     }
 
@@ -114,7 +146,8 @@ private:
     static constexpr int MAX_CMD_LEN = 128;
     static constexpr int MAX_TOKENS  = 8;
     static constexpr int TX_BUF_LEN  = 256;
-    static constexpr int JSON_BUF_LEN = 12288;
+    static constexpr int JSON_BUF_LEN = 16384;
+    static constexpr uint16_t UART_RX_QUEUE_LEN = 512;
 
     Router* router_ = nullptr;
     float   sample_rate_ = 48000.f;
@@ -128,6 +161,13 @@ private:
     volatile uint32_t audio_cpu_usage_hundredths_ = 0;
     daisy::CpuLoadMeter cpu_load_meter_;
     bool cpu_load_meter_initialized_ = false;
+    uint8_t uart_rx_queue_[UART_RX_QUEUE_LEN] = {};
+    volatile uint16_t uart_rx_head_ = 0;
+    volatile uint16_t uart_rx_tail_ = 0;
+    uint8_t* uart_rx_dma_buffer_ = nullptr;
+    size_t uart_rx_dma_buffer_size_ = 0;
+    daisy::UartHandler::CircularRxCallbackFunctionPtr uart_rx_dma_callback_ = nullptr;
+    void* uart_rx_dma_context_ = nullptr;
 
     // ─── Command Dispatch ────────────────────────────────────────────────────
     void Execute(char* cmd) {
@@ -154,7 +194,15 @@ private:
         else if (strcmp(tokens[0], "setpin") == 0)  CmdSetPin(tokens, n);
         else if (strcmp(tokens[0], "getpin") == 0)  CmdGetPin(tokens, n);
         else if (strcmp(tokens[0], "cpu_usage") == 0)  CmdCpuUsage();
+        else if (strcmp(tokens[0], "reset") == 0)  CmdReset();
         else Reply("ERR unknown command\n");
+    }
+
+    bool DequeueUartByte(char& c) {
+        if (uart_rx_tail_ == uart_rx_head_) return false;
+        c = static_cast<char>(uart_rx_queue_[uart_rx_tail_]);
+        uart_rx_tail_ = static_cast<uint16_t>((uart_rx_tail_ + 1) % UART_RX_QUEUE_LEN);
+        return true;
     }
 
     // ─── add <lane> <effect> ─────────────────────────────────────────────────
@@ -168,6 +216,11 @@ private:
 
         router_->lanes[lane].Add(fx);
         Reply("OK added %s to lane %d slot %d\n", t[2], lane, router_->lanes[lane].count - 1);
+    }
+
+    void CmdReset() {
+        daisy::System::Delay(10);
+        HAL_NVIC_SystemReset();
     }
 
     // ─── insert <lane> <slot> <effect> ───────────────────────────────────────
@@ -665,7 +718,16 @@ private:
             usb_->TransmitInternal(reinterpret_cast<uint8_t*>(out), static_cast<size_t>(len));
         }
         if (uart_ && len > 0) {
-            uart_->BlockingTransmit(reinterpret_cast<uint8_t*>(out), static_cast<size_t>(len), 1000);
+            uart_->DmaListenStop();
+            uart_->BlockingTransmit(reinterpret_cast<uint8_t*>(out),
+                                    static_cast<size_t>(len),
+                                    2000);
+            if (uart_rx_dma_buffer_ && uart_rx_dma_callback_) {
+                uart_->DmaListenStart(uart_rx_dma_buffer_,
+                                      uart_rx_dma_buffer_size_,
+                                      uart_rx_dma_callback_,
+                                      uart_rx_dma_context_);
+            }
         }
     }
 

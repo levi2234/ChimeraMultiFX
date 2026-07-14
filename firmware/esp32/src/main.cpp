@@ -9,11 +9,11 @@ namespace {
 constexpr uint8_t DaisyUartRxPin = 16;
 constexpr uint8_t DaisyUartTxPin = 17;
 constexpr uint32_t DaisyUartBaud = 115200;
-constexpr uint32_t DaisyResponseTimeoutMs = 2000;
+constexpr uint32_t DaisyResponseTimeoutMs = 5000;
 constexpr uint32_t LoopbackTimeoutMs = 250;
 constexpr uint32_t WifiConnectTimeoutMs = 20000;
 constexpr uint32_t WifiReconnectIntervalMs = 5000;
-constexpr size_t DaisyResponseMaxLen = 12288;
+constexpr size_t DaisyResponseMaxLen = 16384;
 constexpr size_t DaisyCommandMaxLen = 127;
 
 WebServer server(80);
@@ -69,7 +69,23 @@ DaisyReply transactDaisyCommand(const String& command) {
 	daisySerial.print(command);
 	daisySerial.print('\n');
 	daisySerial.flush();
-	return readDaisyLine(DaisyResponseTimeoutMs);
+	DaisyReply reply = readDaisyLine(DaisyResponseTimeoutMs);
+	const bool retryable = command == "ping"
+		|| command == "info"
+		|| command == "status"
+		|| command == "uartdiag"
+		|| command.startsWith("get ")
+		|| command.startsWith("params ")
+		|| command.startsWith("effect ");
+	if (retryable && !reply.complete) {
+		delay(2);
+		clearDaisyInput();
+		daisySerial.print(command);
+		daisySerial.print('\n');
+		daisySerial.flush();
+		reply = readDaisyLine(DaisyResponseTimeoutMs);
+	}
+	return reply;
 }
 
 bool requestedPins(uint8_t& rxPin, uint8_t& txPin) {
@@ -211,6 +227,14 @@ void handleBridgeSelfTest() {
 	}
 }
 
+void handleDaisyReset() {
+	sendCorsHeaders();
+	clearDaisyInput();
+	daisySerial.print("reset\n");
+	daisySerial.flush();
+	server.send(202, "text/plain", "daisy reset requested");
+}
+
 void handleDaisyCommand() {
 	sendCorsHeaders();
 	if (!server.hasArg("cmd")) {
@@ -288,6 +312,8 @@ void setupRoutes() {
 	server.on("/api/gpio/write", HTTP_GET, handleGpioWrite);
 	server.on("/api/uart2/loopback", HTTP_GET, handleUartLoopback);
 	server.on("/api/bridge/selftest", HTTP_GET, handleBridgeSelfTest);
+	server.on("/api/bridge/reset", HTTP_POST, handleDaisyReset);
+	server.on("/api/bridge/reset", HTTP_GET, handleDaisyReset);
 	server.on("/api/daisy/command", HTTP_GET, handleDaisyCommand);
 	server.serveStatic("/app/", LittleFS, "/app/", "max-age=3600");
 	server.serveStatic("/assets/", LittleFS, "/assets/", "max-age=3600");

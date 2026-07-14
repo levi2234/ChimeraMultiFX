@@ -17,6 +17,16 @@ static DaisySeed hw;
 static Router router; // Audio routing engine that manages lanes and effects
 static SerialController serial; // UART command interface that allows dynamic control of the router and effects
 static UartHandler esp_uart;
+static uint8_t esp_uart_rx_dma_buffer[SerialController::UART_RX_DMA_BUFFER_LEN];
+
+void EspUartRxCallback(uint8_t* data,
+                       size_t size,
+                       void* context,
+                       UartHandler::Result result) {
+    if (result == UartHandler::Result::OK && context != nullptr) {
+        static_cast<SerialController*>(context)->QueueUartBytes(data, size);
+    }
+}
 
 // ==========================================
 // USB CDC Receive Callback
@@ -64,6 +74,10 @@ int main(void) {
     esp_uart.Init(esp_uart_config);
 
     serial.Init(&router, sr, &hw.usb_handle, &esp_uart);
+    serial.StartUartDmaReceive(esp_uart_rx_dma_buffer,
+                               sizeof(esp_uart_rx_dma_buffer),
+                               EspUartRxCallback,
+                               &serial);
 
     // Register USB receive callback (interrupt-driven)
     hw.usb_handle.SetReceiveCallback(UsbRxCallback, UsbHandle::FS_INTERNAL);
@@ -71,14 +85,8 @@ int main(void) {
     // Start audio processing
     hw.StartAudio(AudioCallback);
 
-    uint8_t esp_uart_byte = 0;
-
-    // Once the first byte arrives, drain the command continuously. Avoiding an
-    // extra loop delay prevents USART1 overruns between bytes.
     while (1) {
-        while (esp_uart.BlockingReceive(&esp_uart_byte, 1, 1) == UartHandler::Result::OK) {
-            serial.Feed(static_cast<char>(esp_uart_byte));
-        }
+        serial.ProcessPendingUart();
         serial.ProcessPendingActions();
     }
 }
