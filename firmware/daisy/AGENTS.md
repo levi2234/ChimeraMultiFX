@@ -12,7 +12,7 @@ The firmware is built around dynamically adding, removing, routing, and paramete
 - `SerialController.h`: human-readable USB serial command parser and dispatcher.
 - `Router.h`: four-lane effect routing engine, lane input/output selection, lane-to-lane feeds, effect slot management.
 - `Effect.h`: base effect interface and parameter metadata contract.
-- `effects/**`: header-only effect implementations grouped by category.
+- `include/effects/**`: header-only effect implementations grouped by category.
 - `Makefile`: firmware build configuration. `CPP_SOURCES = main.cpp`; effects are included through headers.
 - `SerialPCInterface.py`: simple Python serial terminal for sending commands to the device.
 
@@ -159,7 +159,7 @@ Optional but expected for serial/UI integration:
 
 When adding a new effect:
 
-1. Add the header under the appropriate `effects/<category>/` folder.
+1. Add the header under the appropriate `include/effects/<category>/` folder.
 2. Include it in `SerialController.h`.
 3. Add a name mapping to `CreateFromName()`.
 4. Add the name to the `info` command effect list.

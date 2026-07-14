@@ -1,5 +1,5 @@
 #pragma once
-#include "../../Effect.h"
+#include "Effect.h"
 #include <cmath>
 #include <cstring>
 

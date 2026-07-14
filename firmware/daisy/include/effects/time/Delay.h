@@ -1,6 +1,6 @@
 #pragma once
 #include "daisy_seed.h"
-#include "../../Effect.h"
+#include "Effect.h"
 #include <cstdint>
 #include <cstring>
 

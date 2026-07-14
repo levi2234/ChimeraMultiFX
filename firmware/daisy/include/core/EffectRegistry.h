@@ -1,14 +1,14 @@
 #pragma once
 
-#include "../../Effect.h"
-#include "../../effects/distortion/TanhDistortion.h"
-#include "../../effects/distortion/Bitcrusher.h"
-#include "../../effects/distortion/overdrive.h"
-#include "../../effects/modulation/Chorus.h"
-#include "../../effects/modulation/Tremolo.h"
-#include "../../effects/time/Delay.h"
-#include "../../effects/dynamics/Compressor.h"
-#include "../../effects/filter/LowPass.h"
+#include "Effect.h"
+#include "effects/distortion/TanhDistortion.h"
+#include "effects/distortion/Bitcrusher.h"
+#include "effects/distortion/Overdrive.h"
+#include "effects/modulation/Chorus.h"
+#include "effects/modulation/Tremolo.h"
+#include "effects/time/Delay.h"
+#include "effects/dynamics/Compressor.h"
+#include "effects/filter/LowPass.h"
 
 class EffectRegistry {
 public:

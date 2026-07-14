@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../../Effect.h"
+#include "Effect.h"
 #include <cstdarg>
 #include <cstdio>
 #include <cstring>
