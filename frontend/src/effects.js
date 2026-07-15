@@ -32,7 +32,7 @@ export const EFFECT_GLYPHS = {
   bitcrusher: '▥',
   overdrive: '⌁',
   boost: '↑',
-  TubeScreamer: 'TS',
+  TubeScreamer: '↯',
   KlonCentaur: '♞',
   ProcoRAT: '⚲',
   BigMuffPi: 'π',

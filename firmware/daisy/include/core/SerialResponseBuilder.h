@@ -74,6 +74,21 @@ public:
             AppendFloat(out, max, pos, info.default_value, 4);
             Append(out, max, pos, ",\"step\":");
             AppendFloat(out, max, pos, info.step, 4);
+            if (info.options && info.options[0] != '\0') {
+                char options[128];
+                strncpy(options, info.options, sizeof(options) - 1);
+                options[sizeof(options) - 1] = '\0';
+                Append(out, max, pos, ",\"options\":[");
+                bool first_option = true;
+                char* option = strtok(options, ",");
+                while (option) {
+                    if (!first_option) Append(out, max, pos, ",");
+                    Append(out, max, pos, "\"%s\"", option);
+                    first_option = false;
+                    option = strtok(nullptr, ",");
+                }
+                Append(out, max, pos, "]");
+            }
             Append(out, max, pos, "}");
             first = false;
         }

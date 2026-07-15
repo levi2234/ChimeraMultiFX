@@ -106,6 +106,11 @@ button:active { transform: scale(.97); }
 .knob-cap { position: relative; width: 3px; height: 26px; border-radius: 3px; background: white; transform: rotate(var(--knob-turn)); transform-origin: 50% 100%; translate: 0 -11px; }
 .parameter-control input { width: 100%; height: 28px; margin: 0; accent-color: var(--violet); touch-action: pan-x; }
 .parameter-control output { color: white; font-size: .8rem; font-variant-numeric: tabular-nums; font-weight: 800; }
+.parameter-switch { align-content: start; border: 0; }
+.parameter-switch legend { padding: 0; text-align: center; }
+.parameter-switch-options { display: grid; width: 100%; gap: 6px; }
+.parameter-switch-options button { min-height: 38px; padding: 5px 8px; border-radius: 9px; background: #242429; color: #c9c9cf; font-size: .66rem; font-weight: 850; letter-spacing: .04em; }
+.parameter-switch-options button.is-selected { background: var(--violet); color: white; box-shadow: inset 0 0 0 1px #ffffff40; }
 .sheet-loading { padding: 30px; color: var(--muted); text-align: center; }
 
 .route-layout { display: grid; grid-template-columns: 1.25fr 1fr; gap: 14px; }

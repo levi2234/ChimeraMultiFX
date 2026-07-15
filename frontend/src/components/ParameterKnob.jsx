@@ -24,7 +24,51 @@ function format(value, info) {
   return `${Number(value).toFixed(decimals)}${info.unit || ''}`;
 }
 
+function optionLabels(info) {
+  if (Array.isArray(info.options)) return info.options;
+  if (typeof info.options === 'string') return info.options.split(',').map((option) => option.trim()).filter(Boolean);
+  const min = Number(info.min) || 0;
+  const max = Number(info.max) || min;
+  return Array.from({ length: Math.max(0, Math.round(max - min) + 1) }, (_, index) => `${min + index}`);
+}
+
+function formatOptionLabel(label) {
+  return String(label).replace(/[_-]/g, ' ').toUpperCase();
+}
+
+function ParameterSwitch({ name, value, info, onCommit }) {
+  const min = Number(info.min) || 0;
+  const labels = optionLabels(info);
+  const selected = Math.round(Number(value ?? info.default ?? min));
+
+  return (
+    <fieldset class="parameter-control parameter-switch">
+      <legend class="parameter-name">{info.label || name}</legend>
+      <div class="parameter-switch-options">
+        {labels.map((label, index) => {
+          const optionValue = min + index;
+          return (
+            <button
+              type="button"
+              class={optionValue === selected ? 'is-selected' : ''}
+              onClick={() => onCommit(name, optionValue)}
+              aria-pressed={optionValue === selected}
+              key={`${name}-${label}`}
+            >
+              {formatOptionLabel(label)}
+            </button>
+          );
+        })}
+      </div>
+    </fieldset>
+  );
+}
+
 export function ParameterKnob({ name, value, info, onCommit }) {
+  if (info.type === 'switch' || info.type === 'enum') {
+    return <ParameterSwitch name={name} value={value} info={info} onCommit={onCommit} />;
+  }
+
   const [localValue, setLocalValue] = useState(Number(value));
   const dragRef = useRef(null);
   useEffect(() => setLocalValue(Number(value)), [value]);

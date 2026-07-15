@@ -21,6 +21,7 @@ struct EffectParamInfo {
     float max;
     float default_value;
     float step;
+    const char* options;
 };
 
 // Base class for all ChimeraMultiFX effects.

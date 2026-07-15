@@ -153,8 +153,8 @@ public:
 	int GetParamCount() const override { return 8; }
 	bool GetParamInfo(int index, EffectParamInfo& info) const override {
 		switch (index) {
-			case 0: info = {"verb", "BlueSky Verb", "", "int", "linear", 0.0f, 2.0f, 0.0f, 1.0f}; return true;
-			case 1: info = {"mod", "BlueSky Mod", "", "int", "linear", 0.0f, 2.0f, 1.0f, 1.0f}; return true;
+			case 0: info = {"verb", "BlueSky Verb", "", "switch", "linear", 0.0f, 2.0f, 0.0f, 1.0f, "plate,room,spring"}; return true;
+			case 1: info = {"mod", "BlueSky Mod", "", "switch", "linear", 0.0f, 2.0f, 1.0f, 1.0f, "off,light,deep"}; return true;
 			case 2: info = {"decay", "BlueSky Decay", "", "float", "linear", 0.05f, 0.98f, 0.58f, 0.01f}; return true;
 			case 3: info = {"pre_delay", "BlueSky Pre-Delay", "s", "float", "linear", 0.0f, 0.12f, 0.018f, 0.001f}; return true;
 			case 4: info = {"low", "BlueSky Low", "", "float", "linear", 0.0f, 1.0f, 0.52f, 0.01f}; return true;
