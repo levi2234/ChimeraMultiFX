@@ -2,10 +2,10 @@
 # ChimeraMultiFX — Daisy Seed Firmware Makefile
 # =============================================================================
 # Usage:
-#   make           — compile
-#   make program-dfu — flash via USB DFU (hold BOOT then tap RESET first)
-#   make program   — flash via ST-Link (SWD)
-#   make clean     — remove build artefacts
+#   make              — compile the QSPI application
+#   make program-boot — install the Daisy bootloader from STM DFU (one time)
+#   make program-dfu  — upload the application during the bootloader DFU window
+#   make clean        — remove build artefacts
 #
 # Select the active effect by setting CPP_SOURCES below.
 # =============================================================================
@@ -13,9 +13,11 @@
 # Project Name
 TARGET = ChimeraFX
 
-# The complete runtime effect registry is flash-heavy. Size optimization keeps
-# the BOOT_NONE image inside the Daisy Seed's 128 KB internal flash while the
-# audio callback remains dominated by explicit DSP operations.
+# Store and execute the application from the Daisy Seed's external QSPI flash.
+# The Daisy bootloader must be installed in internal flash before programming.
+APP_TYPE = BOOT_QSPI
+
+# Keep code compact and reduce QSPI instruction fetches.
 OPT ?= -Os
 
 # Sources — single entry point; effects are header-only classes

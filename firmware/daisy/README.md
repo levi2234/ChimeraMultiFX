@@ -14,22 +14,41 @@ cd ../../
 make
 ```
 
-## Upload code
+## QSPI boot setup
 
-1. Connect the Daisy Seed to your computer over USB.
-2. Put the board into DFU bootloader mode:
+The application uses `BOOT_QSPI`, giving it nearly 8 MB of external flash. The
+Daisy bootloader must be installed in internal flash once before QSPI
+applications can run.
+
+1. Connect the Daisy Seed to the computer over USB.
+2. Enter the STM32 ROM DFU mode:
    - Hold the BOOT button.
    - Press and release RESET.
    - Release BOOT.
-3. Build the firmware if needed.
-4. Flash it with:
+3. Install the Daisy bootloader:
 
 ```bash
 cd firmware/daisy
+make program-boot
+```
+
+## Upload code
+
+1. Reset the Daisy and wait for the user LED to pulse during the bootloader's
+   two-second DFU window. Press BOOT during this window to keep it open.
+2. Build and upload the QSPI application:
+
+```bash
+cd firmware/daisy
+make clean
+make
 make program-dfu
 ```
 
-If the upload fails, confirm the board is in bootloader mode and that `dfu-util` is installed.
+`program-dfu` writes the application to QSPI at `0x90040000`. `make program`
+is intentionally unavailable for QSPI applications. If upload fails, confirm
+that the Daisy bootloader is installed, its LED is pulsing, and `dfu-util` is
+installed.
 
 ## Quick test
 
