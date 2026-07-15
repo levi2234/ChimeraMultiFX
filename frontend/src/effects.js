@@ -2,30 +2,46 @@ export const EFFECT_COLORS = {
   distortion: '#ff8a18',
   bitcrusher: '#ffca3a',
   overdrive: '#ff5a36',
+  boost: '#f43f5e',
   chorus: '#18d879',
   tremolo: '#27b7ff',
   delay: '#8a5cff',
   compressor: '#ff3f67',
+  noisegate: '#22c55e',
+  sustain: '#eab308',
   lowpass: '#16dfd0',
+  highpass: '#06b6d4',
+  bandpass: '#0ea5e9',
+  notch: '#14b8a6',
+  eq: '#84cc16',
+  autowah: '#f97316',
 };
 
 export const EFFECT_GLYPHS = {
   distortion: '∿',
   bitcrusher: '▥',
   overdrive: '⌁',
+  boost: '↑',
   chorus: '≈',
   tremolo: '⌇',
   delay: '◉',
   compressor: '↔',
+  noisegate: '⊣',
+  sustain: '∞',
   lowpass: '⌁',
+  highpass: '⌁',
+  bandpass: '◇',
+  notch: '⌄',
+  eq: '≡',
+  autowah: '◒',
 };
 
 export const EFFECT_TYPES = [
-  { id: 'drive', label: 'Drive', effects: ['distortion', 'overdrive', 'bitcrusher'] },
+  { id: 'drive', label: 'Drive', effects: ['distortion', 'overdrive', 'boost', 'bitcrusher'] },
   { id: 'modulation', label: 'Modulation', effects: ['chorus', 'tremolo'] },
   { id: 'time', label: 'Time', effects: ['delay'] },
-  { id: 'dynamics', label: 'Dynamics', effects: ['compressor'] },
-  { id: 'filter', label: 'Filter', effects: ['lowpass'] },
+  { id: 'dynamics', label: 'Dynamics', effects: ['compressor', 'noisegate', 'sustain'] },
+  { id: 'filter', label: 'Filter', effects: ['lowpass', 'highpass', 'bandpass', 'notch', 'eq', 'autowah'] },
 ];
 
 const TYPE_BY_EFFECT = EFFECT_TYPES.reduce((lookup, type) => {

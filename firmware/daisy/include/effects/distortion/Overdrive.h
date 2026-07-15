@@ -31,6 +31,8 @@ public:
 		drive_gain_smoothed_ = drive_gain_;
 		output_trim_smoothed_ = output_trim_;
 		bass_cut_smoothed_ = bass_cut_;
+		aa_coeff_smoothed_ = aa_coeff_;
+		tone_smoothed_ = tone_;
 		tone_coeff_smoothed_ = tone_coeff_;
 		post_coeff_smoothed_ = post_coeff_;
 		level_smoothed_ = level_;
@@ -43,6 +45,8 @@ public:
 		Smooth(drive_gain_smoothed_, drive_gain_);
 		Smooth(output_trim_smoothed_, output_trim_);
 		Smooth(bass_cut_smoothed_, bass_cut_);
+		Smooth(aa_coeff_smoothed_, aa_coeff_);
+		Smooth(tone_smoothed_, tone_);
 		Smooth(tone_coeff_smoothed_, tone_coeff_);
 		Smooth(post_coeff_smoothed_, post_coeff_);
 		Smooth(level_smoothed_, level_);
@@ -61,7 +65,7 @@ public:
 		// restores pick attack without removing the warm low-frequency body.
 		tone_state_ += tone_coeff_smoothed_ * (shaped - tone_state_);
 		float bright = shaped - tone_state_;
-		float voiced = tone_state_ + (bright * (0.35f + (tone_ * 1.25f)));
+		float voiced = tone_state_ + (bright * (0.35f + (tone_smoothed_ * 1.25f)));
 		post_state_ += post_coeff_smoothed_ * (voiced - post_state_);
 
 		// Asymmetric clipping sounds tube-like but creates a small DC component.
@@ -133,7 +137,7 @@ private:
 	float ShapeOversampled(float in) {
 		float driven = in * drive_gain_smoothed_;
 		float shaped = driven >= 0.0f ? tanhf(driven) : tanhf(driven * 0.78f) * 1.08f;
-		aa_state_ += aa_coeff_ * ((shaped * output_trim_smoothed_) - aa_state_);
+		aa_state_ += aa_coeff_smoothed_ * ((shaped * output_trim_smoothed_) - aa_state_);
 		return aa_state_;
 	}
 
@@ -158,6 +162,8 @@ private:
 	float bass_coeff_ = 0.1f;
 	float smoothing_coeff_ = 0.01f;
 	float aa_coeff_ = 0.1f;
+	float aa_coeff_smoothed_ = 0.1f;
+	float tone_smoothed_ = 0.55f;
 	float tone_coeff_ = 0.1f;
 	float post_coeff_ = 0.1f;
 	float drive_gain_ = 4.0f;

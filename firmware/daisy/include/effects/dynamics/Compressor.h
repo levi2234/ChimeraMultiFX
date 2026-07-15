@@ -3,7 +3,12 @@
 #include <cmath>
 #include <cstring>
 
-// Simple feed-forward compressor (envelope follower + gain reduction).
+// Feed-forward compressor for controlling guitar dynamics. The rectified input
+// drives an envelope follower with a fast attack and slower release. Samples
+// above the threshold are attenuated by a power curve derived from the selected
+// ratio, then makeup gain restores the desired output level. Coefficients are
+// cached outside the audio path and gain changes are smoothed to avoid zipper
+// noise when parameters arrive over serial.
 class Compressor : public Effect {
 public:
     void Init(float sample_rate) override {
@@ -14,26 +19,38 @@ public:
         release_   = 0.1f;   // seconds
         makeup_    = 1.5f;   // output gain
         env_       = 0.0f;
+        gain_      = 1.0f;
+        makeup_smoothed_ = makeup_;
+        smoothing_coeff_ = 1.0f - expf(-2.0f * 3.14159265f * 35.0f / sample_rate_);
+        UpdateAttackCoeff();
+        UpdateReleaseCoeff();
+        UpdateGainExponent();
     }
 
     float Process(float in) override {
-        // Envelope follower
+        // Rectification turns the bipolar waveform into a level estimate. The
+        // attack coefficient catches peaks while release lets the detector fall
+        // naturally between notes; both are precomputed when controls change.
         float abs_in = fabsf(in);
-        float coeff  = (abs_in > env_)
-                        ? expf(-1.0f / (attack_  * sample_rate_))
-                        : expf(-1.0f / (release_ * sample_rate_));
+        float coeff = abs_in > env_ ? attack_coeff_ : release_coeff_;
         env_ = coeff * env_ + (1.0f - coeff) * abs_in;
 
-        // Gain computation
-        float gain = 1.0f;
+        // This power law is algebraically equivalent to converting the amount
+        // above threshold to decibels, applying the ratio, then converting back.
+        // It avoids a log10 plus a second power operation on every active sample.
+        float target_gain = 1.0f;
         if (env_ > threshold_) {
-            float over_db = 20.0f * log10f(env_ / threshold_);
-            float reduced = over_db * (1.0f - 1.0f / ratio_);
-            gain = powf(10.0f, -reduced / 20.0f);
+            target_gain = powf(env_ / threshold_, gain_exponent_);
         }
 
-        return in * gain * makeup_;
-    }    const char* GetName() const override { return "compressor"; }
+        // Serial parameter changes are stepwise. Slewing the final gain and
+        // makeup controls prevents those steps from becoming audible clicks.
+        gain_ += smoothing_coeff_ * (target_gain - gain_);
+        makeup_smoothed_ += smoothing_coeff_ * (makeup_ - makeup_smoothed_);
+        return in * gain_ * makeup_smoothed_;
+    }
+
+    const char* GetName() const override { return "compressor"; }
     EffectCategory GetCategory() const override { return EffectCategory::Dynamics; }
 
     void SetParam(const char* name, float value) override {
@@ -48,7 +65,8 @@ public:
         if      (strcmp(name, "threshold") == 0) return threshold_;
         else if (strcmp(name, "ratio") == 0)     return ratio_;
         else if (strcmp(name, "attack") == 0)    return attack_;
-        else if (strcmp(name, "release") == 0)   return release_;        else if (strcmp(name, "makeup") == 0)    return makeup_;
+        else if (strcmp(name, "release") == 0)   return release_;
+        else if (strcmp(name, "makeup") == 0)    return makeup_;
         return 0.f;
     }
 
@@ -67,15 +85,33 @@ public:
     }
 
     void SetThreshold(float t)  { threshold_ = Clamp(t, 0.0001f, 1.0f); }
-    void SetRatio(float r)      { ratio_ = Clamp(r, 1.0f, 20.0f); }
-    void SetAttack(float sec)   { attack_ = Clamp(sec, 0.0001f, 2.0f); }
-    void SetRelease(float sec)  { release_ = Clamp(sec, 0.0001f, 5.0f); }
+    void SetRatio(float r)      { ratio_ = Clamp(r, 1.0f, 20.0f); UpdateGainExponent(); }
+    void SetAttack(float sec)   { attack_ = Clamp(sec, 0.0001f, 2.0f); UpdateAttackCoeff(); }
+    void SetRelease(float sec)  { release_ = Clamp(sec, 0.0001f, 5.0f); UpdateReleaseCoeff(); }
     void SetMakeup(float g)     { makeup_ = Clamp(g, 0.0f, 8.0f); }
 
 private:
+    void UpdateAttackCoeff() {
+        attack_coeff_ = expf(-1.0f / (attack_ * sample_rate_));
+    }
+
+    void UpdateReleaseCoeff() {
+        release_coeff_ = expf(-1.0f / (release_ * sample_rate_));
+    }
+
+    void UpdateGainExponent() {
+        gain_exponent_ = -(1.0f - (1.0f / ratio_));
+    }
+
     float sample_rate_;
     float threshold_, ratio_;
     float attack_, release_;
     float makeup_;
     float env_;
+    float attack_coeff_;
+    float release_coeff_;
+    float gain_exponent_;
+    float gain_;
+    float makeup_smoothed_;
+    float smoothing_coeff_;
 };
