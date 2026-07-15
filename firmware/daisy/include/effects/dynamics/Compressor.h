@@ -73,12 +73,6 @@ public:
     void SetMakeup(float g)     { makeup_ = Clamp(g, 0.0f, 8.0f); }
 
 private:
-    static float Clamp(float value, float min, float max) {
-        if (value < min) return min;
-        if (value > max) return max;
-        return value;
-    }
-
     float sample_rate_;
     float threshold_, ratio_;
     float attack_, release_;

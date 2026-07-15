@@ -54,12 +54,6 @@ public:
     void SetLevel(float l) { level_ = Clamp(l, 0.0f, 2.0f); }
 
 private:
-    static float Clamp(float value, float min, float max) {
-        if (value < min) return min;
-        if (value > max) return max;
-        return value;
-    }
-
     float LowPassCoeff(float cutoff) const {
         float x = 2.0f * 3.14159265f * cutoff / sample_rate_;
         return Clamp(x, 0.001f, 1.0f);

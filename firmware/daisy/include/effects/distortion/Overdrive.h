@@ -78,12 +78,6 @@ public:
 	void SetMix(float mix)     { mix_ = Clamp(mix, 0.0f, 1.0f); }
 
 private:
-	static float Clamp(float value, float min, float max) {
-		if (value < min) return min;
-		if (value > max) return max;
-		return value;
-	}
-
 	float LowPassCoeff(float cutoff, float rate) const {
 		float x = -2.0f * 3.14159265f * cutoff / rate;
 		return Clamp(1.0f - expf(x), 0.001f, 0.95f);

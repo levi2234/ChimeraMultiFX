@@ -65,12 +65,6 @@ public:
     void SetMix(float m)       { mix_ = Clamp(m, 0.0f, 1.0f); }
 
 private:
-    static float Clamp(float value, float min, float max) {
-        if (value < min) return min;
-        if (value > max) return max;
-        return value;
-    }
-
     float    sample_rate_   = 96000.f;
     float    delay_time_    = 0.5f;
     float    feedback_      = 0.6f;

@@ -52,12 +52,6 @@ public:
     void SetMix(float m)       { mix_ = Clamp(m, 0.0f, 1.0f); }
 
 private:
-    static float Clamp(float value, float min, float max) {
-        if (value < min) return min;
-        if (value > max) return max;
-        return value;
-    }
-
     void CalcCoeffs() {
         float w0    = 2.0f * 3.14159265f * cutoff_ / sample_rate_;
         float alpha = sinf(w0) / (2.0f * (1.0f - resonance_ * 0.99f)); // Q from resonance

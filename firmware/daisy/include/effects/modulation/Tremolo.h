@@ -49,12 +49,6 @@ public:
     void SetDepth(float d)   { depth_ = Clamp(d, 0.0f, 1.0f); }
 
 private:
-    static float Clamp(float value, float min, float max) {
-        if (value < min) return min;
-        if (value > max) return max;
-        return value;
-    }
-
     float sample_rate_;
     float rate_, depth_;
     float phase_;
