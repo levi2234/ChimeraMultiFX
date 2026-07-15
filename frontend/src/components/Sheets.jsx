@@ -1,4 +1,4 @@
-import { effectColor, effectGlyph, groupEffectsByType } from '../effects.js';
+import { effectColor, effectGlyph, effectLabel, groupEffectsByType } from '../effects.js';
 import { ParameterKnob } from './ParameterKnob.jsx';
 import { useState } from 'preact/hooks';
 
@@ -49,7 +49,7 @@ export function EffectLibrarySheet({ lane, effects, onChoose, onClose }) {
           <div class="cortex-effect-list">
             {selectedGroup?.effects.map((name) => (
               <button type="button" class="cortex-effect-option" onClick={() => onChoose(name)} key={name}>
-                <span>{name}</span>
+                <span>{effectLabel(name)}</span>
               </button>
             ))}
           </div>
@@ -63,7 +63,7 @@ export function ParameterSheet({ selection, effect, metadata, onSet, onBypass, o
   if (!effect) return null;
   return (
     <Sheet
-      title={effect.name}
+      title={effectLabel(effect.name)}
       eyebrow={`LANE ${selection.lane + 1} · SLOT ${selection.slot + 1}`}
       onClose={onClose}
       className="parameter-sheet"

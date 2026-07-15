@@ -9,14 +9,18 @@
 #include "effects/distortion/KlonCentaur.h"
 #include "effects/distortion/ProCoRat.h"
 #include "effects/distortion/BigMuffPi.h"
+#include "effects/distortion/FulltoneOCD.h"
+#include "effects/distortion/BossBD2.h"
 #include "effects/modulation/Chorus.h"
 #include "effects/modulation/Tremolo.h"
 #include "effects/modulation/BossCE2.h"
 #include "effects/modulation/MXRPhase90.h"
 #include "effects/modulation/BossBF2.h"
+#include "effects/modulation/TCSubNUp.h"
 #include "effects/time/Delay.h"
 #include "effects/time/DeluxeMemoryMan.h"
 #include "effects/time/StrymonBlueSky.h"
+#include "effects/time/TCHallOfFame2.h"
 #include "effects/dynamics/Compressor.h"
 #include "effects/dynamics/NoiseGate.h"
 #include "effects/dynamics/Sustain.h"
@@ -53,14 +57,18 @@ private:
             {"KlonCentaur", EffectCategory::Distortion, &Instantiate<KlonCentaur>},
             {"ProcoRAT", EffectCategory::Distortion, &Instantiate<ProCoRat>},
             {"BigMuffPi", EffectCategory::Distortion, &Instantiate<BigMuffPi>},
+            {"FulltoneOCD", EffectCategory::Distortion, &Instantiate<FulltoneOCD>},
+            {"BossBD2", EffectCategory::Distortion, &Instantiate<BossBD2>},
             {"chorus", EffectCategory::Modulation, &Instantiate<Chorus>},
             {"tremolo", EffectCategory::Modulation, &Instantiate<Tremolo>},
             {"boss_ce2", EffectCategory::Modulation, &Instantiate<BossCE2>},
             {"mxr_phase90", EffectCategory::Modulation, &Instantiate<MXRPhase90>},
             {"boss_bf2", EffectCategory::Modulation, &Instantiate<BossBF2>},
+            {"TCSubNUp", EffectCategory::Modulation, &Instantiate<TCSubNUp>},
             {"delay", EffectCategory::Time, &Instantiate<Delay>},
             {"DeluxeMemoryMan", EffectCategory::Time, &Instantiate<DeluxeMemoryMan>},
             {"StrymonBluesky", EffectCategory::Time, &Instantiate<StrymonBlueSky>},
+            {"TCHallOfFame2", EffectCategory::Time, &Instantiate<TCHallOfFame2>},
             {"compressor", EffectCategory::Dynamics, &Instantiate<Compressor>},
             {"noisegate", EffectCategory::Dynamics, &Instantiate<NoiseGate>},
             {"sustain", EffectCategory::Dynamics, &Instantiate<Sustain>},

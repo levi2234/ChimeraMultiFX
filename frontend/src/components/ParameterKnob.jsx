@@ -38,21 +38,28 @@ function formatOptionLabel(label) {
 
 function ParameterSwitch({ name, value, info, onCommit }) {
   const min = Number(info.min) || 0;
+  const max = Number(info.max) || min;
   const labels = optionLabels(info);
-  const selected = Math.round(Number(value ?? info.default ?? min));
+  const optionValue = (index) => labels.length <= 1
+    ? min
+    : min + (max - min) * index / (labels.length - 1);
+  const currentValue = Number(value ?? info.default ?? min);
+  const selectedIndex = labels.reduce((closest, _, index) => (
+    Math.abs(optionValue(index) - currentValue) < Math.abs(optionValue(closest) - currentValue) ? index : closest
+  ), 0);
 
   return (
     <fieldset class="parameter-control parameter-switch">
       <legend class="parameter-name">{info.label || name}</legend>
       <div class="parameter-switch-options">
         {labels.map((label, index) => {
-          const optionValue = min + index;
+          const valueForOption = optionValue(index);
           return (
             <button
               type="button"
-              class={optionValue === selected ? 'is-selected' : ''}
-              onClick={() => onCommit(name, optionValue)}
-              aria-pressed={optionValue === selected}
+              class={index === selectedIndex ? 'is-selected' : ''}
+              onClick={() => onCommit(name, valueForOption)}
+              aria-pressed={index === selectedIndex}
               key={`${name}-${label}`}
             >
               {formatOptionLabel(label)}
