@@ -3,7 +3,11 @@
 #include <cmath>
 #include <cstring>
 
-// Reduces bit depth and sample rate for lo-fi grit.
+// Reduces bit depth and sample rate for deliberate lo-fi texture.
+//
+// "bits" means conventional signed resolution: one bit has two output states,
+// while 16 bits has 65536.  The quantizer scale is cached when the parameter
+// changes so the audio callback does not perform a pow() for every sample.
 class Bitcrusher : public Effect {
 public:
     void Init(float sample_rate) override {
@@ -13,15 +17,21 @@ public:
         mix_          = 0.5f;
         hold_         = 0.0f;
         counter_      = 0;
+        UpdateQuantizer();
     }
 
     float Process(float in) override {
-        // Sample rate reduction: hold the value for N samples
+        // Holding one quantized value for N samples creates the characteristic
+        // stepped waveform.  Input limiting defines predictable behavior when
+        // an upstream boost or resonant filter exceeds nominal full scale.
         if (++counter_ >= rate_reduce_) {
             counter_ = 0;
-            // Bit depth reduction: quantize to fewer levels
-            float levels = powf(2.0f, bit_depth_);
-            hold_ = roundf(in * levels) / levels;
+            float limited = Clamp(in, -1.0f, 1.0f);
+            if (bit_depth_ == 1) {
+                hold_ = limited >= 0.0f ? 1.0f : -1.0f;
+            } else {
+                hold_ = roundf(limited * positive_steps_) / positive_steps_;
+            }
         }
         return (in * (1.0f - mix_)) + (hold_ * mix_);
     }    const char* GetName() const override { return "bitcrusher"; }
@@ -50,15 +60,25 @@ public:
         }
     }
 
-    void SetBitDepth(float bits) { bit_depth_ = Clamp(bits, 1.0f, 16.0f); }
+    void SetBitDepth(float bits) {
+        bit_depth_ = ClampInt(static_cast<int>(bits + 0.5f), 1, 16);
+        UpdateQuantizer();
+    }
     void SetRateReduce(int n)    { rate_reduce_ = ClampInt(n, 1, 256); }
     void SetMix(float m)         { mix_ = Clamp(m, 0.0f, 1.0f); }
 
 private:
+    void UpdateQuantizer() {
+        positive_steps_ = bit_depth_ == 1
+            ? 1.0f
+            : static_cast<float>((1u << (bit_depth_ - 1)) - 1u);
+    }
+
     float sample_rate_;
-    float bit_depth_;
+    int   bit_depth_;
     int   rate_reduce_;
     float mix_;
     float hold_;
+    float positive_steps_;
     int   counter_;
 };

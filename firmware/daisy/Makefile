@@ -13,6 +13,11 @@
 # Project Name
 TARGET = ChimeraFX
 
+# The complete runtime effect registry is flash-heavy. Size optimization keeps
+# the BOOT_NONE image inside the Daisy Seed's 128 KB internal flash while the
+# audio callback remains dominated by explicit DSP operations.
+OPT ?= -Os
+
 # Sources — single entry point; effects are header-only classes
 CPP_SOURCES = main.cpp
 
