@@ -76,7 +76,8 @@ public:
         if (dfu_requested_) {
             dfu_requested_ = false;
             daisy::System::Delay(250);
-            daisy::System::ResetToBootloader(daisy::System::BootloaderMode::STM);
+            daisy::System::ResetToBootloader(
+                daisy::System::BootloaderMode::DAISY_INFINITE_TIMEOUT);
         }
     }
 
@@ -452,7 +453,7 @@ private:
     }
 
     void CmdDfu() {
-        Reply("OK rebooting to DFU\n");
+        Reply("OK rebooting to Daisy bootloader DFU\n");
         dfu_requested_ = true;
     }
 

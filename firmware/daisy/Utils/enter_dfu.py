@@ -49,7 +49,10 @@ def enter_dfu(port, baud, timeout_seconds):
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Send the ChimeraMultiFX serial dfu command to reboot a Daisy Seed into STM DFU mode."
+        description=(
+            "Send the ChimeraMultiFX serial dfu command to enter the Daisy bootloader's "
+            "persistent QSPI DFU mode."
+        )
     )
     parser.add_argument("--port", help="Serial port to use, such as COM9. Auto-detects Daisy USB CDC if omitted.")
     parser.add_argument("--baud", type=int, default=DEFAULT_BAUD, help=f"Serial baud rate. Default: {DEFAULT_BAUD}.")
@@ -72,7 +75,10 @@ def main():
     else:
         print("dfu command sent; no acknowledgment received before USB handoff")
 
-    print(f"Sent dfu command on {port}. The serial port should disappear and STM DFU should enumerate.")
+    print(
+        f"Sent dfu command on {port}. The serial port should disappear and the Daisy "
+        "bootloader should expose QSPI flash at 0x90000000."
+    )
     return 0
 
 
