@@ -1,7 +1,8 @@
-import { effectColor, effectGlyph } from '../effects.js';
+import { effectColor, effectGlyph, effectType } from '../effects.js';
 
 export function EffectNode({ effect, lane, metadata, onOpen }) {
   const color = effectColor(effect.name);
+  const category = metadata?.category || effectType(effect.name).label;
   return (
     <button
       type="button"
@@ -15,7 +16,7 @@ export function EffectNode({ effect, lane, metadata, onOpen }) {
     >
       <span class="effect-glyph" aria-hidden="true">{effectGlyph(effect.name)}</span>
       <span class="effect-label">{effect.name}</span>
-      <span class="effect-category">{metadata?.category || `S${effect.slot + 1}`}</span>
+      <span class="effect-category">{category}</span>
       <span class="effect-led" aria-hidden="true" />
     </button>
   );

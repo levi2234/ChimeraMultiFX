@@ -1,9 +1,12 @@
-import { effectColor, effectGlyph } from '../effects.js';
+import { effectColor, effectGlyph, groupEffectsByType } from '../effects.js';
 import { ParameterKnob } from './ParameterKnob.jsx';
+import { useState } from 'preact/hooks';
 
 function Sheet({ title, eyebrow, onClose, children, className = '' }) {
+  const layerClass = className.includes('cortex-library-sheet') ? 'sheet-layer is-left-drawer' : 'sheet-layer';
+
   return (
-    <div class="sheet-layer" role="presentation">
+    <div class={layerClass} role="presentation">
       <button class="sheet-backdrop" type="button" onClick={onClose} aria-label="Close panel" />
       <section class={`bottom-sheet ${className}`} role="dialog" aria-modal="true" aria-label={title}>
         <header class="sheet-header">
@@ -17,21 +20,40 @@ function Sheet({ title, eyebrow, onClose, children, className = '' }) {
 }
 
 export function EffectLibrarySheet({ lane, effects, onChoose, onClose }) {
+  const groupedEffects = groupEffectsByType(effects);
+  const [selectedType, setSelectedType] = useState(groupedEffects[0]?.id);
+  const selectedGroup = groupedEffects.find((group) => group.id === selectedType) || groupedEffects[0];
+
   return (
-    <Sheet title="Add effect" eyebrow={`LANE ${lane + 1}`} onClose={onClose} className="library-sheet">
-      <div class="effect-library-grid">
-        {effects.map((name) => (
-          <button
-            type="button"
-            class="library-effect"
-            style={{ '--effect-color': effectColor(name) }}
-            onClick={() => onChoose(name)}
-            key={name}
-          >
-            <span>{effectGlyph(name)}</span>
-            <strong>{name}</strong>
-          </button>
-        ))}
+    <Sheet title="Effects" eyebrow={`LANE ${lane + 1}`} onClose={onClose} className="library-sheet cortex-library-sheet">
+      <div class="cortex-library">
+        <nav class="cortex-category-rail" aria-label="Effect categories">
+          {groupedEffects.map((group) => (
+            <button
+              type="button"
+              class={`cortex-category ${group.id === selectedGroup?.id ? 'is-selected' : ''}`}
+              style={{ '--effect-color': effectColor(group.effects[0]) }}
+              onClick={() => setSelectedType(group.id)}
+              aria-label={group.label}
+              aria-pressed={group.id === selectedGroup?.id}
+              key={group.id}
+            >
+              <span aria-hidden="true">{effectGlyph(group.effects[0])}</span>
+            </button>
+          ))}
+        </nav>
+        <section class="cortex-effect-browser" aria-label={`${selectedGroup?.label || 'Effect'} list`}>
+          <header class="cortex-tabs">
+            <button type="button" class="is-selected">{selectedGroup?.label || 'Effects'}</button>
+          </header>
+          <div class="cortex-effect-list">
+            {selectedGroup?.effects.map((name) => (
+              <button type="button" class="cortex-effect-option" onClick={() => onChoose(name)} key={name}>
+                <span>{name}</span>
+              </button>
+            ))}
+          </div>
+        </section>
       </div>
     </Sheet>
   );
