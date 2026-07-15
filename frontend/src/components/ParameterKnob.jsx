@@ -74,6 +74,8 @@ export function ParameterKnob({ name, value, info, onCommit }) {
   useEffect(() => setLocalValue(Number(value)), [value]);
   const position = Math.min(1, Math.max(0, normalize(localValue, info)));
   const turn = -135 + position * 270;
+  const safePosition = Number.isFinite(position) ? position : 0;
+  const level = Math.round(safePosition * 1000);
 
   const setValueFromPosition = (nextPosition) => {
     const clampedPosition = Math.min(1, Math.max(0, nextPosition));
@@ -95,7 +97,7 @@ export function ParameterKnob({ name, value, info, onCommit }) {
     if (event.button !== undefined && event.button !== 0) return;
     dragRef.current = {
       pointerId: event.pointerId,
-      startX: event.clientX,
+      startY: event.clientY,
       startPosition: position,
     };
     event.currentTarget.setPointerCapture(event.pointerId);
@@ -104,8 +106,8 @@ export function ParameterKnob({ name, value, info, onCommit }) {
   const handlePointerMove = (event) => {
     const drag = dragRef.current;
     if (!drag || drag.pointerId !== event.pointerId) return;
-    const deltaX = event.clientX - drag.startX;
-    const nextPosition = drag.startPosition + deltaX / 220;
+    const deltaY = drag.startY - event.clientY;
+    const nextPosition = drag.startPosition + deltaY / 180;
     setValueFromPosition(nextPosition);
   };
 
@@ -123,7 +125,7 @@ export function ParameterKnob({ name, value, info, onCommit }) {
       <span class="parameter-name">{info.label || name}</span>
       <span
         class="knob"
-        style={{ '--knob-turn': `${turn}deg`, '--knob-progress': `${position * 270}deg` }}
+        style={{ '--knob-turn': `${turn}deg`, '--knob-progress': `${safePosition * 270}deg` }}
         aria-hidden="true"
         onPointerDown={handlePointerDown}
         onPointerMove={handlePointerMove}
@@ -137,14 +139,15 @@ export function ParameterKnob({ name, value, info, onCommit }) {
         min="0"
         max="1000"
         step="1"
-        value={Math.round(position * 1000)}
+        value={level}
+        class="parameter-slider"
         onInput={updateFromSlider}
         onPointerUp={commit}
         onKeyUp={commit}
         onBlur={commit}
         aria-label={info.label || name}
       />
-      <output>{format(localValue, info)}</output>
+      <output class="parameter-value">{format(localValue, info)}</output>
     </label>
   );
 }

@@ -2,13 +2,13 @@ import { effectColor, effectGlyph, groupEffectsByType } from '../effects.js';
 import { ParameterKnob } from './ParameterKnob.jsx';
 import { useState } from 'preact/hooks';
 
-function Sheet({ title, eyebrow, onClose, children, className = '' }) {
+function Sheet({ title, eyebrow, onClose, children, className = '', style }) {
   const layerClass = className.includes('cortex-library-sheet') ? 'sheet-layer is-left-drawer' : 'sheet-layer';
 
   return (
     <div class={layerClass} role="presentation">
       <button class="sheet-backdrop" type="button" onClick={onClose} aria-label="Close panel" />
-      <section class={`bottom-sheet ${className}`} role="dialog" aria-modal="true" aria-label={title}>
+      <section class={`bottom-sheet ${className}`} style={style} role="dialog" aria-modal="true" aria-label={title}>
         <header class="sheet-header">
           <div><small>{eyebrow}</small><h2>{title}</h2></div>
           <button type="button" class="close-button" onClick={onClose}>×</button>
@@ -62,7 +62,13 @@ export function EffectLibrarySheet({ lane, effects, onChoose, onClose }) {
 export function ParameterSheet({ selection, effect, metadata, onSet, onBypass, onRemove, onClose }) {
   if (!effect) return null;
   return (
-    <Sheet title={effect.name} eyebrow={`LANE ${selection.lane + 1} · SLOT ${selection.slot + 1}`} onClose={onClose} className="parameter-sheet">
+    <Sheet
+      title={effect.name}
+      eyebrow={`LANE ${selection.lane + 1} · SLOT ${selection.slot + 1}`}
+      onClose={onClose}
+      className="parameter-sheet"
+      style={{ '--effect-color': effectColor(effect.name) }}
+    >
       <div class="sheet-actions">
         <button type="button" class={effect.enabled ? 'active-action' : ''} onClick={() => onBypass(!effect.enabled)}>
           {effect.enabled ? 'BYPASS' : 'ENABLE'}
