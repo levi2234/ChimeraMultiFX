@@ -5,9 +5,18 @@
 #include "effects/distortion/Bitcrusher.h"
 #include "effects/distortion/Overdrive.h"
 #include "effects/distortion/Boost.h"
+#include "effects/distortion/TubeScreamer.h"
+#include "effects/distortion/KlonCentaur.h"
+#include "effects/distortion/ProCoRat.h"
+#include "effects/distortion/BigMuffPi.h"
 #include "effects/modulation/Chorus.h"
 #include "effects/modulation/Tremolo.h"
+#include "effects/modulation/BossCE2.h"
+#include "effects/modulation/MXRPhase90.h"
+#include "effects/modulation/BossBF2.h"
 #include "effects/time/Delay.h"
+#include "effects/time/DeluxeMemoryMan.h"
+#include "effects/time/StrymonBlueSky.h"
 #include "effects/dynamics/Compressor.h"
 #include "effects/dynamics/NoiseGate.h"
 #include "effects/dynamics/Sustain.h"
@@ -17,6 +26,7 @@
 #include "effects/filter/Notch.h"
 #include "effects/filter/Equalizer.h"
 #include "effects/filter/AutoWah.h"
+#include "effects/filter/CryBabyMutron.h"
 
 class EffectRegistry {
 private:
@@ -39,9 +49,18 @@ private:
             {"bitcrusher", EffectCategory::Distortion, &Instantiate<Bitcrusher>},
             {"overdrive", EffectCategory::Distortion, &Instantiate<Overdrive>},
             {"boost", EffectCategory::Distortion, &Instantiate<Boost>},
+            {"TubeScreamer", EffectCategory::Distortion, &Instantiate<TubeScreamer>},
+            {"KlonCentaur", EffectCategory::Distortion, &Instantiate<KlonCentaur>},
+            {"ProcoRAT", EffectCategory::Distortion, &Instantiate<ProCoRat>},
+            {"BigMuffPi", EffectCategory::Distortion, &Instantiate<BigMuffPi>},
             {"chorus", EffectCategory::Modulation, &Instantiate<Chorus>},
             {"tremolo", EffectCategory::Modulation, &Instantiate<Tremolo>},
+            {"boss_ce2", EffectCategory::Modulation, &Instantiate<BossCE2>},
+            {"mxr_phase90", EffectCategory::Modulation, &Instantiate<MXRPhase90>},
+            {"boss_bf2", EffectCategory::Modulation, &Instantiate<BossBF2>},
             {"delay", EffectCategory::Time, &Instantiate<Delay>},
+            {"DeluxeMemoryMan", EffectCategory::Time, &Instantiate<DeluxeMemoryMan>},
+            {"StrymonBluesky", EffectCategory::Time, &Instantiate<StrymonBlueSky>},
             {"compressor", EffectCategory::Dynamics, &Instantiate<Compressor>},
             {"noisegate", EffectCategory::Dynamics, &Instantiate<NoiseGate>},
             {"sustain", EffectCategory::Dynamics, &Instantiate<Sustain>},
@@ -51,6 +70,7 @@ private:
             {"notch", EffectCategory::Filter, &Instantiate<Notch>},
             {"eq", EffectCategory::Filter, &Instantiate<Equalizer>},
             {"autowah", EffectCategory::Filter, &Instantiate<AutoWah>},
+            {"CryBabyMutron", EffectCategory::Filter, &Instantiate<CryBabyMutron>},
         };
         count = sizeof(descriptors) / sizeof(descriptors[0]);
         return descriptors;

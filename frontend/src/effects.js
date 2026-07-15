@@ -3,9 +3,18 @@ export const EFFECT_COLORS = {
   bitcrusher: '#ffca3a',
   overdrive: '#ff5a36',
   boost: '#f43f5e',
+  TubeScreamer: '#3fbf5b',
+  KlonCentaur: '#d9a441',
+  ProcoRAT: '#e43d30',
+  BigMuffPi: '#7c3aed',
   chorus: '#18d879',
   tremolo: '#27b7ff',
+  boss_ce2: '#22c9a8',
+  mxr_phase90: '#f59e0b',
+  boss_bf2: '#38bdf8',
   delay: '#8a5cff',
+  DeluxeMemoryMan: '#7c5cff',
+  StrymonBluesky: '#2f80ed',
   compressor: '#ff3f67',
   noisegate: '#22c55e',
   sustain: '#eab308',
@@ -15,6 +24,7 @@ export const EFFECT_COLORS = {
   notch: '#14b8a6',
   eq: '#84cc16',
   autowah: '#f97316',
+  CryBabyMutron: '#d6b21f',
 };
 
 export const EFFECT_GLYPHS = {
@@ -22,9 +32,18 @@ export const EFFECT_GLYPHS = {
   bitcrusher: '▥',
   overdrive: '⌁',
   boost: '↑',
+  TubeScreamer: 'TS',
+  KlonCentaur: '♞',
+  ProcoRAT: '⚲',
+  BigMuffPi: 'π',
   chorus: '≈',
   tremolo: '⌇',
+  boss_ce2: '⚹ ',
+  mxr_phase90: 'Φ',
+  boss_bf2: '⨝',
   delay: '◉',
+  DeluxeMemoryMan: '⧖',
+  StrymonBluesky: '☁',
   compressor: '↔',
   noisegate: '⊣',
   sustain: '∞',
@@ -34,22 +53,37 @@ export const EFFECT_GLYPHS = {
   notch: '⌄',
   eq: '≡',
   autowah: '◒',
+  CryBabyMutron: '⤿',
 };
 
 export const EFFECT_TYPES = [
-  { id: 'distortion', label: 'Distortion', effects: ['distortion', 'overdrive', 'boost', 'bitcrusher'] },
-  { id: 'modulation', label: 'Modulation', effects: ['chorus', 'tremolo'] },
-  { id: 'time', label: 'Time', effects: ['delay'] },
-  { id: 'dynamics', label: 'Dynamics', effects: ['compressor', 'noisegate', 'sustain'] },
-  { id: 'filter', label: 'Filter', effects: ['lowpass', 'highpass', 'bandpass', 'notch', 'eq', 'autowah'] },
+  { id: 'distortion', label: 'Distortion' },
+  { id: 'modulation', label: 'Modulation' },
+  { id: 'time', label: 'Time' },
+  { id: 'dynamics', label: 'Dynamics' },
+  { id: 'filter', label: 'Filter' },
 ];
 
 const TYPE_BY_ID = Object.fromEntries(EFFECT_TYPES.map((type) => [type.id, type]));
 
-const TYPE_BY_EFFECT = EFFECT_TYPES.reduce((lookup, type) => {
-  type.effects.forEach((effect) => { lookup[effect] = type; });
-  return lookup;
-}, {});
+const LEGACY_TYPE_BY_EFFECT = {
+  distortion: TYPE_BY_ID.distortion,
+  bitcrusher: TYPE_BY_ID.distortion,
+  overdrive: TYPE_BY_ID.distortion,
+  boost: TYPE_BY_ID.distortion,
+  chorus: TYPE_BY_ID.modulation,
+  tremolo: TYPE_BY_ID.modulation,
+  delay: TYPE_BY_ID.time,
+  compressor: TYPE_BY_ID.dynamics,
+  noisegate: TYPE_BY_ID.dynamics,
+  sustain: TYPE_BY_ID.dynamics,
+  lowpass: TYPE_BY_ID.filter,
+  highpass: TYPE_BY_ID.filter,
+  bandpass: TYPE_BY_ID.filter,
+  notch: TYPE_BY_ID.filter,
+  eq: TYPE_BY_ID.filter,
+  autowah: TYPE_BY_ID.filter,
+};
 
 export function effectColor(name) {
   return EFFECT_COLORS[name] || '#a762e9';
@@ -60,7 +94,7 @@ export function effectGlyph(name) {
 }
 
 export function effectType(name) {
-  return TYPE_BY_EFFECT[name] || { id: 'other', label: 'Other', effects: [] };
+  return LEGACY_TYPE_BY_EFFECT[name] || { id: 'other', label: 'Other' };
 }
 
 export function groupEffectsByType(effects) {
