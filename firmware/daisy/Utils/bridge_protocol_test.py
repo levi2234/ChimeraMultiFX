@@ -13,6 +13,20 @@ import urllib.request
 DEFAULT_COMMANDS = ["ping", "info", "status"]
 
 
+def validate_info(body):
+    try:
+        info = json.loads(body)
+    except json.JSONDecodeError as error:
+        return f"info did not return valid JSON: {error}"
+
+    effects = info.get("effects")
+    if not isinstance(effects, list) or not effects:
+        return "info.effects must be a non-empty list"
+    if any(not isinstance(effect, dict) or not effect.get("name") or not effect.get("category") for effect in effects):
+        return "info.effects entries must contain name and category"
+    return None
+
+
 def read_serial_line(serial_port, timeout):
     deadline = time.time() + timeout
     line = bytearray()
@@ -61,6 +75,11 @@ def run_serial_tests(port, baudrate, timeout, commands, uart_loopback, repeat):
                 if command == "loopback" and not reply.startswith("OK uart loopback"):
                     print(f"expected OK uart loopback, got {reply.rstrip()!r}", file=sys.stderr)
                     return 1
+                if command == "info":
+                    error = validate_info(reply)
+                    if error:
+                        print(error, file=sys.stderr)
+                        return 1
                 completed += 1
 
         if repeat > 1:
@@ -106,7 +125,12 @@ def run_http_tests(base_url, timeout, commands, repeat):
             if command == "ping" and not body.startswith("PONG"):
                 print(f"expected PONG, got {body.rstrip()!r}", file=sys.stderr)
                 return 1
-            if command in {"info", "status"}:
+            if command == "info":
+                error = validate_info(body)
+                if error:
+                    print(error, file=sys.stderr)
+                    return 1
+            if command == "status":
                 try:
                     json.loads(body)
                 except json.JSONDecodeError as error:

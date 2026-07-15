@@ -19,31 +19,73 @@
 #include "effects/filter/AutoWah.h"
 
 class EffectRegistry {
-public:
-    static Effect* Create(const char* name, float sample_rate) {
-        Effect* effect = nullptr;
-        if      (strcmp(name, "distortion") == 0) effect = new TanhDistortion();
-        else if (strcmp(name, "bitcrusher") == 0) effect = new Bitcrusher();
-        else if (strcmp(name, "overdrive") == 0)  effect = new Overdrive();
-        else if (strcmp(name, "boost") == 0)      effect = new Boost();
-        else if (strcmp(name, "chorus") == 0)     effect = new Chorus();
-        else if (strcmp(name, "tremolo") == 0)    effect = new Tremolo();
-        else if (strcmp(name, "delay") == 0)      effect = new Delay();
-        else if (strcmp(name, "compressor") == 0) effect = new Compressor();
-        else if (strcmp(name, "noisegate") == 0)  effect = new NoiseGate();
-        else if (strcmp(name, "sustain") == 0)    effect = new Sustain();
-        else if (strcmp(name, "lowpass") == 0)    effect = new LowPass();
-        else if (strcmp(name, "highpass") == 0)   effect = new HighPass();
-        else if (strcmp(name, "bandpass") == 0)   effect = new BandPass();
-        else if (strcmp(name, "notch") == 0)      effect = new Notch();
-        else if (strcmp(name, "eq") == 0)         effect = new Equalizer();
-        else if (strcmp(name, "autowah") == 0)    effect = new AutoWah();
-        if (effect) effect->Init(sample_rate);
-        return effect;
+private:
+    using Factory = Effect* (*)();
+
+    struct Descriptor {
+        const char* name;
+        EffectCategory category;
+        Factory factory;
+    };
+
+    template <typename EffectType>
+    static Effect* Instantiate() {
+        return new EffectType();
     }
 
-    static const char* NamesJson() {
-        return "[\"distortion\",\"bitcrusher\",\"overdrive\",\"boost\",\"chorus\",\"tremolo\",\"delay\",\"compressor\",\"noisegate\",\"sustain\",\"lowpass\",\"highpass\",\"bandpass\",\"notch\",\"eq\",\"autowah\"]";
+    static const Descriptor* Descriptors(int& count) {
+        static const Descriptor descriptors[] = {
+            {"distortion", EffectCategory::Distortion, &Instantiate<TanhDistortion>},
+            {"bitcrusher", EffectCategory::Distortion, &Instantiate<Bitcrusher>},
+            {"overdrive", EffectCategory::Distortion, &Instantiate<Overdrive>},
+            {"boost", EffectCategory::Distortion, &Instantiate<Boost>},
+            {"chorus", EffectCategory::Modulation, &Instantiate<Chorus>},
+            {"tremolo", EffectCategory::Modulation, &Instantiate<Tremolo>},
+            {"delay", EffectCategory::Time, &Instantiate<Delay>},
+            {"compressor", EffectCategory::Dynamics, &Instantiate<Compressor>},
+            {"noisegate", EffectCategory::Dynamics, &Instantiate<NoiseGate>},
+            {"sustain", EffectCategory::Dynamics, &Instantiate<Sustain>},
+            {"lowpass", EffectCategory::Filter, &Instantiate<LowPass>},
+            {"highpass", EffectCategory::Filter, &Instantiate<HighPass>},
+            {"bandpass", EffectCategory::Filter, &Instantiate<BandPass>},
+            {"notch", EffectCategory::Filter, &Instantiate<Notch>},
+            {"eq", EffectCategory::Filter, &Instantiate<Equalizer>},
+            {"autowah", EffectCategory::Filter, &Instantiate<AutoWah>},
+        };
+        count = sizeof(descriptors) / sizeof(descriptors[0]);
+        return descriptors;
+    }
+
+public:
+    static Effect* Create(const char* name, float sample_rate) {
+        int count = 0;
+        const Descriptor* descriptors = Descriptors(count);
+        for (int index = 0; index < count; index++) {
+            if (strcmp(name, descriptors[index].name) == 0) {
+                Effect* effect = descriptors[index].factory();
+                effect->Init(sample_rate);
+                return effect;
+            }
+        }
+        return nullptr;
+    }
+
+    static int Count() {
+        int count = 0;
+        Descriptors(count);
+        return count;
+    }
+
+    static const char* NameAt(int index) {
+        int count = 0;
+        const Descriptor* descriptors = Descriptors(count);
+        return index >= 0 && index < count ? descriptors[index].name : "";
+    }
+
+    static EffectCategory CategoryAt(int index) {
+        int count = 0;
+        const Descriptor* descriptors = Descriptors(count);
+        return index >= 0 && index < count ? descriptors[index].category : EffectCategory::Distortion;
     }
 
     static const char* CategoryName(EffectCategory category) {

@@ -37,12 +37,14 @@ export const EFFECT_GLYPHS = {
 };
 
 export const EFFECT_TYPES = [
-  { id: 'drive', label: 'Drive', effects: ['distortion', 'overdrive', 'boost', 'bitcrusher'] },
+  { id: 'distortion', label: 'Distortion', effects: ['distortion', 'overdrive', 'boost', 'bitcrusher'] },
   { id: 'modulation', label: 'Modulation', effects: ['chorus', 'tremolo'] },
   { id: 'time', label: 'Time', effects: ['delay'] },
   { id: 'dynamics', label: 'Dynamics', effects: ['compressor', 'noisegate', 'sustain'] },
   { id: 'filter', label: 'Filter', effects: ['lowpass', 'highpass', 'bandpass', 'notch', 'eq', 'autowah'] },
 ];
+
+const TYPE_BY_ID = Object.fromEntries(EFFECT_TYPES.map((type) => [type.id, type]));
 
 const TYPE_BY_EFFECT = EFFECT_TYPES.reduce((lookup, type) => {
   type.effects.forEach((effect) => { lookup[effect] = type; });
@@ -63,8 +65,10 @@ export function effectType(name) {
 
 export function groupEffectsByType(effects) {
   const groups = new Map(EFFECT_TYPES.map((type) => [type.id, { ...type, effects: [] }]));
-  effects.forEach((name) => {
-    const type = effectType(name);
+  effects.forEach((effect) => {
+    const name = typeof effect === 'string' ? effect : effect.name;
+    const category = typeof effect === 'string' ? null : effect.category;
+    const type = TYPE_BY_ID[category] || effectType(name);
     if (!groups.has(type.id)) groups.set(type.id, { ...type, effects: [] });
     groups.get(type.id).effects.push(name);
   });

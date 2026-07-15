@@ -380,8 +380,15 @@ private:
          Append(json_buf_, JSON_BUF_LEN, pos,
              ",\"max_lanes\":%d,\"max_slots\":%d,",
              Router::MAX_LANES, Router::MAX_SLOTS);
-         Append(json_buf_, JSON_BUF_LEN, pos,
-             "\"effects\":%s,", EffectRegistry::NamesJson());
+         Append(json_buf_, JSON_BUF_LEN, pos, "\"effects\":[");
+         for (int index = 0; index < EffectRegistry::Count(); index++) {
+             if (index > 0) Append(json_buf_, JSON_BUF_LEN, pos, ",");
+             Append(json_buf_, JSON_BUF_LEN, pos,
+                 "{\"name\":\"%s\",\"category\":\"%s\"}",
+                 EffectRegistry::NameAt(index),
+                 EffectRegistry::CategoryName(EffectRegistry::CategoryAt(index)));
+         }
+         Append(json_buf_, JSON_BUF_LEN, pos, "],");
          Append(json_buf_, JSON_BUF_LEN, pos,
              "\"inputs\":[\"in1\",\"in2\",\"mix\",\"lane0\",\"lane1\",\"lane2\",\"lane3\"],");
          Append(json_buf_, JSON_BUF_LEN, pos,
