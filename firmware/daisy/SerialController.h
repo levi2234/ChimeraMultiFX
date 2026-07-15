@@ -62,13 +62,22 @@ public:
     // Feed one character at a time (call from main loop)
     void Feed(char c) {
         if (c == '\n' || c == '\r') {
-            if (buf_pos_ > 0) {
+            if (discarding_frame_) {
+                discarding_frame_ = false;
+                buf_pos_ = 0;
+            } else if (buf_pos_ > 0) {
                 buf_[buf_pos_] = '\0';
                 Execute(buf_);
                 buf_pos_ = 0;
             }
+        } else if (discarding_frame_) {
+            return;
         } else if (buf_pos_ < MAX_CMD_LEN - 1) {
             buf_[buf_pos_++] = c;
+        } else {
+            framing_error_count_++;
+            discarding_frame_ = true;
+            buf_pos_ = 0;
         }
     }
 
@@ -82,6 +91,13 @@ public:
     }
 
     void ProcessPendingUart() {
+        const bool receive_restarted = transport_.MaintainUartReceive();
+        const bool receive_overflowed = transport_.TakeRxOverflow();
+        if (receive_restarted || receive_overflowed) {
+            buf_pos_ = 0;
+            discarding_frame_ = false;
+        }
+        if (receive_overflowed) framing_error_count_++;
         transport_.ProcessPending(HandleTransportByte, this);
     }
 
@@ -136,6 +152,8 @@ private:
     char    tx_buf_[TX_BUF_LEN] = {};
     char    json_buf_[JSON_BUF_LEN] = {};
     int     buf_pos_ = 0;
+    bool    discarding_frame_ = false;
+    uint32_t framing_error_count_ = 0;
     volatile bool dfu_requested_ = false;
     volatile uint32_t audio_cpu_usage_hundredths_ = 0;
     daisy::CpuLoadMeter cpu_load_meter_;
@@ -418,7 +436,14 @@ private:
             Reply("UART unavailable\n");
             return;
         }
-        Reply("UART listening=%d error=%d\n", uart_->IsListening() ? 1 : 0, uart_->CheckError());
+        Reply("UART listening=%d error=%d rx_bytes=%lu rx_restarts=%lu rx_restart_failures=%lu tx_failures=%lu framing_errors=%lu\n",
+              uart_->IsListening() ? 1 : 0,
+              uart_->CheckError(),
+              static_cast<unsigned long>(transport_.RxByteCount()),
+              static_cast<unsigned long>(transport_.RxRestartCount()),
+              static_cast<unsigned long>(transport_.RxRestartFailureCount()),
+              static_cast<unsigned long>(transport_.TxFailureCount()),
+              static_cast<unsigned long>(framing_error_count_));
     }
 
     void CmdCpuUsage() {

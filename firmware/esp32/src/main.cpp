@@ -9,17 +9,28 @@ namespace {
 constexpr uint8_t DaisyUartRxPin = 16;
 constexpr uint8_t DaisyUartTxPin = 17;
 constexpr uint32_t DaisyUartBaud = 115200;
-constexpr uint32_t DaisyResponseTimeoutMs = 5000;
+constexpr uint32_t DaisyResponseTimeoutMs = 1500;
 constexpr uint32_t DaisyRetryDelayMs = 2;
+constexpr uint32_t DaisyUartSettleMs = 10;
 constexpr uint32_t LoopbackTimeoutMs = 250;
 constexpr uint32_t WifiConnectTimeoutMs = 20000;
 constexpr uint32_t WifiReconnectIntervalMs = 5000;
 constexpr size_t DaisyResponseMaxLen = 16384;
 constexpr size_t DaisyCommandMaxLen = 127;
+constexpr size_t WebSocketReplyMaxLen = 1024;
 
 WebServer server(80);
 WebSocketsServer webSocket(81);
 HardwareSerial daisySerial(2);
+bool daisyUartStarted = false;
+bool daisyRxBufferConfigured = false;
+uint8_t daisyUartRxPin = DaisyUartRxPin;
+uint8_t daisyUartTxPin = DaisyUartTxPin;
+uint32_t daisyCommandCount = 0;
+uint32_t daisyTxByteCount = 0;
+uint32_t daisyReplyCount = 0;
+uint32_t daisyTimeoutCount = 0;
+uint32_t daisyRecoveryCount = 0;
 
 struct DaisyReply {
 	String body;
@@ -33,15 +44,44 @@ void sendCorsHeaders() {
 }
 
 void configureDaisyUart(uint8_t rxPin, uint8_t txPin) {
-	daisySerial.end();
-	daisySerial.setRxBufferSize(DaisyResponseMaxLen);
+	if (daisyUartStarted && rxPin == daisyUartRxPin && txPin == daisyUartTxPin) return;
+	if (daisyUartStarted) {
+		daisySerial.end();
+		daisyUartStarted = false;
+		delay(DaisyUartSettleMs);
+	}
+	if (!daisyRxBufferConfigured) {
+		daisySerial.setRxBufferSize(DaisyResponseMaxLen);
+		daisyRxBufferConfigured = true;
+	}
 	daisySerial.begin(DaisyUartBaud, SERIAL_8N1, rxPin, txPin);
+	daisyUartRxPin = rxPin;
+	daisyUartTxPin = txPin;
+	daisyUartStarted = true;
+	delay(DaisyUartSettleMs);
+}
+
+void stopDaisyUart() {
+	if (!daisyUartStarted) return;
+	daisySerial.end();
+	daisyUartStarted = false;
 }
 
 void clearDaisyInput() {
 	while (daisySerial.available() > 0) {
 		daisySerial.read();
 	}
+}
+
+void recoverDaisyUart() {
+	clearDaisyInput();
+	daisySerial.setPins(DaisyUartRxPin, DaisyUartTxPin);
+	daisySerial.updateBaudRate(DaisyUartBaud);
+	daisySerial.write('\n');
+	daisySerial.flush();
+	delay(DaisyRetryDelayMs);
+	clearDaisyInput();
+	daisyRecoveryCount++;
 }
 
 DaisyReply readDaisyLine(uint32_t timeoutMs) {
@@ -67,10 +107,22 @@ DaisyReply readDaisyLine(uint32_t timeoutMs) {
 
 DaisyReply sendDaisyCommand(const String& command) {
 	clearDaisyInput();
-	daisySerial.print(command);
-	daisySerial.print('\n');
+	daisyCommandCount++;
+	daisyTxByteCount += daisySerial.write(
+		reinterpret_cast<const uint8_t*>(command.c_str()), command.length());
+	daisyTxByteCount += daisySerial.write('\n');
 	daisySerial.flush();
-	return readDaisyLine(DaisyResponseTimeoutMs);
+	DaisyReply reply = readDaisyLine(DaisyResponseTimeoutMs);
+	if (reply.complete) {
+		daisyReplyCount++;
+	} else {
+		daisyTimeoutCount++;
+		Serial.printf("Daisy timeout command=%s tx_bytes=%u recoveries=%u\n",
+			command.c_str(),
+			static_cast<unsigned>(daisyTxByteCount),
+			static_cast<unsigned>(daisyRecoveryCount));
+	}
+	return reply;
 }
 
 bool isRetryableDaisyCommand(const String& command) {
@@ -85,10 +137,11 @@ bool isRetryableDaisyCommand(const String& command) {
 
 DaisyReply transactDaisyCommand(const String& command) {
 	DaisyReply reply = sendDaisyCommand(command);
-	// Retrying is limited to read-only commands so a lost reply cannot duplicate a mutation.
-	if (isRetryableDaisyCommand(command) && !reply.complete) {
+	if (!reply.complete) {
 		delay(DaisyRetryDelayMs);
-		configureDaisyUart(DaisyUartRxPin, DaisyUartTxPin);
+		recoverDaisyUart();
+		// Retrying is limited to read-only commands so a lost reply cannot duplicate a mutation.
+		if (!isRetryableDaisyCommand(command)) return reply;
 		delay(DaisyRetryDelayMs);
 		reply = sendDaisyCommand(command);
 	}
@@ -145,7 +198,14 @@ void handleRoot() {
 
 void handleHealth() {
 	sendCorsHeaders();
-	server.send(200, "application/json", "{\"ok\":true}");
+	const String response = "{\"ok\":true,\"uart_started\":"
+		+ String(daisyUartStarted ? "true" : "false")
+		+ ",\"commands\":" + String(daisyCommandCount)
+		+ ",\"tx_bytes\":" + String(daisyTxByteCount)
+		+ ",\"replies\":" + String(daisyReplyCount)
+		+ ",\"timeouts\":" + String(daisyTimeoutCount)
+		+ ",\"recoveries\":" + String(daisyRecoveryCount) + "}";
+	server.send(200, "application/json", response);
 }
 
 void handleBridgePins() {
@@ -161,7 +221,7 @@ void handleGpioRead() {
 	uint8_t pin;
 	if (!requestedGpio(pin)) return;
 
-	daisySerial.end();
+	stopDaisyUart();
 	pinMode(pin, INPUT_PULLDOWN);
 	delay(1);
 	const int value = digitalRead(pin);
@@ -180,7 +240,7 @@ void handleGpioWrite() {
 	}
 
 	const bool value = server.arg("value").toInt() != 0;
-	daisySerial.end();
+	stopDaisyUart();
 	pinMode(pin, OUTPUT);
 	digitalWrite(pin, value ? HIGH : LOW);
 	configureDaisyUart(DaisyUartRxPin, DaisyUartTxPin);
@@ -304,6 +364,8 @@ void handleWebSocketEvent(uint8_t client,
 		webSocket.sendTXT(client, "ERR daisy_timeout");
 	} else if (!reply.complete) {
 		webSocket.sendTXT(client, "ERR daisy_incomplete_response");
+	} else if (reply.body.length() > WebSocketReplyMaxLen) {
+		webSocket.sendTXT(client, "ERR response_too_large_use_http");
 	} else {
 		String body = reply.body;
 		webSocket.sendTXT(client, body);

@@ -1,4 +1,7 @@
 const REQUEST_TIMEOUT_MS = 3500;
+const HTTP_REQUEST_TIMEOUT_MS = 4000;
+const HTTP_READ_ATTEMPTS = 3;
+const HTTP_COMMANDS = new Set(['info', 'status']);
 
 export class CommandManager {
   constructor(onConnection = () => {}) {
@@ -54,23 +57,44 @@ export class CommandManager {
 
   async request(command) {
     let response;
-    if (this.socket && this.socket.readyState === 1) {
+    const requiresHttp = HTTP_COMMANDS.has(command) || command.startsWith('effect ');
+    if (!requiresHttp && this.socket && this.socket.readyState === 1) {
       response = await new Promise((resolve, reject) => {
         const timer = setTimeout(() => {
           this.pending = null;
+          this.socket?.close();
+          this.socket = null;
           reject(new Error(`Daisy timeout: ${command}`));
         }, REQUEST_TIMEOUT_MS);
         this.pending = { resolve, reject, timer };
         this.socket.send(command);
       });
     } else {
-      this.onConnection('http');
-      const request = await fetch(`/api/daisy/command?cmd=${encodeURIComponent(command)}`);
-      response = (await request.text()).trim();
-      if (!request.ok) throw new Error(response || `HTTP ${request.status}`);
+      response = await this.requestHttp(command, requiresHttp ? HTTP_READ_ATTEMPTS : 1);
     }
     if (response.startsWith('ERR')) throw new Error(response);
     return response;
+  }
+
+  async requestHttp(command, attempts) {
+    let lastError;
+    for (let attempt = 0; attempt < attempts; attempt += 1) {
+      const controller = new AbortController();
+      const timer = window.setTimeout(() => controller.abort(), HTTP_REQUEST_TIMEOUT_MS);
+      try {
+        const request = await fetch(`/api/daisy/command?cmd=${encodeURIComponent(command)}`, {
+          signal: controller.signal,
+        });
+        const response = (await request.text()).trim();
+        if (!request.ok) throw new Error(response || `HTTP ${request.status}`);
+        return response;
+      } catch (problem) {
+        lastError = problem;
+      } finally {
+        window.clearTimeout(timer);
+      }
+    }
+    throw lastError;
   }
 
   json(command) { return this.send(command).then(parseProtocolJson); }
