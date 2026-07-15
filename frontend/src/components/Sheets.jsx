@@ -2,7 +2,7 @@ import { effectColor, effectGlyph, groupEffectsByType } from '../effects.js';
 import { ParameterKnob } from './ParameterKnob.jsx';
 import { useState } from 'preact/hooks';
 
-function Sheet({ title, eyebrow, onClose, children, className = '', style }) {
+function Sheet({ title, eyebrow, onClose, children, className = '', style, actions = null }) {
   const layerClass = className.includes('cortex-library-sheet') ? 'sheet-layer is-left-drawer' : 'sheet-layer';
 
   return (
@@ -11,7 +11,7 @@ function Sheet({ title, eyebrow, onClose, children, className = '', style }) {
       <section class={`bottom-sheet ${className}`} style={style} role="dialog" aria-modal="true" aria-label={title}>
         <header class="sheet-header">
           <div><small>{eyebrow}</small><h2>{title}</h2></div>
-          <button type="button" class="close-button" onClick={onClose}>×</button>
+          {actions && <div class="sheet-header-actions">{actions}</div>}
         </header>
         {children}
       </section>
@@ -68,13 +68,15 @@ export function ParameterSheet({ selection, effect, metadata, onSet, onBypass, o
       onClose={onClose}
       className="parameter-sheet"
       style={{ '--effect-color': effectColor(effect.name) }}
+      actions={(
+        <div class="sheet-actions">
+          <button type="button" class={effect.enabled ? 'active-action' : ''} onClick={() => onBypass(!effect.enabled)}>
+            {effect.enabled ? 'BYPASS' : 'ENABLE'}
+          </button>
+          <button type="button" class="danger-action" onClick={onRemove}>REMOVE</button>
+        </div>
+      )}
     >
-      <div class="sheet-actions">
-        <button type="button" class={effect.enabled ? 'active-action' : ''} onClick={() => onBypass(!effect.enabled)}>
-          {effect.enabled ? 'BYPASS' : 'ENABLE'}
-        </button>
-        <button type="button" class="danger-action" onClick={onRemove}>REMOVE</button>
-      </div>
       {!metadata && <div class="sheet-loading">Loading parameters…</div>}
       <div class="parameter-grid">
         {Object.entries(metadata?.params || {}).map(([name, info]) => (

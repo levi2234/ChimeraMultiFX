@@ -24,6 +24,7 @@ export function AppController() {
   const [metadata, setMetadata] = useState({});
   const [connection, setConnection] = useState('offline');
   const [sheet, setSheet] = useState(null);
+  const [quickEdit, setQuickEdit] = useState(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const commandRef = useRef(null);
@@ -55,6 +56,34 @@ export function AppController() {
     } finally { setBusy(false); }
   }, [commands, refresh, showError]);
 
+  const sameEffect = useCallback((a, b) => a && b && a.lane === b.lane && a.slot === b.slot, []);
+
+  const toggleQuickEdit = useCallback((lane, slot) => {
+    setQuickEdit((current) => sameEffect(current, { lane, slot }) ? null : { lane, slot });
+  }, [sameEffect]);
+
+  useEffect(() => {
+    if (!quickEdit) return;
+    const dismissQuickEdit = (event) => {
+      if (event.target.closest('.effect-node-wrap')) return;
+      setQuickEdit(null);
+    };
+    document.addEventListener('pointerdown', dismissQuickEdit, true);
+    return () => document.removeEventListener('pointerdown', dismissQuickEdit, true);
+  }, [quickEdit]);
+
+  const bypassEffect = useCallback((lane, slot) => {
+    const effect = lanes[lane]?.effects[slot];
+    if (!effect) return;
+    setQuickEdit(null);
+    mutate(() => commands.bypass(lane, slot, !effect.enabled));
+  }, [commands, lanes, mutate]);
+
+  const removeEffect = useCallback((lane, slot) => {
+    setQuickEdit(null);
+    mutate(() => commands.remove(lane, slot), true);
+  }, [commands, mutate]);
+
   const initialize = useCallback(async () => {
     setBusy(true);
     await commands.connect();
@@ -81,6 +110,7 @@ export function AppController() {
   const openEffect = useCallback(async (lane, slot) => {
     const effect = lanes[lane]?.effects[slot];
     if (!effect) return;
+    setQuickEdit(null);
     setSheet({ type: 'parameter', lane, slot });
     if (metadata[effect.name]) return;
     try {
@@ -104,6 +134,10 @@ export function AppController() {
           info={info}
           metadata={metadata}
           onOpenEffect={openEffect}
+          quickEdit={quickEdit}
+          onQuickEdit={toggleQuickEdit}
+          onQuickBypass={bypassEffect}
+          onQuickRemove={removeEffect}
           onAdd={(lane) => setSheet({ type: 'library', lane })}
           onRoute={(lane) => setSheet({ type: 'route', lane })}
           onMove={(...args) => mutate(() => commands.move(...args), true)}

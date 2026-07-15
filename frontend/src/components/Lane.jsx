@@ -14,7 +14,7 @@ function Endpoint({ side, value, lane, onPress }) {
   );
 }
 
-export function Lane({ lane, info, metadata, onOpenEffect, onAdd, onRoute }) {
+export function Lane({ lane, info, metadata, onOpenEffect, quickEdit, onQuickEdit, onQuickBypass, onQuickRemove, onAdd, onRoute }) {
   return (
     <section class={`lane-row ${lane.active ? 'is-active' : ''}`} aria-label={`Lane ${lane.lane + 1}`}>
       <Endpoint side="input" value={lane.input} lane={lane.lane} onPress={() => onRoute(lane.lane)} />
@@ -29,6 +29,10 @@ export function Lane({ lane, info, metadata, onOpenEffect, onAdd, onRoute }) {
                 lane={lane.lane}
                 metadata={metadata[effect.name]}
                 onOpen={onOpenEffect}
+                quickEdit={quickEdit?.lane === lane.lane && quickEdit?.slot === effect.slot}
+                onQuickEdit={onQuickEdit}
+                onQuickBypass={onQuickBypass}
+                onQuickRemove={onQuickRemove}
               />
             </span>
           ))}

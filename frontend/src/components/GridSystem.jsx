@@ -5,7 +5,7 @@ function position(element) {
   return { lane: Number(element.dataset.lane), slot: Number(element.dataset.slot) };
 }
 
-export function GridSystem({ lanes, info, metadata, onOpenEffect, onAdd, onRoute, onMove }) {
+export function GridSystem({ lanes, info, metadata, onOpenEffect, quickEdit, onQuickEdit, onQuickBypass, onQuickRemove, onAdd, onRoute, onMove }) {
   const rootRef = useRef(null);
   const dragRef = useRef(null);
   const overRef = useRef(null);
@@ -38,6 +38,7 @@ export function GridSystem({ lanes, info, metadata, onOpenEffect, onAdd, onRoute
     const onDragStart = (event) => {
       const node = event.target.closest('.effect-node');
       if (!node) return;
+      if (event.target.closest('.effect-quick-action')) return;
       dragRef.current = { source: position(node), node, desktop: true };
       node.classList.add('is-dragging');
       event.dataTransfer.effectAllowed = 'move';
@@ -65,6 +66,7 @@ export function GridSystem({ lanes, info, metadata, onOpenEffect, onAdd, onRoute
       if (event.pointerType === 'mouse') return;
       const node = event.target.closest('.effect-node');
       if (!node) return;
+      if (event.target.closest('.effect-quick-action')) return;
       dragRef.current = {
         id: event.pointerId,
         node,
@@ -136,6 +138,10 @@ export function GridSystem({ lanes, info, metadata, onOpenEffect, onAdd, onRoute
           info={info}
           metadata={metadata}
           onOpenEffect={onOpenEffect}
+          quickEdit={quickEdit}
+          onQuickEdit={onQuickEdit}
+          onQuickBypass={onQuickBypass}
+          onQuickRemove={onQuickRemove}
           onAdd={onAdd}
           onRoute={onRoute}
         />
