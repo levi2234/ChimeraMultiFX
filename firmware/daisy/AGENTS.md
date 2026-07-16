@@ -186,6 +186,12 @@ Build dependencies if needed:
 cd deps/libDaisy && make
 cd ../DaisySP && make
 ```
+Enable STM DFU
+```bash
+cd firmware/daisy/Utils
+python enter-dfu.py
+```
+
 
 Flash via STM DFU:
 
