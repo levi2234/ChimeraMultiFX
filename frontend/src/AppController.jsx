@@ -3,7 +3,7 @@ import { GridSystem } from './components/GridSystem.jsx';
 import { EffectLibrarySheet, ParameterSheet, RouteSheet } from './components/Sheets.jsx';
 import { CommandManager } from './protocol/CommandManager.js';
 
-function Header({ connection, sampleRate, busy, onRefresh }) {
+function Header({ connection, sampleRate, cpuUsage, busy, onRefresh }) {
   return (
     <header class="app-header">
       <div class="preset-number"><strong>1</strong><span>A</span></div>
@@ -11,6 +11,7 @@ function Header({ connection, sampleRate, busy, onRefresh }) {
       <div class="header-status">
         <span class={`transport ${connection}`}>{connection === 'websocket' ? 'LIVE' : connection.toUpperCase()}</span>
         <span>{sampleRate ? `${sampleRate / 1000}K` : '--'}</span>
+        <span>{Number.isFinite(cpuUsage) ? `${cpuUsage.toFixed(1)}% CPU` : '-- CPU'}</span>
         <button type="button" onClick={onRefresh} disabled={busy} aria-label="Refresh DSP state">↻</button>
       </div>
       <div class="mode-label">STOMP</div>
@@ -21,6 +22,7 @@ function Header({ connection, sampleRate, busy, onRefresh }) {
 export function AppController() {
   const [info, setInfo] = useState(null);
   const [lanes, setLanes] = useState([]);
+  const [cpuUsage, setCpuUsage] = useState(null);
   const [metadata, setMetadata] = useState({});
   const [connection, setConnection] = useState('offline');
   const [sheet, setSheet] = useState(null);
@@ -36,10 +38,17 @@ export function AppController() {
     window.setTimeout(() => setError(''), 3500);
   }, []);
 
+  const refreshCpuUsage = useCallback(async () => {
+    try {
+      setCpuUsage(await commands.cpuUsage());
+    } catch (problem) { showError(problem); }
+  }, [commands, showError]);
+
   const refresh = useCallback(async () => {
     try {
-      const status = await commands.status();
+      const [status, usage] = await Promise.all([commands.status(), commands.cpuUsage()]);
       setLanes(status.lanes);
+      setCpuUsage(usage);
     } catch (problem) { showError(problem); }
   }, [commands, showError]);
 
@@ -47,8 +56,9 @@ export function AppController() {
     setBusy(true);
     try {
       await operation();
-      const status = await commands.status();
+      const [status, usage] = await Promise.all([commands.status(), commands.cpuUsage()]);
       setLanes(status.lanes);
+      setCpuUsage(usage);
       if (closeSheet) setSheet(null);
     } catch (problem) {
       showError(problem);
@@ -91,9 +101,10 @@ export function AppController() {
     for (let attempt = 0; attempt < 3; attempt += 1) {
       try {
         const capabilities = await commands.info();
-        const status = await commands.status();
+        const [status, usage] = await Promise.all([commands.status(), commands.cpuUsage()]);
         setInfo(capabilities);
         setLanes(status.lanes);
+        setCpuUsage(usage);
         setBusy(false);
         return;
       } catch (problem) {
@@ -106,6 +117,12 @@ export function AppController() {
   }, [commands, showError]);
 
   useEffect(() => { initialize(); }, [initialize]);
+
+  useEffect(() => {
+    if (!info) return undefined;
+    const timer = window.setInterval(refreshCpuUsage, 2000);
+    return () => window.clearInterval(timer);
+  }, [info, refreshCpuUsage]);
 
   const openEffect = useCallback(async (lane, slot) => {
     const effect = lanes[lane]?.effects[slot];
@@ -127,7 +144,7 @@ export function AppController() {
 
   return (
     <div class="touch-app">
-      <Header connection={connection} sampleRate={info?.sample_rate} busy={busy} onRefresh={info ? refresh : initialize} />
+      <Header connection={connection} sampleRate={info?.sample_rate} cpuUsage={cpuUsage} busy={busy} onRefresh={info ? refresh : initialize} />
       {info ? (
         <GridSystem
           lanes={lanes}

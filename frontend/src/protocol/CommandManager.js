@@ -100,6 +100,7 @@ export class CommandManager {
   json(command) { return this.send(command).then(parseProtocolJson); }
   info() { return this.json('info'); }
   status() { return this.json('status'); }
+  cpuUsage() { return this.send('cpu_usage').then(parseCpuUsage); }
   effect(name) { return this.json(`effect ${name}`); }
   add(lane, effect) { return this.send(`add ${lane} ${effect}`); }
   insert(lane, slot, effect) { return this.send(`insert ${lane} ${slot} ${effect}`); }
@@ -120,4 +121,10 @@ export function parseProtocolJson(text) {
     try { return JSON.parse(`{${text}}`); }
     catch { throw new Error(`Invalid JSON from Daisy: ${text.slice(0, 80)}`); }
   }
+}
+
+export function parseCpuUsage(text) {
+  const match = text.match(/CPU Usage:\s*([0-9]+(?:\.[0-9]+)?)%/i);
+  if (!match) throw new Error(`Invalid CPU usage from Daisy: ${text.slice(0, 80)}`);
+  return Number(match[1]);
 }
