@@ -7,17 +7,23 @@
 namespace {
 constexpr uint32_t WifiConnectTimeoutMs = 20000;
 constexpr uint32_t WifiReconnectIntervalMs = 5000;
+constexpr uint32_t WifiRejoinIntervalMs = 15000;
 uint32_t lastStatusMs = 0;
-}
+uint32_t disconnectedSinceMs = 0;
 
-namespace WifiManager {
-void connect() {
+void startStation() {
 	WiFi.persistent(false);
 	WiFi.disconnect(true, true);
 	WiFi.mode(WIFI_STA);
 	WiFi.setSleep(false);
 	WiFi.setAutoReconnect(true);
 	WiFi.begin(CHIMERA_WIFI_SSID, CHIMERA_WIFI_PASSWORD);
+}
+}
+
+namespace WifiManager {
+void connect() {
+	startStation();
 
 	Serial.printf("Connecting to WiFi %s", CHIMERA_WIFI_SSID);
 	const uint32_t startMs = millis();
@@ -40,7 +46,17 @@ void connect() {
 void maintain() {
 	if (millis() - lastStatusMs < WifiReconnectIntervalMs) return;
 	lastStatusMs = millis();
-	if (WiFi.status() != WL_CONNECTED) {
+	if (WiFi.status() == WL_CONNECTED) {
+		disconnectedSinceMs = 0;
+	} else if (disconnectedSinceMs == 0) {
+		disconnectedSinceMs = millis();
+		Serial.println("WiFi disconnected; requesting reconnect");
+		WiFi.reconnect();
+	} else if (millis() - disconnectedSinceMs >= WifiRejoinIntervalMs) {
+		disconnectedSinceMs = millis();
+		Serial.println("WiFi still disconnected; cycling station radio");
+		startStation();
+	} else {
 		WiFi.reconnect();
 	}
 	Serial.printf("bridge alive wifi_status=%d ip=%s\n",

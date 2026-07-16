@@ -1,7 +1,34 @@
-const REQUEST_TIMEOUT_MS = 3500;
-const HTTP_REQUEST_TIMEOUT_MS = 4000;
-const HTTP_READ_ATTEMPTS = 3;
-const HTTP_COMMANDS = new Set(['info', 'status']);
+const REQUEST_TIMEOUT_MS = 1500;
+const HTTP_REQUEST_TIMEOUT_MS = 1500;
+const HTTP_LARGE_READ_TIMEOUT_MS = 9000;
+const HEALTH_REQUEST_TIMEOUT_MS = 700;
+const HTTP_READ_ATTEMPTS = 1;
+const HTTP_COMMANDS = new Set(['info', 'status', 'cpu_usage']);
+
+function isAbortError(problem) {
+  return problem?.name === 'AbortError' || /signal.*aborted|aborted/i.test(problem?.message || '');
+}
+
+function requestTimeoutMs(command) {
+  return command.startsWith('status') || command === 'info' || command.startsWith('effect ')
+    ? HTTP_LARGE_READ_TIMEOUT_MS
+    : HTTP_REQUEST_TIMEOUT_MS;
+}
+
+async function bridgeHealth() {
+  const controller = new AbortController();
+  const timer = window.setTimeout(() => controller.abort(), HEALTH_REQUEST_TIMEOUT_MS);
+  try {
+    const request = await fetch('/health', { cache: 'no-store', signal: controller.signal });
+    if (!request.ok) throw new Error(`Bridge health HTTP ${request.status}`);
+    return request.json();
+  } catch (problem) {
+    if (isAbortError(problem)) throw new Error('Bridge health timeout');
+    throw problem;
+  } finally {
+    window.clearTimeout(timer);
+  }
+}
 
 export class CommandManager {
   constructor(onConnection = () => {}) {
@@ -9,6 +36,7 @@ export class CommandManager {
     this.socket = null;
     this.pending = null;
     this.queue = Promise.resolve();
+    this.active = false;
   }
 
   connect() {
@@ -50,14 +78,29 @@ export class CommandManager {
     });
   }
 
-  send(command) {
-    this.queue = this.queue.catch(() => {}).then(() => this.request(command));
+  send(command, options = {}) {
+    if (options.dropIfBusy && this.active) {
+      return Promise.reject(new Error('Bridge busy'));
+    }
+    this.queue = this.queue.catch(() => {}).then(async () => {
+      this.active = true;
+      try { return await this.request(command); }
+      finally { this.active = false; }
+    });
     return this.queue;
   }
 
   async request(command) {
+    const staleRead = command === 'info' || command === 'status' || command === 'cpu_usage';
+    if (staleRead) {
+      const health = await bridgeHealth();
+      if (health.uart_backoff_active) {
+        throw new Error(`Daisy unavailable; retry in ${Math.ceil(health.uart_backoff_remaining_ms / 1000)}s`);
+      }
+    }
+
     let response;
-    const requiresHttp = HTTP_COMMANDS.has(command) || command.startsWith('effect ');
+    const requiresHttp = HTTP_COMMANDS.has(command) || command.startsWith('status ') || command.startsWith('effect ');
     if (!requiresHttp && this.socket && this.socket.readyState === 1) {
       response = await new Promise((resolve, reject) => {
         const timer = setTimeout(() => {
@@ -80,7 +123,7 @@ export class CommandManager {
     let lastError;
     for (let attempt = 0; attempt < attempts; attempt += 1) {
       const controller = new AbortController();
-      const timer = window.setTimeout(() => controller.abort(), HTTP_REQUEST_TIMEOUT_MS);
+      const timer = window.setTimeout(() => controller.abort(), requestTimeoutMs(command));
       try {
         const request = await fetch(`/api/daisy/command?cmd=${encodeURIComponent(command)}`, {
           signal: controller.signal,
@@ -89,7 +132,7 @@ export class CommandManager {
         if (!request.ok) throw new Error(response || `HTTP ${request.status}`);
         return response;
       } catch (problem) {
-        lastError = problem;
+        lastError = isAbortError(problem) ? new Error(`Daisy timeout: ${command}`) : problem;
       } finally {
         window.clearTimeout(timer);
       }
@@ -100,7 +143,9 @@ export class CommandManager {
   json(command) { return this.send(command).then(parseProtocolJson); }
   info() { return this.json('info'); }
   status() { return this.json('status'); }
-  cpuUsage() { return this.send('cpu_usage').then(parseCpuUsage); }
+  statusLane(lane) { return this.json(`status lane ${lane}`); }
+  statusSlot(lane, slot) { return this.json(`status slot ${lane} ${slot}`); }
+  cpuUsage(options) { return this.send('cpu_usage', options).then(parseCpuUsage); }
   effect(name) { return this.json(`effect ${name}`); }
   add(lane, effect) { return this.send(`add ${lane} ${effect}`); }
   insert(lane, slot, effect) { return this.send(`insert ${lane} ${slot} ${effect}`); }

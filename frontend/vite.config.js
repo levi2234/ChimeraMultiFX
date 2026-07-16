@@ -1,6 +1,8 @@
 import { defineConfig } from 'vite';
 import { resolve } from 'node:path';
 
+const outDir = resolve(import.meta.dirname, '../firmware/esp32/data');
+
 export default defineConfig({
   base: '/',
   esbuild: {
@@ -8,7 +10,7 @@ export default defineConfig({
     jsxImportSource: 'preact',
   },
   build: {
-    outDir: resolve(import.meta.dirname, '../firmware/esp32/data'),
+    outDir,
     emptyOutDir: true,
     cssCodeSplit: false,
     sourcemap: false,

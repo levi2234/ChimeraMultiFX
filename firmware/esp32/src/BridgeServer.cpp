@@ -52,6 +52,7 @@ bool requestedGpio(uint8_t& pin) {
 
 void handleRoot() {
 	sendCorsHeaders();
+	server->sendHeader("Cache-Control", "no-store");
 	File index = LittleFS.open("/index.html", "r");
 	if (!index) {
 		server->send(503, "text/plain", "UI not installed. Run: pio run --target uploadfs\n");
@@ -181,6 +182,10 @@ void handleDaisyCommand() {
 		server->send(504, "application/json", "{\"error\":\"daisy_timeout\"}");
 		return;
 	}
+	if (reply.overflow) {
+		server->send(507, "application/json", "{\"error\":\"daisy_response_too_large\"}");
+		return;
+	}
 	if (!reply.complete) {
 		server->send(504, "application/json", "{\"error\":\"daisy_incomplete_response\"}");
 		return;
@@ -222,6 +227,8 @@ void handleWebSocketEvent(uint8_t client,
 	const DaisyBridge::Reply reply = DaisyBridge::transactCommand(command);
 	if (reply.body.isEmpty()) {
 		webSocket->sendTXT(client, "ERR daisy_timeout");
+	} else if (reply.overflow) {
+		webSocket->sendTXT(client, "ERR daisy_response_too_large");
 	} else if (!reply.complete) {
 		webSocket->sendTXT(client, "ERR daisy_incomplete_response");
 	} else if (reply.body.length() > DaisyBridge::WebSocketReplyMaxLen) {
@@ -249,8 +256,8 @@ void setupRoutes(WebServer& routeServer, WebSocketsServer& socketServer) {
 	server->on("/api/bridge/reset", HTTP_POST, handleDaisyReset);
 	server->on("/api/bridge/reset", HTTP_GET, handleDaisyReset);
 	server->on("/api/daisy/command", HTTP_GET, handleDaisyCommand);
-	server->serveStatic("/app/", LittleFS, "/app/", "max-age=3600");
-	server->serveStatic("/assets/", LittleFS, "/assets/", "max-age=3600");
+	server->serveStatic("/app/", LittleFS, "/app/", "max-age=60");
+	server->serveStatic("/assets/", LittleFS, "/assets/", "max-age=60");
 	server->onNotFound(handleNotFound);
 	webSocket->onEvent(handleWebSocketEvent);
 }

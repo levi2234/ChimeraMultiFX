@@ -37,6 +37,10 @@ void recoverDaisyUart() {
 	daisyRecoveryCount++;
 }
 
+bool commandUsesLargeResponseWindow(const String& command) {
+	return command.startsWith("status") || command == "info" || command.startsWith("effect ");
+}
+
 DaisyBridge::Reply sendDaisyCommand(const String& command) {
 	DaisyBridge::clearInput();
 	daisyCommandCount++;
@@ -44,7 +48,12 @@ DaisyBridge::Reply sendDaisyCommand(const String& command) {
 		reinterpret_cast<const uint8_t*>(command.c_str()), command.length());
 	daisyTxByteCount += daisySerial.write('\n');
 	daisySerial.flush();
-	DaisyBridge::Reply reply = DaisyBridge::readLine(DaisyBridge::ResponseTimeoutMs);
+	DaisyBridge::Reply reply = commandUsesLargeResponseWindow(command)
+		? DaisyBridge::readLine(
+			DaisyBridge::LargeResponseFirstByteTimeoutMs,
+			DaisyBridge::LargeResponseIdleTimeoutMs,
+			DaisyBridge::LargeResponseMaxDurationMs)
+		: DaisyBridge::readLine();
 	if (reply.complete) {
 		daisyUnavailableUntilMs = 0;
 		daisyReplyCount++;
@@ -101,25 +110,34 @@ void sendReset() {
 	daisySerial.flush();
 }
 
-Reply readLine(uint32_t timeoutMs) {
+Reply readLine(uint32_t firstByteTimeoutMs, uint32_t idleTimeoutMs, uint32_t maxDurationMs) {
 	String response;
 	response.reserve(256);
 	const uint32_t startMs = millis();
+	uint32_t lastByteMs = startMs;
+	bool receivedByte = false;
 
-	while ((millis() - startMs) < timeoutMs) {
+	while ((millis() - startMs) < maxDurationMs) {
 		while (daisySerial.available() > 0) {
 			const char character = static_cast<char>(daisySerial.read());
+			receivedByte = true;
+			lastByteMs = millis();
 			if (character == '\n') {
-				return {response, true};
+				return {response, true, false};
 			}
 			if (character != '\r' && response.length() < ResponseMaxLen - 1) {
 				response += character;
+			} else if (character != '\r') {
+				return {response, false, true};
 			}
 		}
+		const uint32_t nowMs = millis();
+		if (!receivedByte && (nowMs - startMs) >= firstByteTimeoutMs) break;
+		if (receivedByte && (nowMs - lastByteMs) >= idleTimeoutMs) break;
 		delay(1);
 	}
 
-	return {response, false};
+	return {response, false, response.length() >= ResponseMaxLen - 1};
 }
 
 Reply testLoopback(uint8_t rxPin, uint8_t txPin) {
@@ -128,13 +146,13 @@ Reply testLoopback(uint8_t rxPin, uint8_t txPin) {
 	clearInput();
 	daisySerial.print("LOOPBACK_TEST\n");
 	daisySerial.flush();
-	Reply reply = readLine(LoopbackTimeoutMs);
+	Reply reply = readLine(LoopbackTimeoutMs, ResponseIdleTimeoutMs, LoopbackTimeoutMs);
 	configureUart(DefaultRxPin, DefaultTxPin);
 	return reply;
 }
 
 Reply transactCommand(const String& command) {
-	if (unavailableBackoffRemainingMs() > 0) return {"", false};
+	if (unavailableBackoffRemainingMs() > 0) return {"", false, false};
 
 	Reply reply = sendDaisyCommand(command);
 	if (!reply.complete) {

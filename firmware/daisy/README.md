@@ -105,7 +105,16 @@ the one-time setup sequence above and run `make program-boot` again.
 The bridge protocol helper can exercise the UART command path from a host PC:
 
 ```bash
-python Utils/bridge_protocol_test.py --serial-port COM9 --repeat 10 ping info status
+python Utils/bridge_protocol_test.py --serial-port COM9 ping info status "status lane 0"
 ```
+
+State reads are intentionally split into bounded JSON responses:
+
+- `status` returns only `lane_count` and `max_slots`.
+- `status lane <lane>` returns routing and effect topology for one lane, without parameters.
+- `status slot <lane> <slot>` returns live values and parameter definitions for one effect.
+
+Clients should refresh only the lane or slot affected by a mutation. This keeps
+response size independent of the total number of effect parameters in the rig.
 
 The ESP32 firmware is the normal host for these commands in the finished system.

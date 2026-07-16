@@ -10,7 +10,7 @@ import urllib.parse
 import urllib.request
 
 
-DEFAULT_COMMANDS = ["ping", "info", "status"]
+DEFAULT_COMMANDS = ["ping", "info", "status", "status lane 0"]
 
 
 def validate_info(body):
@@ -24,6 +24,32 @@ def validate_info(body):
         return "info.effects must be a non-empty list"
     if any(not isinstance(effect, dict) or not effect.get("name") or not effect.get("category") for effect in effects):
         return "info.effects entries must contain name and category"
+    return None
+
+
+def validate_status(command, body):
+    try:
+        status = json.loads(body)
+    except json.JSONDecodeError as error:
+        return f"{command!r} did not return valid JSON: {error}"
+
+    if command == "status":
+        if not isinstance(status.get("lane_count"), int) or status["lane_count"] < 1:
+            return "status.lane_count must be a positive integer"
+        if "lanes" in status:
+            return "status overview must not contain the monolithic lanes payload"
+    elif command.startswith("status lane "):
+        if not isinstance(status.get("effects"), list) or not isinstance(status.get("lane"), int):
+            return "lane status must contain lane and effects"
+        if any("params" in effect for effect in status["effects"]):
+            return "lane status effects must not contain parameter payloads"
+    elif command.startswith("status slot "):
+        if not isinstance(status.get("params"), dict) or not isinstance(status.get("slot"), int):
+            return "slot status must contain slot and params"
+        if not isinstance(status.get("param_info"), dict):
+            return "slot status must contain parameter definitions"
+        if set(status["params"]) != set(status["param_info"]):
+            return "slot status values and definitions must describe the same parameters"
     return None
 
 
@@ -130,11 +156,10 @@ def run_http_tests(base_url, timeout, commands, repeat):
                 if error:
                     print(error, file=sys.stderr)
                     return 1
-            if command == "status":
-                try:
-                    json.loads(body)
-                except json.JSONDecodeError as error:
-                    print(f"{command!r} did not return valid JSON: {error}", file=sys.stderr)
+            if command.startswith("status"):
+                error = validate_status(command, body)
+                if error:
+                    print(error, file=sys.stderr)
                     return 1
             completed += 1
 

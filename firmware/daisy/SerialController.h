@@ -143,7 +143,7 @@ private:
     static constexpr int MAX_CMD_LEN = 128;
     static constexpr int MAX_TOKENS  = 8;
     static constexpr int TX_BUF_LEN  = 256;
-    static constexpr int JSON_BUF_LEN = 16384;
+    static constexpr int JSON_BUF_LEN = 32768;
     Router* router_ = nullptr;
     float   sample_rate_ = 48000.f;
     daisy::UsbHandle* usb_ = nullptr;
@@ -176,7 +176,7 @@ private:
         else if (strcmp(tokens[0], "clear") == 0)  CmdClear(tokens, n);
         else if (strcmp(tokens[0], "route") == 0)  CmdRoute(tokens, n);
         else if (strcmp(tokens[0], "level") == 0)  CmdLevel(tokens, n);        else if (strcmp(tokens[0], "params") == 0) CmdParams(tokens, n);
-        else if (strcmp(tokens[0], "status") == 0) CmdStatus();
+        else if (strcmp(tokens[0], "status") == 0) CmdStatus(tokens, n);
         else if (strcmp(tokens[0], "info") == 0)   CmdInfo();
         else if (strcmp(tokens[0], "effect") == 0) CmdEffectInfo(tokens, n);
         else if (strcmp(tokens[0], "ping") == 0)   CmdPing();
@@ -350,34 +350,59 @@ private:
         ReplyLevel(lane, router_->lanes[lane].level);
     }
 
-    // ─── status ──────────────────────────────────────────────────────────────
-    // Returns full router state as a JSON string for programmatic parsing.
-    void CmdStatus() {
+    // ─── status [lane <lane>|slot <lane> <slot>] ─────────────────────────────
+    void CmdStatus(char** t, int n) {
+        if (n == 1) {
+            Reply("{\"lane_count\":%d,\"max_slots\":%d}\n", Router::MAX_LANES, Router::MAX_SLOTS);
+            return;
+        }
+        if (strcmp(t[1], "lane") == 0) {
+            if (n < 3) { Reply("ERR usage: status lane <lane>\n"); return; }
+            CmdLaneStatus(atoi(t[2]));
+            return;
+        }
+        if (strcmp(t[1], "slot") == 0) {
+            if (n < 4) { Reply("ERR usage: status slot <lane> <slot>\n"); return; }
+            CmdSlotStatus(atoi(t[2]), atoi(t[3]));
+            return;
+        }
+        Reply("ERR usage: status [lane <lane>|slot <lane> <slot>]\n");
+    }
+
+    void CmdLaneStatus(int lane_index) {
+        if (!ValidLane(lane_index)) return;
         int pos = 0;
-        Append(json_buf_, JSON_BUF_LEN, pos, "{\"lanes\":[");
-        for (int r = 0; r < Router::MAX_LANES; r++) {
-            auto& lane = router_->lanes[r];
-            if (r > 0) Append(json_buf_, JSON_BUF_LEN, pos, ",");
+        auto& lane = router_->lanes[lane_index];
+        Append(json_buf_, JSON_BUF_LEN, pos,
+               "{\"lane\":%d,\"active\":%s,\"input\":\"%s\",\"output\":\"%s\",\"level\":",
+               lane_index,
+               lane.active ? "true" : "false",
+               InputName(lane.input),
+               OutputName(lane.output));
+        AppendFloat(json_buf_, JSON_BUF_LEN, pos, lane.level, 4);
+        Append(json_buf_, JSON_BUF_LEN, pos, ",\"effects\":[");
+        for (int slot = 0; slot < lane.count; slot++) {
+            Effect* fx = lane.slots[slot];
+            if (slot > 0) Append(json_buf_, JSON_BUF_LEN, pos, ",");
             Append(json_buf_, JSON_BUF_LEN, pos,
-                     "{\"lane\":%d,\"active\":%s,\"input\":\"%s\",\"output\":\"%s\",\"level\":",
-                   r,
-                   lane.active ? "true" : "false",
-                   InputName(lane.input),
-                     OutputName(lane.output));
-                 AppendFloat(json_buf_, JSON_BUF_LEN, pos, lane.level, 4);
-                 Append(json_buf_, JSON_BUF_LEN, pos, ",\"effects\":[");
-            for (int i = 0; i < lane.count; i++) {
-                Effect* fx = lane.slots[i];
-                if (i > 0) Append(json_buf_, JSON_BUF_LEN, pos, ",");
-                  Append(json_buf_, JSON_BUF_LEN, pos,
-                      "{\"slot\":%d,\"name\":\"%s\",\"enabled\":%s,\"params\":{",
-                       i, fx->GetName(), fx->IsEnabled() ? "true" : "false");
-                EmitParams(json_buf_, JSON_BUF_LEN, pos, fx);
-                Append(json_buf_, JSON_BUF_LEN, pos, "}}");
-            }
-            Append(json_buf_, JSON_BUF_LEN, pos, "]}");
+                   "{\"slot\":%d,\"name\":\"%s\",\"enabled\":%s}",
+                   slot, fx->GetName(), fx->IsEnabled() ? "true" : "false");
         }
         Append(json_buf_, JSON_BUF_LEN, pos, "]}\n");
+        SendBuffer(json_buf_, pos);
+    }
+
+    void CmdSlotStatus(int lane_index, int slot_index) {
+        if (!ValidLane(lane_index) || !ValidSlot(lane_index, slot_index)) return;
+        Effect* fx = router_->lanes[lane_index].slots[slot_index];
+        int pos = 0;
+        Append(json_buf_, JSON_BUF_LEN, pos,
+               "{\"lane\":%d,\"slot\":%d,\"name\":\"%s\",\"enabled\":%s,\"params\":{",
+               lane_index, slot_index, fx->GetName(), fx->IsEnabled() ? "true" : "false");
+        EmitParams(json_buf_, JSON_BUF_LEN, pos, fx);
+         Append(json_buf_, JSON_BUF_LEN, pos, "},\"param_info\":{");
+         EmitParamInfo(json_buf_, JSON_BUF_LEN, pos, fx);
+         Append(json_buf_, JSON_BUF_LEN, pos, "}}\n");
         SendBuffer(json_buf_, pos);
     }
 
@@ -413,7 +438,7 @@ private:
          Append(json_buf_, JSON_BUF_LEN, pos,
              "\"outputs\":[\"out1\",\"out2\",\"both\",\"none\"],");
          Append(json_buf_, JSON_BUF_LEN, pos,
-             "\"commands\":[\"add\",\"insert\",\"remove\",\"swap\",\"move\",\"set\",\"get\",\"bypass\",\"clear\",\"route\",\"level\",\"params\",\"status\",\"info\",\"effect\",\"ping\",\"loopback\",\"dfu\"]}\n");
+             "\"commands\":[\"add\",\"insert\",\"remove\",\"swap\",\"move\",\"set\",\"get\",\"bypass\",\"clear\",\"route\",\"level\",\"params\",\"status\",\"status lane\",\"status slot\",\"info\",\"effect\",\"ping\",\"loopback\",\"cpu_usage\",\"dfu\"]}\n");
          SendBuffer(json_buf_, pos);
     }
 

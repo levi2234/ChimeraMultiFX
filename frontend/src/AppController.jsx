@@ -3,6 +3,26 @@ import { GridSystem } from './components/GridSystem.jsx';
 import { EffectLibrarySheet, ParameterSheet, RouteSheet } from './components/Sheets.jsx';
 import { CommandManager } from './protocol/CommandManager.js';
 
+const FALLBACK_INFO = {
+  sample_rate: null,
+  max_lanes: 4,
+  max_slots: 8,
+  effects: [],
+  inputs: ['in1', 'in2', 'mix', 'lane0', 'lane1', 'lane2', 'lane3'],
+  outputs: ['out1', 'out2', 'both', 'none'],
+  commands: [],
+  offline: true,
+};
+
+const FALLBACK_LANES = Array.from({ length: FALLBACK_INFO.max_lanes }, (_, lane) => ({
+  lane,
+  active: false,
+  input: lane === 0 ? 'in1' : 'mix',
+  output: lane === 0 ? 'both' : 'none',
+  level: 1,
+  effects: [],
+}));
+
 function Header({ connection, sampleRate, cpuUsage, busy, onRefresh }) {
   return (
     <header class="app-header">
@@ -20,8 +40,8 @@ function Header({ connection, sampleRate, cpuUsage, busy, onRefresh }) {
 }
 
 export function AppController() {
-  const [info, setInfo] = useState(null);
-  const [lanes, setLanes] = useState([]);
+  const [info, setInfo] = useState(FALLBACK_INFO);
+  const [lanes, setLanes] = useState(FALLBACK_LANES);
   const [cpuUsage, setCpuUsage] = useState(null);
   const [metadata, setMetadata] = useState({});
   const [connection, setConnection] = useState('offline');
@@ -39,32 +59,67 @@ export function AppController() {
   }, []);
 
   const refreshCpuUsage = useCallback(async () => {
+    if (!info?.commands?.includes('cpu_usage')) return;
     try {
-      setCpuUsage(await commands.cpuUsage());
-    } catch (problem) { showError(problem); }
-  }, [commands, showError]);
+      setCpuUsage(await commands.cpuUsage({ dropIfBusy: true }));
+    } catch (problem) {
+      if (problem?.message !== 'Bridge busy' && !/timeout|unavailable/i.test(problem?.message || '')) showError(problem);
+    }
+  }, [commands, info, showError]);
+
+  const mergeLane = useCallback((lane) => {
+    setLanes((current) => {
+      const next = [...current];
+      next[lane.lane] = lane;
+      return next;
+    });
+  }, []);
+
+  const mergeSlot = useCallback((slot) => {
+    setLanes((current) => current.map((lane, laneIndex) => {
+      if (laneIndex !== slot.lane) return lane;
+      return {
+        ...lane,
+        effects: lane.effects.map((effect) => effect.slot === slot.slot ? slot : effect),
+      };
+    }));
+  }, []);
+
+  const refreshLanes = useCallback(async (laneIndexes = null) => {
+    let indexes = laneIndexes;
+    if (!indexes) {
+      const overview = await commands.status();
+      indexes = Array.from({ length: overview.lane_count }, (_, lane) => lane);
+    }
+    for (const laneIndex of [...new Set(indexes)]) {
+      mergeLane(await commands.statusLane(laneIndex));
+    }
+  }, [commands, mergeLane]);
 
   const refresh = useCallback(async () => {
+    setBusy(true);
     try {
-      const [status, usage] = await Promise.all([commands.status(), commands.cpuUsage()]);
-      setLanes(status.lanes);
-      setCpuUsage(usage);
+      await refreshLanes();
+      if (info?.offline) {
+        const capabilities = await commands.info();
+        setInfo(capabilities);
+      }
     } catch (problem) { showError(problem); }
-  }, [commands, showError]);
+    finally { setBusy(false); }
+  }, [commands, info, refreshLanes, showError]);
 
-  const mutate = useCallback(async (operation, closeSheet = false) => {
+  const mutate = useCallback(async (operation, { laneIndexes, slot, closeSheet = false } = {}) => {
     setBusy(true);
     try {
       await operation();
-      const [status, usage] = await Promise.all([commands.status(), commands.cpuUsage()]);
-      setLanes(status.lanes);
-      setCpuUsage(usage);
+      if (slot) mergeSlot(await commands.statusSlot(slot.lane, slot.slot));
+      else await refreshLanes(laneIndexes);
       if (closeSheet) setSheet(null);
     } catch (problem) {
       showError(problem);
       await refresh();
     } finally { setBusy(false); }
-  }, [commands, refresh, showError]);
+  }, [commands, mergeSlot, refresh, refreshLanes, showError]);
 
   const sameEffect = useCallback((a, b) => a && b && a.lane === b.lane && a.slot === b.slot, []);
 
@@ -83,40 +138,47 @@ export function AppController() {
   }, [quickEdit]);
 
   const bypassEffect = useCallback((lane, slot) => {
+    if (info?.offline) return;
     const effect = lanes[lane]?.effects[slot];
     if (!effect) return;
     setQuickEdit(null);
-    mutate(() => commands.bypass(lane, slot, !effect.enabled));
-  }, [commands, lanes, mutate]);
+    mutate(() => commands.bypass(lane, slot, !effect.enabled), { laneIndexes: [lane] });
+  }, [commands, info, lanes, mutate]);
 
   const removeEffect = useCallback((lane, slot) => {
+    if (info?.offline) return;
     setQuickEdit(null);
-    mutate(() => commands.remove(lane, slot), true);
-  }, [commands, mutate]);
+    mutate(() => commands.remove(lane, slot), { laneIndexes: [lane], closeSheet: true });
+  }, [commands, info, mutate]);
 
-  const initialize = useCallback(async () => {
-    setBusy(true);
-    await commands.connect();
+  const initialize = useCallback(async ({ background = false } = {}) => {
+    if (!background) setBusy(true);
     let lastError;
-    for (let attempt = 0; attempt < 3; attempt += 1) {
-      try {
-        const capabilities = await commands.info();
-        const [status, usage] = await Promise.all([commands.status(), commands.cpuUsage()]);
-        setInfo(capabilities);
-        setLanes(status.lanes);
-        setCpuUsage(usage);
-        setBusy(false);
-        return;
-      } catch (problem) {
-        lastError = problem;
-        if (attempt < 2) await new Promise((resolve) => window.setTimeout(resolve, 400 * (attempt + 1)));
+    try {
+      const capabilities = await commands.info();
+      setInfo(capabilities);
+      await refreshLanes();
+      if (capabilities.commands?.includes('cpu_usage')) {
+        try { setCpuUsage(await commands.cpuUsage({ dropIfBusy: true })); }
+        catch { setCpuUsage(null); }
+      } else {
+        setCpuUsage(null);
       }
+      commands.connect().catch(() => setConnection('http'));
+      if (!background) setBusy(false);
+      return;
+    } catch (problem) {
+      lastError = problem;
     }
-    setBusy(false);
-    showError(lastError);
-  }, [commands, showError]);
+    if (!background) showError(lastError);
+    if (!background) setBusy(false);
+    else setConnection('http');
+  }, [commands, refreshLanes, showError]);
 
-  useEffect(() => { initialize(); }, [initialize]);
+  useEffect(() => {
+    const timer = window.setTimeout(() => initialize({ background: true }), 750);
+    return () => window.clearTimeout(timer);
+  }, [initialize]);
 
   useEffect(() => {
     if (!info) return undefined;
@@ -125,16 +187,23 @@ export function AppController() {
   }, [info, refreshCpuUsage]);
 
   const openEffect = useCallback(async (lane, slot) => {
+    if (info?.offline) return;
     const effect = lanes[lane]?.effects[slot];
     if (!effect) return;
     setQuickEdit(null);
     setSheet({ type: 'parameter', lane, slot });
-    if (metadata[effect.name]) return;
     try {
-      const response = await commands.effect(effect.name);
-      setMetadata((current) => ({ ...current, [effect.name]: response[effect.name] }));
+      const slotStatus = await commands.statusSlot(lane, slot);
+      mergeSlot(slotStatus);
+      setMetadata((current) => ({
+        ...current,
+        [slotStatus.name]: {
+          ...current[slotStatus.name],
+          params: slotStatus.param_info,
+        },
+      }));
     } catch (problem) { showError(problem); }
-  }, [commands, lanes, metadata, showError]);
+  }, [commands, info, lanes, mergeSlot, showError]);
 
   const selectedEffect = useMemo(() => {
     if (sheet?.type !== 'parameter') return null;
@@ -155,9 +224,14 @@ export function AppController() {
           onQuickEdit={toggleQuickEdit}
           onQuickBypass={bypassEffect}
           onQuickRemove={removeEffect}
-          onAdd={(lane) => setSheet({ type: 'library', lane })}
-          onRoute={(lane) => setSheet({ type: 'route', lane })}
-          onMove={(...args) => mutate(() => commands.move(...args), true)}
+          onAdd={(lane) => info?.offline ? showError('Daisy unavailable; retry refresh') : setSheet({ type: 'library', lane })}
+          onRoute={(lane) => info?.offline ? showError('Daisy unavailable; retry refresh') : setSheet({ type: 'route', lane })}
+          onMove={(fromLane, fromSlot, toLane, toSlot) => info?.offline
+            ? showError('Daisy unavailable; retry refresh')
+            : mutate(() => commands.move(fromLane, fromSlot, toLane, toSlot), {
+                laneIndexes: [fromLane, toLane],
+                closeSheet: true,
+              })}
         />
       ) : <div class="boot-state"><span class="spinner" />CONNECTING TO DSP</div>}
 
@@ -165,7 +239,10 @@ export function AppController() {
         <EffectLibrarySheet
           lane={sheet.lane}
           effects={info.effects}
-          onChoose={(name) => mutate(() => commands.add(sheet.lane, name), true)}
+          onChoose={(name) => mutate(() => commands.add(sheet.lane, name), {
+            laneIndexes: [sheet.lane],
+            closeSheet: true,
+          })}
           onClose={() => setSheet(null)}
         />
       )}
@@ -174,9 +251,17 @@ export function AppController() {
           selection={sheet}
           effect={selectedEffect}
           metadata={metadata[selectedEffect.name]}
-          onSet={(parameter, value) => mutate(() => commands.set(sheet.lane, sheet.slot, parameter, Number(value).toPrecision(6)))}
-          onBypass={(enabled) => mutate(() => commands.bypass(sheet.lane, sheet.slot, enabled))}
-          onRemove={() => mutate(() => commands.remove(sheet.lane, sheet.slot), true)}
+          onSet={(parameter, value) => mutate(
+            () => commands.set(sheet.lane, sheet.slot, parameter, Number(value).toPrecision(6)),
+            { slot: { lane: sheet.lane, slot: sheet.slot } },
+          )}
+          onBypass={(enabled) => mutate(() => commands.bypass(sheet.lane, sheet.slot, enabled), {
+            laneIndexes: [sheet.lane],
+          })}
+          onRemove={() => mutate(() => commands.remove(sheet.lane, sheet.slot), {
+            laneIndexes: [sheet.lane],
+            closeSheet: true,
+          })}
           onClose={() => setSheet(null)}
         />
       )}
@@ -184,10 +269,19 @@ export function AppController() {
         <RouteSheet
           lane={routedLane}
           info={info}
-          onRoute={(input, output) => mutate(() => commands.route(routedLane.lane, input, output))}
-          onLevel={(value) => mutate(() => commands.level(routedLane.lane, value))}
+          onRoute={(input, output) => mutate(() => commands.route(routedLane.lane, input, output), {
+            laneIndexes: [routedLane.lane],
+          })}
+          onLevel={(value) => mutate(() => commands.level(routedLane.lane, value), {
+            laneIndexes: [routedLane.lane],
+          })}
           onClear={() => {
-            if (confirm(`Clear lane ${routedLane.lane + 1}?`)) mutate(() => commands.clear(routedLane.lane), true);
+            if (confirm(`Clear lane ${routedLane.lane + 1}?`)) {
+              mutate(() => commands.clear(routedLane.lane), {
+                laneIndexes: [routedLane.lane],
+                closeSheet: true,
+              });
+            }
           }}
           onClose={() => setSheet(null)}
         />
