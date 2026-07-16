@@ -33,9 +33,7 @@ void EspUartRxCallback(uint8_t* data,
 // ==========================================
 // Called by libDaisy when bytes arrive over USB serial.
 void UsbRxCallback(uint8_t* buf, uint32_t* len) {
-    for (uint32_t i = 0; i < *len; i++) {
-        serial.Feed(static_cast<char>(buf[i]));
-    }
+    serial.QueueUsbBytes(buf, *len);
 }
 
 // ==========================================
@@ -86,6 +84,7 @@ int main(void) {
     hw.StartAudio(AudioCallback);
 
     while (1) {
+        serial.ProcessPendingUsb();
         serial.ProcessPendingUart();
         serial.ProcessPendingActions();
     }

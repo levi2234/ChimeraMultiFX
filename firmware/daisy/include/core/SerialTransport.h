@@ -6,7 +6,8 @@ class SerialTransport {
 public:
     static constexpr size_t RX_QUEUE_LEN = 512;
     static constexpr uint32_t UART_BAUD = 115200;
-    static constexpr uint32_t UART_TX_MAX_TIMEOUT_MS = 2000;
+    static constexpr uint32_t UART_TX_MAX_TIMEOUT_MS = 5000;
+    static constexpr uint32_t UART_TX_TIMEOUT_MARGIN_MS = 250;
     using ByteCallback = void (*)(char byte, void* context);
 
     void Init(daisy::UsbHandle* usb, daisy::UartHandler* uart) {
@@ -96,8 +97,9 @@ public:
         }
         if (!uart_) return;
 
-        uint32_t timeout_ms = static_cast<uint32_t>(
-            (size * 10000u + UART_BAUD - 1u) / UART_BAUD + 50u);
+        const uint32_t wire_time_ms = static_cast<uint32_t>(
+            (size * 10000u + UART_BAUD - 1u) / UART_BAUD);
+        uint32_t timeout_ms = wire_time_ms * 2u + UART_TX_TIMEOUT_MARGIN_MS;
         if (timeout_ms > UART_TX_MAX_TIMEOUT_MS) timeout_ms = UART_TX_MAX_TIMEOUT_MS;
         if (uart_->BlockingTransmit(
             reinterpret_cast<uint8_t*>(const_cast<char*>(data)), size, timeout_ms)

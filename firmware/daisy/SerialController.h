@@ -46,6 +46,7 @@
 class SerialController {
 public:
     static constexpr size_t UART_RX_DMA_BUFFER_LEN = 256;
+    static constexpr size_t USB_RX_QUEUE_LEN = 512;
 
     void Init(Router* router,
               float sample_rate,
@@ -105,6 +106,33 @@ public:
         transport_.QueueUartBytes(data, size);
     }
 
+    void QueueUsbBytes(const uint8_t* data, size_t size) {
+        for (size_t i = 0; i < size; i++) {
+            const uint16_t next = static_cast<uint16_t>((usb_rx_head_ + 1) % USB_RX_QUEUE_LEN);
+            if (next == usb_rx_tail_) {
+                usb_rx_overflowed_ = true;
+                continue;
+            }
+            usb_rx_queue_[usb_rx_head_] = data[i];
+            usb_rx_head_ = next;
+        }
+    }
+
+    void ProcessPendingUsb() {
+        if (usb_rx_overflowed_) {
+            usb_rx_tail_ = usb_rx_head_;
+            usb_rx_overflowed_ = false;
+            framing_error_count_++;
+            buf_pos_ = 0;
+            discarding_frame_ = false;
+        }
+        while (usb_rx_tail_ != usb_rx_head_) {
+            const char byte = static_cast<char>(usb_rx_queue_[usb_rx_tail_]);
+            usb_rx_tail_ = static_cast<uint16_t>((usb_rx_tail_ + 1) % USB_RX_QUEUE_LEN);
+            Feed(byte);
+        }
+    }
+
     void StartUartDmaReceive(uint8_t* buffer,
                              size_t size,
                              daisy::UartHandler::CircularRxCallbackFunctionPtr callback,
@@ -144,6 +172,9 @@ private:
     static constexpr int MAX_TOKENS  = 8;
     static constexpr int TX_BUF_LEN  = 256;
     static constexpr int JSON_BUF_LEN = 32768;
+    static constexpr uint32_t CPU_GUARD_PREFLIGHT_HUNDREDTHS = 6000;
+    static constexpr uint32_t CPU_GUARD_POSTFLIGHT_HUNDREDTHS = 6000;
+    static constexpr uint32_t CPU_GUARD_SETTLE_MS = 100;
     Router* router_ = nullptr;
     float   sample_rate_ = 48000.f;
     daisy::UsbHandle* usb_ = nullptr;
@@ -156,6 +187,10 @@ private:
     uint32_t framing_error_count_ = 0;
     volatile bool dfu_requested_ = false;
     volatile uint32_t audio_cpu_usage_hundredths_ = 0;
+    uint8_t usb_rx_queue_[USB_RX_QUEUE_LEN] = {};
+    volatile uint16_t usb_rx_head_ = 0;
+    volatile uint16_t usb_rx_tail_ = 0;
+    volatile bool usb_rx_overflowed_ = false;
     daisy::CpuLoadMeter cpu_load_meter_;
     bool cpu_load_meter_initialized_ = false;
     SerialTransport transport_;
@@ -204,8 +239,15 @@ private:
         Effect* fx = CreateFromName(t[2]);
         if (!fx) { Reply("ERR unknown effect: %s\n", t[2]); return; }
 
+        const bool enable_effect = CpuBudgetAvailable();
+        fx->SetEnabled(enable_effect);
         router_->lanes[lane].Add(fx);
-        Reply("OK added %s to lane %d slot %d\n", t[2], lane, router_->lanes[lane].count - 1);
+        const int slot = router_->lanes[lane].count - 1;
+        if (!enable_effect || !KeepEffectWithinCpuBudget(lane, slot)) {
+            Reply("OK added %s to lane %d slot %d bypassed cpu_limit\n", t[2], lane, slot);
+            return;
+        }
+        Reply("OK added %s to lane %d slot %d\n", t[2], lane, slot);
     }
 
     void CmdReset() {
@@ -223,7 +265,13 @@ private:
         Effect* fx = CreateFromName(t[3]);
         if (!fx) { Reply("ERR unknown effect: %s\n", t[3]); return; }
 
+        const bool enable_effect = CpuBudgetAvailable();
+        fx->SetEnabled(enable_effect);
         router_->lanes[lane].Insert(slot, fx);
+        if (!enable_effect || !KeepEffectWithinCpuBudget(lane, slot)) {
+            Reply("OK inserted %s at lane %d slot %d bypassed cpu_limit\n", t[3], lane, slot);
+            return;
+        }
         Reply("OK inserted %s at lane %d slot %d\n", t[3], lane, slot);
     }
 
@@ -312,8 +360,28 @@ private:
         if (!ValidLane(lane) || !ValidSlot(lane, slot)) return;
 
         bool enabled = (atoi(t[3]) != 0);
-        router_->lanes[lane].slots[slot]->SetEnabled(enabled);
+        if (enabled && !CpuBudgetAvailable()) {
+            router_->lanes[lane].SetEffectEnabled(slot, false);
+            Reply("CPU Limit Reached; lane %d slot %d kept bypassed\n", lane, slot);
+            return;
+        }
+        router_->lanes[lane].SetEffectEnabled(slot, enabled);
+        if (enabled && !KeepEffectWithinCpuBudget(lane, slot)) {
+            Reply("CPU Limit Reached; lane %d slot %d kept bypassed\n", lane, slot);
+            return;
+        }
         Reply("OK bypass lane %d slot %d = %s\n", lane, slot, enabled ? "on" : "off");
+    }
+
+    bool CpuBudgetAvailable() const {
+        return audio_cpu_usage_hundredths_ < CPU_GUARD_PREFLIGHT_HUNDREDTHS;
+    }
+
+    bool KeepEffectWithinCpuBudget(int lane, int slot) {
+        daisy::System::Delay(CPU_GUARD_SETTLE_MS);
+        if (audio_cpu_usage_hundredths_ < CPU_GUARD_POSTFLIGHT_HUNDREDTHS) return true;
+        router_->lanes[lane].SetEffectEnabled(slot, false);
+        return false;
     }
 
     // ─── clear <lane> ────────────────────────────────────────────────────────

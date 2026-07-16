@@ -112,9 +112,9 @@ export function AppController() {
     setBusy(true);
     try {
       await operation();
+      if (closeSheet) setSheet(null);
       if (slot) mergeSlot(await commands.statusSlot(slot.lane, slot.slot));
       else await refreshLanes(laneIndexes);
-      if (closeSheet) setSheet(null);
     } catch (problem) {
       showError(problem);
       await refresh();
@@ -139,7 +139,7 @@ export function AppController() {
 
   const bypassEffect = useCallback((lane, slot) => {
     if (info?.offline) return;
-    const effect = lanes[lane]?.effects[slot];
+    const effect = lanes[lane]?.effects.find((candidate) => candidate.slot === slot);
     if (!effect) return;
     setQuickEdit(null);
     mutate(() => commands.bypass(lane, slot, !effect.enabled), { laneIndexes: [lane] });
@@ -188,12 +188,15 @@ export function AppController() {
 
   const openEffect = useCallback(async (lane, slot) => {
     if (info?.offline) return;
-    const effect = lanes[lane]?.effects[slot];
+    const effect = lanes[lane]?.effects.find((candidate) => candidate.slot === slot);
     if (!effect) return;
     setQuickEdit(null);
-    setSheet({ type: 'parameter', lane, slot });
+    setSheet({ type: 'parameter', lane, slot, effect });
     try {
       const slotStatus = await commands.statusSlot(lane, slot);
+      setSheet((current) => sameEffect(current, { lane, slot })
+        ? { ...current, effect: slotStatus }
+        : current);
       mergeSlot(slotStatus);
       setMetadata((current) => ({
         ...current,
@@ -207,7 +210,7 @@ export function AppController() {
 
   const selectedEffect = useMemo(() => {
     if (sheet?.type !== 'parameter') return null;
-    return lanes[sheet.lane]?.effects[sheet.slot] || null;
+    return lanes[sheet.lane]?.effects.find((effect) => effect.slot === sheet.slot) || sheet.effect || null;
   }, [lanes, sheet]);
   const routedLane = sheet?.type === 'route' ? lanes[sheet.lane] : null;
 

@@ -61,6 +61,7 @@ export function EffectLibrarySheet({ lane, effects, onChoose, onClose }) {
 
 export function ParameterSheet({ selection, effect, metadata, onSet, onBypass, onRemove, onClose }) {
   if (!effect) return null;
+  const params = effect.params || {};
   return (
     <Sheet
       title={effectLabel(effect.name)}
@@ -83,7 +84,7 @@ export function ParameterSheet({ selection, effect, metadata, onSet, onBypass, o
           <ParameterKnob
             key={name}
             name={name}
-            value={effect.params[name] ?? info.default}
+            value={params[name] ?? info.default}
             info={info}
             onCommit={onSet}
           />

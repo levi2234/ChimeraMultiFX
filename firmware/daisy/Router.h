@@ -39,7 +39,9 @@ public:
 
     struct Lane {
         Effect*      slots[MAX_SLOTS] = {};
+        Effect*      enabled_slots[MAX_SLOTS] = {};
         int          count  = 0;
+        int          enabled_count = 0;
         float        level  = 1.0f;
         bool         active = false;
         InputSource  input  = InputSource::In_1;
@@ -48,7 +50,11 @@ public:
         float        last_out = 0.f;
 
         void Add(Effect* fx) {
-            if (count < MAX_SLOTS) { slots[count++] = fx; active = true; }
+            if (count < MAX_SLOTS) {
+                slots[count++] = fx;
+                active = true;
+                RebuildEnabledSlots();
+            }
         }
 
         void Insert(int pos, Effect* fx) {
@@ -56,6 +62,8 @@ public:
             for (int i = count; i > pos; i--) slots[i] = slots[i - 1];
             slots[pos] = fx;
             count++;
+            active = true;
+            RebuildEnabledSlots();
         }
 
         void Remove(int pos) {
@@ -63,6 +71,7 @@ public:
             for (int i = pos; i < count - 1; i++) slots[i] = slots[i + 1];
             slots[--count] = nullptr;
             if (count == 0) active = false;
+            RebuildEnabledSlots();
         }
 
         void Swap(int a, int b) {
@@ -70,21 +79,38 @@ public:
                 Effect* tmp = slots[a];
                 slots[a] = slots[b];
                 slots[b] = tmp;
+                RebuildEnabledSlots();
             }
         }
 
         void Clear() {
             for (int i = 0; i < count; i++) slots[i] = nullptr;
-            count = 0; active = false;
+            count = 0;
+            enabled_count = 0;
+            active = false;
+        }
+
+        void SetEffectEnabled(int slot, bool enabled) {
+            if (slot < 0 || slot >= count) return;
+            slots[slot]->SetEnabled(enabled);
+            RebuildEnabledSlots();
         }
 
         float ProcessChain(float in) {
             float s = in;
-            for (int i = 0; i < count; i++) {
-                s = slots[i]->Tick(s);
+            for (int i = 0; i < enabled_count; i++) {
+                s = enabled_slots[i]->Process(s);
             }
             last_out = s * level;
             return last_out;
+        }
+
+        void RebuildEnabledSlots() {
+            enabled_count = 0;
+            for (int i = 0; i < count; i++) {
+                if (slots[i]->IsEnabled()) enabled_slots[enabled_count++] = slots[i];
+            }
+            for (int i = enabled_count; i < MAX_SLOTS; i++) enabled_slots[i] = nullptr;
         }
     };
 
@@ -95,6 +121,7 @@ public:
             for (int i = 0; i < lanes[r].count; i++) {
                 lanes[r].slots[i]->Init(sample_rate);
             }
+                lanes[r].RebuildEnabledSlots();
         }
     }
 

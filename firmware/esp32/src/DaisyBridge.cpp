@@ -2,7 +2,7 @@
 
 namespace {
 constexpr uint32_t DaisyUartSettleMs = 10;
-constexpr uint32_t DaisyUnavailableBackoffMs = 10000;
+constexpr uint32_t DaisyUnavailableBackoffMs = 1500;
 
 HardwareSerial daisySerial(2);
 bool daisyUartStarted = false;
@@ -39,6 +39,15 @@ void recoverDaisyUart() {
 
 bool commandUsesLargeResponseWindow(const String& command) {
 	return command.startsWith("status") || command == "info" || command.startsWith("effect ");
+}
+
+bool commandCanRetry(const String& command) {
+	return command.startsWith("status")
+		|| command == "info"
+		|| command.startsWith("effect ")
+		|| command == "cpu_usage"
+		|| command == "ping"
+		|| command == "uartdiag";
 }
 
 DaisyBridge::Reply sendDaisyCommand(const String& command) {
@@ -158,6 +167,14 @@ Reply transactCommand(const String& command) {
 	if (!reply.complete) {
 		delay(RetryDelayMs);
 		recoverDaisyUart();
+		if (!reply.overflow && commandCanRetry(command)) {
+			daisyUnavailableUntilMs = 0;
+			reply = sendDaisyCommand(command);
+			if (!reply.complete) {
+				delay(RetryDelayMs);
+				recoverDaisyUart();
+			}
+		}
 	}
 	return reply;
 }
