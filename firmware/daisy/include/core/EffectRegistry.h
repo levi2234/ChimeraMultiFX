@@ -20,7 +20,6 @@
 #include "effects/time/Delay.h"
 #include "effects/time/DeluxeMemoryMan.h"
 #include "effects/time/StrymonBlueSky.h"
-#include "effects/time/TCHallOfFame2.h"
 #include "effects/dynamics/Compressor.h"
 #include "effects/dynamics/NoiseGate.h"
 #include "effects/dynamics/Sustain.h"
@@ -68,7 +67,6 @@ private:
             {"delay", EffectCategory::Time, &Instantiate<Delay>},
             {"DeluxeMemoryMan", EffectCategory::Time, &Instantiate<DeluxeMemoryMan>},
             {"StrymonBluesky", EffectCategory::Time, &Instantiate<StrymonBlueSky>},
-            {"TCHallOfFame2", EffectCategory::Time, &Instantiate<TCHallOfFame2>},
             {"compressor", EffectCategory::Dynamics, &Instantiate<Compressor>},
             {"noisegate", EffectCategory::Dynamics, &Instantiate<NoiseGate>},
             {"sustain", EffectCategory::Dynamics, &Instantiate<Sustain>},

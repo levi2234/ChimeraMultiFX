@@ -6,37 +6,6 @@ to reproduce proprietary digital code or exact protected circuit designs. All
 API values are normalized from `0.0` to `1.0`; tapers and physical ranges are
 mapped inside each effect.
 
-## TC Hall of Fame 2-style reverb
-
-Registry name: `TCHallOfFame2`
-
-Tone: a clean dry path with an additive, dense wet field. Room is compact and
-early-reflection-led; Hall is smooth; Spring is resonant and transient-sensitive;
-Plate is fast and bright; Church is long and dark; Shimmer blooms one octave up
-inside the tail; Mod moves slowly; LoFi is dark, quantized, and grainy.
-
-| Parameter | Range | Default | Internal mapping |
-| --- | ---: | ---: | --- |
-| `decay` | 0-1 | 0.48 | Mode-dependent FDN feedback, up to 0.968 |
-| `tone` | 0-1 | 0.48 | In-loop damping, approximately 520 Hz-13.3 kHz |
-| `level` | 0-1 | 0.28 | Quadratic wet gain; dry remains unity |
-| `predelay` | 0-1 | 0.16 | Quadratic 2-120 ms |
-| `mode` | 0-1 | 1/7 | Room, Hall, Spring, Plate, Church, Shimmer, Mod, LoFi |
-| `mash` | 0-1 | 0 | Mode macro: decay, drip, brightness, shimmer, motion, or degradation |
-
-Approximation: eight mutually prime delay lines use an orthonormal Hadamard
-feedback matrix, mode-specific geometry, early reflections, diffusion, and
-feedback damping. Modes crossfade for 55 ms. Shimmer uses a dual-grain +1 octave
-shift in the tank feedback; Spring adds dispersive delay geometry and two
-transient-driven resonances.
-
-Presets:
-
-| Use | Decay | Tone | Level | PreDelay | Mode | MASH |
-| --- | ---: | ---: | ---: | ---: | ---: | ---: |
-| Subtle room | 0.20 | 0.43 | 0.18 | 0.04 | 0 | 0.10 |
-| Classic hall | 0.58 | 0.52 | 0.34 | 0.22 | 1/7 | 0.15 |
-| Shimmer bloom | 0.82 | 0.58 | 0.42 | 0.30 | 5/7 | 0.72 |
 
 ## TC Sub N Up-style octaver
 

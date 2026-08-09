@@ -18,7 +18,6 @@ export const EFFECT_COLORS = {
   delay: '#8a5cff',
   DeluxeMemoryMan: '#7c5cff',
   StrymonBluesky: '#2f80ed',
-  TCHallOfFame2: '#14b8a6',
   compressor: '#ff3f67',
   noisegate: '#22c55e',
   sustain: '#eab308',
@@ -51,7 +50,6 @@ export const EFFECT_GLYPHS = {
   delay: '◉',
   DeluxeMemoryMan: '⧖',
   StrymonBluesky: '☁',
-  TCHallOfFame2: '◌',
   compressor: '↔',
   noisegate: '⊣',
   sustain: '∞',
@@ -68,7 +66,6 @@ export const EFFECT_LABELS = {
   FulltoneOCD: 'Fulltone OCD',
   BossBD2: 'BOSS BD-2 Blues Driver',
   TCSubNUp: "TC Electronic Sub 'N' Up",
-  TCHallOfFame2: 'TC Electronic Hall of Fame 2',
 };
 
 export const EFFECT_TYPES = [
@@ -92,7 +89,6 @@ const LEGACY_TYPE_BY_EFFECT = {
   tremolo: TYPE_BY_ID.modulation,
   TCSubNUp: TYPE_BY_ID.modulation,
   delay: TYPE_BY_ID.time,
-  TCHallOfFame2: TYPE_BY_ID.time,
   compressor: TYPE_BY_ID.dynamics,
   noisegate: TYPE_BY_ID.dynamics,
   sustain: TYPE_BY_ID.dynamics,
