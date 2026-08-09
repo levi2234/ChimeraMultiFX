@@ -13429,13 +13429,13 @@
 			)
 		)
 		(pin "3"
-			(uuid "daf6a53d-d172-4356-99d1-5803c5ef7c8d")
+			(uuid "daf6a53d-d172-4356-99d1-5803c5ef7c8e")
 		)
 		(pin "7"
 			(uuid "b44d9405-f6d1-42e4-b372-345173d0a6fc")
 		)
 		(pin "2"
-			(uuid "2400502f-1dfc-4292-8539-5e6673ccfccd")
+			(uuid "2400502f-1dfc-4292-8539-5e6673ccfcce")
 		)
 		(pin "6"
 			(uuid "4af59bad-8f40-454c-816e-9a135f162fe0")
@@ -13444,13 +13444,13 @@
 			(uuid "354eb5d5-7fff-41bb-a5d8-f9be65c4355e")
 		)
 		(pin "4"
-			(uuid "8e3bccce-66be-42c0-8a97-65809cce15ed")
+			(uuid "8e3bccce-66be-42c0-8a97-65809cce15ee")
 		)
 		(pin "1"
-			(uuid "ed795646-c183-4fb8-9475-aa447e1db632")
+			(uuid "ed795646-c183-4fb8-9475-aa447e1db633")
 		)
 		(pin "8"
-			(uuid "25c80f49-ce9a-4682-8916-03902051ba61")
+			(uuid "25c80f49-ce9a-4682-8916-03902051ba62")
 		)
 		(instances
 			(project "daisyBoard"
@@ -15269,13 +15269,13 @@
 			(uuid "5811d60c-983b-4f74-834e-357b7d6e6c38")
 		)
 		(pin "4"
-			(uuid "8e3bccce-66be-42c0-8a97-65809cce15ed")
+			(uuid "8e3bccce-66be-42c0-8a97-65809cce15ef")
 		)
 		(pin "1"
 			(uuid "5d8c1132-b892-4356-8bff-a53cf6c36cea")
 		)
 		(pin "8"
-			(uuid "25c80f49-ce9a-4682-8916-03902051ba61")
+			(uuid "25c80f49-ce9a-4682-8916-03902051ba63")
 		)
 		(instances
 			(project "daisyBoard"
@@ -17481,25 +17481,25 @@
 			(uuid "a5f0d431-94cf-45b5-9126-4114071b9b88")
 		)
 		(pin "7"
-			(uuid "b44d9405-f6d1-42e4-b372-345173d0a6fc")
+			(uuid "b44d9405-f6d1-42e4-b372-345173d0a6fd")
 		)
 		(pin "2"
 			(uuid "ad0c019e-fb01-48d2-a3ef-04c6eac0e55f")
 		)
 		(pin "6"
-			(uuid "4af59bad-8f40-454c-816e-9a135f162fe0")
+			(uuid "4af59bad-8f40-454c-816e-9a135f162fe1")
 		)
 		(pin "5"
-			(uuid "354eb5d5-7fff-41bb-a5d8-f9be65c4355e")
+			(uuid "354eb5d5-7fff-41bb-a5d8-f9be65c4355f")
 		)
 		(pin "4"
-			(uuid "8e3bccce-66be-42c0-8a97-65809cce15ed")
+			(uuid "8e3bccce-66be-42c0-8a97-65809cce15f0")
 		)
 		(pin "1"
 			(uuid "9ae2013a-74c8-4177-a750-7d5003dd1d59")
 		)
 		(pin "8"
-			(uuid "25c80f49-ce9a-4682-8916-03902051ba61")
+			(uuid "25c80f49-ce9a-4682-8916-03902051ba64")
 		)
 		(instances
 			(project "daisyBoard"
@@ -17917,25 +17917,25 @@
 			(uuid "3fde2f5c-0f95-4a21-b5f3-89891034671f")
 		)
 		(pin "7"
-			(uuid "ef82f248-c862-4e32-b2a3-0f6284c57cd6")
+			(uuid "ef82f248-c862-4e32-b2a3-0f6284c57cd7")
 		)
 		(pin "2"
 			(uuid "aa3c5c3f-7af5-420b-ad09-d8d2c2ab4cbb")
 		)
 		(pin "6"
-			(uuid "6b97023b-d897-49f9-89da-34f5707cfd28")
+			(uuid "6b97023b-d897-49f9-89da-34f5707cfd29")
 		)
 		(pin "5"
-			(uuid "3e1a7c69-5f65-4a9b-bc65-2ffe78e4cedd")
+			(uuid "3e1a7c69-5f65-4a9b-bc65-2ffe78e4cede")
 		)
 		(pin "4"
-			(uuid "8e3bccce-66be-42c0-8a97-65809cce15ed")
+			(uuid "8e3bccce-66be-42c0-8a97-65809cce15f1")
 		)
 		(pin "1"
 			(uuid "cdfd5bcf-3957-4416-b481-33b2789eee40")
 		)
 		(pin "8"
-			(uuid "25c80f49-ce9a-4682-8916-03902051ba61")
+			(uuid "25c80f49-ce9a-4682-8916-03902051ba65")
 		)
 		(instances
 			(project "daisyBoard"
@@ -20554,28 +20554,28 @@
 			)
 		)
 		(pin "3"
-			(uuid "2be17ce9-4b3f-4af7-9094-b057de857b90")
+			(uuid "2be17ce9-4b3f-4af7-9094-b057de857b91")
 		)
 		(pin "7"
-			(uuid "b44d9405-f6d1-42e4-b372-345173d0a6fc")
+			(uuid "b44d9405-f6d1-42e4-b372-345173d0a6fe")
 		)
 		(pin "2"
-			(uuid "65288496-e5c3-4edd-83c0-cb1a8f708e87")
+			(uuid "65288496-e5c3-4edd-83c0-cb1a8f708e88")
 		)
 		(pin "6"
-			(uuid "4af59bad-8f40-454c-816e-9a135f162fe0")
+			(uuid "4af59bad-8f40-454c-816e-9a135f162fe2")
 		)
 		(pin "5"
-			(uuid "354eb5d5-7fff-41bb-a5d8-f9be65c4355e")
+			(uuid "354eb5d5-7fff-41bb-a5d8-f9be65c43560")
 		)
 		(pin "4"
-			(uuid "8e3bccce-66be-42c0-8a97-65809cce15ed")
+			(uuid "8e3bccce-66be-42c0-8a97-65809cce15f2")
 		)
 		(pin "1"
-			(uuid "5d8c1132-b892-4356-8bff-a53cf6c36cea")
+			(uuid "5d8c1132-b892-4356-8bff-a53cf6c36ceb")
 		)
 		(pin "8"
-			(uuid "25c80f49-ce9a-4682-8916-03902051ba61")
+			(uuid "25c80f49-ce9a-4682-8916-03902051ba66")
 		)
 		(instances
 			(project "daisyBoard"
@@ -20652,13 +20652,13 @@
 			)
 		)
 		(pin "3"
-			(uuid "daf6a53d-d172-4356-99d1-5803c5ef7c8d")
+			(uuid "daf6a53d-d172-4356-99d1-5803c5ef7c8f")
 		)
 		(pin "7"
 			(uuid "0aace06a-ac33-480c-82bf-13c7b9fee325")
 		)
 		(pin "2"
-			(uuid "2400502f-1dfc-4292-8539-5e6673ccfccd")
+			(uuid "2400502f-1dfc-4292-8539-5e6673ccfccf")
 		)
 		(pin "6"
 			(uuid "f1b2c710-9360-4b7c-9311-c51b0f2795f2")
@@ -20667,13 +20667,13 @@
 			(uuid "38a33738-035d-424e-980f-3564cf8e0b21")
 		)
 		(pin "4"
-			(uuid "8e3bccce-66be-42c0-8a97-65809cce15ed")
+			(uuid "8e3bccce-66be-42c0-8a97-65809cce15f3")
 		)
 		(pin "1"
-			(uuid "ed795646-c183-4fb8-9475-aa447e1db632")
+			(uuid "ed795646-c183-4fb8-9475-aa447e1db634")
 		)
 		(pin "8"
-			(uuid "25c80f49-ce9a-4682-8916-03902051ba61")
+			(uuid "25c80f49-ce9a-4682-8916-03902051ba67")
 		)
 		(instances
 			(project "daisyBoard"
@@ -22330,25 +22330,25 @@
 			(uuid "cc76936c-ebff-414b-8d50-15e8ee16532e")
 		)
 		(pin "7"
-			(uuid "ef82f248-c862-4e32-b2a3-0f6284c57cd6")
+			(uuid "ef82f248-c862-4e32-b2a3-0f6284c57cd8")
 		)
 		(pin "2"
 			(uuid "1244e9de-3d5b-4ee9-96a3-a0c4382f512c")
 		)
 		(pin "6"
-			(uuid "6b97023b-d897-49f9-89da-34f5707cfd28")
+			(uuid "6b97023b-d897-49f9-89da-34f5707cfd2a")
 		)
 		(pin "5"
-			(uuid "3e1a7c69-5f65-4a9b-bc65-2ffe78e4cedd")
+			(uuid "3e1a7c69-5f65-4a9b-bc65-2ffe78e4cedf")
 		)
 		(pin "4"
-			(uuid "8e3bccce-66be-42c0-8a97-65809cce15ed")
+			(uuid "8e3bccce-66be-42c0-8a97-65809cce15f4")
 		)
 		(pin "1"
 			(uuid "206928c4-282f-4c33-ac88-cebc602cf6d2")
 		)
 		(pin "8"
-			(uuid "25c80f49-ce9a-4682-8916-03902051ba61")
+			(uuid "25c80f49-ce9a-4682-8916-03902051ba68")
 		)
 		(instances
 			(project "daisyBoard"
@@ -22765,25 +22765,25 @@
 			(uuid "8a73086a-4268-42ad-acff-5facdf5a3c92")
 		)
 		(pin "7"
-			(uuid "b44d9405-f6d1-42e4-b372-345173d0a6fc")
+			(uuid "b44d9405-f6d1-42e4-b372-345173d0a6ff")
 		)
 		(pin "2"
 			(uuid "7888799f-59ec-43ff-af19-270e612bb092")
 		)
 		(pin "6"
-			(uuid "4af59bad-8f40-454c-816e-9a135f162fe0")
+			(uuid "4af59bad-8f40-454c-816e-9a135f162fe3")
 		)
 		(pin "5"
-			(uuid "354eb5d5-7fff-41bb-a5d8-f9be65c4355e")
+			(uuid "354eb5d5-7fff-41bb-a5d8-f9be65c43561")
 		)
 		(pin "4"
-			(uuid "8e3bccce-66be-42c0-8a97-65809cce15ed")
+			(uuid "8e3bccce-66be-42c0-8a97-65809cce15f5")
 		)
 		(pin "1"
 			(uuid "5ce19771-babe-4efe-a2e1-c4cb671055c0")
 		)
 		(pin "8"
-			(uuid "25c80f49-ce9a-4682-8916-03902051ba61")
+			(uuid "25c80f49-ce9a-4682-8916-03902051ba69")
 		)
 		(instances
 			(project "daisyBoard"
