@@ -1,0 +1,91 @@
+Designator,Val,Package,Mid X,Mid Y,Rotation,Layer
+C1,100p,C_0805_2012Metric,60.5,-102.775,0.0,top
+C10,2n2,C_1812_4532Metric,80.0,-140.95,90.0,top
+C11,1u,C_1206_3216Metric,75.425,-142.525,180.0,top
+C12,1u,C_1206_3216Metric,59.925,-142.525,180.0,top
+C13,100u,C_1206_3216Metric,129.585,-65.89,0.0,top
+C14,0.1uF,C_1206_3216Metric,68.175,-56.41,90.0,top
+C15,100u,C_1206_3216Metric,113.80125,-70.1725,0.0,top
+C16,100n,C_1206_3216Metric,129.615,-68.67,0.0,top
+C17,100n,C_1206_3216Metric,129.515,-71.52,0.0,top
+C18,10uF,C_1206_3216Metric,85.475,-56.51,90.0,top
+C19,100u,C_1206_3216Metric,113.82625,-75.1725,0.0,top
+C2,1u,C_1206_3216Metric,60.875,-105.545,0.0,top
+C20,100n,C_1206_3216Metric,113.80125,-72.6725,0.0,top
+C21,100u,C_1206_3216Metric,100.745,-65.920132,180.0,top
+C22,100n,C_1206_3216Metric,100.745,-62.570132,180.0,top
+C23,100n,C_1206_3216Metric,100.745,-59.220132,180.0,top
+C3,1n,C_1206_3216Metric,68.4,-104.3,-90.0,top
+C4,100p,C_0805_2012Metric,60.0,-127.095,0.0,top
+C5,1u,C_1206_3216Metric,60.275,-130.095,0.0,top
+C6,1n,C_1206_3216Metric,67.275,-128.62,-90.0,top
+C7,2n2,C_1812_4532Metric,79.0,-116.5,90.0,top
+C8,1u,C_1206_3216Metric,74.75,-118.5,180.0,top
+C9,1u,C_1206_3216Metric,59.3875,-118.5,180.0,top
+FB1,600R @ 100MHz,L_0805_2012Metric,103.435,-54.720132,180.0,top
+FB2,600R @ 100MHz,L_0805_2012Metric,139.98,-58.16,90.0,top
+FB3,600R @ 100MHz,L_0805_2012Metric,133.9825,-57.5,0.0,top
+IC1,TL072,SOIC-8_3.9x4.9mm_P1.27mm,75.875,-104.68,270.0,top
+IC2,TL072,SOIC-8_3.9x4.9mm_P1.27mm,74.775,-128.595,270.0,top
+IC3,TL072,SOIC-8_3.9x4.9mm_P1.27mm,68.3875,-116.0,0.0,top
+IC4,TL072,SOIC-8_3.9x4.9mm_P1.27mm,68.925,-140.025,0.0,top
+J1,LEFT Pin ROW,PinSocket_1x15_P2.54mm_Vertical,64.23,-71.29,180.0,top
+J12,Micro_SD_Card,microSD_HC_Molex_104031-0811,76.865,-56.775,0.0,top
+J13,LEFT Pin ROW Daisy,PinSocket_1x20_P2.54mm_Vertical,141.86,-122.98,0.0,top
+J14,RIGHT Pin ROW DAISY,PinSocket_1x20_P2.54mm_Vertical,126.56,-122.98,180.0,top
+J15,Daisy Pin Breakout LEFT,PinHeader_1x20_P2.54mm_Vertical,146.56,-122.98,180.0,top
+J16,Daisy PIN Breakout RIGHT,PinHeader_1x20_P2.54mm_Vertical,121.58,-122.98,0.0,top
+J2,RIGHT Pin Row,PinSocket_1x15_P2.54mm_Vertical,89.63,-71.29,0.0,top
+J3,ESP32 Pin Breakout RIGHT,PinHeader_1x15_P2.54mm_Vertical,93.5,-71.3,180.0,top
+J4,ESP32 Pin Breakout LEFT,PinHeader_1x15_P2.54mm_Vertical,59.885,-71.23,0.0,top
+J5,Micro_SD_Card,microSD_HC_Molex_104031-0811,141.8875,-86.0,-90.0,top
+NT1,NetTie_2,NetTie-2_SMD_Pad0.5mm,128.11,-64.68,-90.0,top
+R1,1k,R_0805_2012Metric,65.3125,-105.545,0.0,top
+R10,1M,R_0805_2012Metric,73.925,-139.6125,-90.0,top
+R11,100R,R_0805_2012Metric,64.0125,-142.525,180.0,top
+R12,100k,R_0805_2012Metric,59.425,-140.025,0.0,top
+R13,10K,R_0805_2012Metric,132.2,-81.2,0.0,top
+R14,10K,R_0805_2012Metric,132.2,-83.6,0.0,top
+R15,10K,R_0805_2012Metric,132.2,-85.7,0.0,top
+R16,10K,R_0805_2012Metric,132.2,-87.9,0.0,top
+R17,10K,R_0805_2012Metric,132.2,-90.4,0.0,top
+R18,100R,R_0805_2012Metric,89.5,-140.25,90.0,top
+R19,2M,R_0805_2012Metric,93.5,-140.5,180.0,top
+R2,1M,R_0805_2012Metric,70.9,-104.775,90.0,top
+R20,2M,R_0805_2012Metric,109.0,-141.0,0.0,top
+R21,100R,R_0805_2012Metric,104.5,-140.25,-90.0,top
+R22,100k,R_0805_2012Metric,113.17625,-65.4525,0.0,top
+R23,100k,R_0805_2012Metric,113.18625,-67.6725,180.0,top
+R24,100R,R_0805_2012Metric,117.2,-78.2875,90.0,top
+R25,10K,R_0805_2012Metric,73.975,-68.795,90.0,top
+R26,10K,R_0805_2012Metric,76.925,-68.795,90.0,top
+R27,10K,R_0805_2012Metric,79.875,-68.795,90.0,top
+R3,1k,R_0805_2012Metric,64.275,-130.095,0.0,top
+R4,1M,R_0805_2012Metric,69.775,-129.1825,90.0,top
+R5,3R3,R_0805_2012Metric,83.0,-118.5,0.0,top
+R6,1M,R_0805_2012Metric,73.225,-115.5,-90.0,top
+R7,100R,R_0805_2012Metric,63.475,-118.5,180.0,top
+R8,100k,R_0805_2012Metric,58.8875,-115.0,0.0,top
+R9,3R3,R_0805_2012Metric,83.0,-141.9125,-90.0,top
+TP1,Global Ground - Functional,TestPoint_THTPad_D2.5mm_Drill1.2mm,137.0,-53.62,0.0,top
+TP10,Jack Input 1 Pad GND,TestPoint_THTPad_D2.5mm_Drill1.2mm,54.0,-110.0,-90.0,top
+TP11,Jack Output 2 Signal Pad,TestPoint_THTPad_D2.5mm_Drill1.2mm,54.0,-140.0,-90.0,top
+TP12,Jack Output 2 GND Pad,TestPoint_THTPad_D2.5mm_Drill1.2mm,54.0,-145.0,-90.0,top
+TP15,Jack Output 1 GND Pad,TestPoint_THTPad_D2.5mm_Drill1.2mm,54.0,-120.0,-90.0,top
+TP16,Jack Output 1 Signal Pad,TestPoint_THTPad_D2.5mm_Drill1.2mm,54.0,-115.0,-90.0,top
+TP17,Exp Jack Input 1 Pad GND,TestPoint_THTPad_D2.5mm_Drill1.2mm,99.75,-146.5,90.0,top
+TP18,Exp Jack Input 1 Signal,TestPoint_THTPad_D2.5mm_Drill1.2mm,94.5,-146.5,90.0,top
+TP19,Exp Jack Input 2 GND,TestPoint_THTPad_D2.5mm_Drill1.2mm,114.25,-146.5,90.0,top
+TP2,Global power 5V Input field - Functional,TestPoint_THTPad_D2.5mm_Drill1.2mm,131.34,-53.72,0.0,top
+TP20,Exp Jack Input 2 Signal,TestPoint_THTPad_D2.5mm_Drill1.2mm,109.75,-146.75,90.0,top
+TP21,Processed input power at 5V ESP32 - Probe,TestPoint_Pad_2.0x2.0mm,100.935,-70.510132,90.0,top
+TP22,EXPR REF 1,TestPoint_THTPad_D2.5mm_Drill1.2mm,89.5,-146.25,0.0,top
+TP23,EXPR Ref 2,TestPoint_THTPad_D2.5mm_Drill1.2mm,104.5,-146.75,0.0,top
+TP5,Reference voltage for the op amps - Probe,TestPoint_Pad_2.0x2.0mm,120.95,-84.125,0.0,top
+TP6,Processed input power at 5V Daisy- Probe,TestPoint_Pad_2.0x2.0mm,146.5,-94.75,0.0,top
+TP7,Jack Input 1 Pad,TestPoint_THTPad_D2.5mm_Drill1.2mm,54.0,-105.0,-90.0,top
+TP8,Jack Input 2 Pad,TestPoint_THTPad_D2.5mm_Drill1.2mm,54.0,-130.0,-90.0,top
+TP9,Jack Input 2 Pad GND,TestPoint_THTPad_D2.5mm_Drill1.2mm,54.0,-135.0,-90.0,top
+U1,MCP6002-xSN,SOIC-8_3.9x4.9mm_P1.27mm,91.75,-133.0,270.0,top
+U2,MCP6002-xSN,SOIC-8_3.9x4.9mm_P1.27mm,103.25,-133.0,270.0,top
+U3,MCP6002-xSN,SOIC-8_3.9x4.9mm_P1.27mm,113.065,-80.6,180.0,top
