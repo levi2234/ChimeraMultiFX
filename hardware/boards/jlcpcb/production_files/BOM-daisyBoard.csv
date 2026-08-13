@@ -24,26 +24,7 @@ MCP6002-xSN,"U1,U2,U3",SOIC-8_3.9x4.9mm_P1.27mm,C7377,3
 RIGHT Pin ROW DAISY,J14,PinSocket_1x20_P2.54mm_Vertical,C53202183,1
 RIGHT Pin Row,J2,PinSocket_1x15_P2.54mm_Vertical,C2897378,1
 TL072,"IC1,IC2,IC3,IC4",SOIC-8_3.9x4.9mm_P1.27mm,C1346149,4
-Processed input power at 5V ESP32 - Probe,TP21,TestPoint_Pad_2.0x2.0mm,,1
-Exp Jack Input 1 Signal,TP18,TestPoint_THTPad_D2.5mm_Drill1.2mm,,1
-Jack Output 1 GND Pad,TP15,TestPoint_THTPad_D2.5mm_Drill1.2mm,,1
 Micro_SD_Card,J5,microSD_HC_Molex_104031-0811,,1
-Processed input power at 5V Daisy- Probe,TP6,TestPoint_Pad_2.0x2.0mm,,1
-EXPR Ref 2,TP23,TestPoint_THTPad_D2.5mm_Drill1.2mm,,1
 3R3,R5,R_0805_2012Metric,,1
-Exp Jack Input 1 Pad GND,TP17,TestPoint_THTPad_D2.5mm_Drill1.2mm,,1
-Jack Input 1 Pad GND,TP10,TestPoint_THTPad_D2.5mm_Drill1.2mm,,1
 3R3,R9,R_0805_2012Metric,,1
-Global Ground - Functional,TP1,TestPoint_THTPad_D2.5mm_Drill1.2mm,,1
-Reference voltage for the op amps - Probe,TP5,TestPoint_Pad_2.0x2.0mm,,1
-Exp Jack Input 2 GND,TP19,TestPoint_THTPad_D2.5mm_Drill1.2mm,,1
-Global power 5V Input field - Functional,TP2,TestPoint_THTPad_D2.5mm_Drill1.2mm,,1
-Jack Input 1 Pad,TP7,TestPoint_THTPad_D2.5mm_Drill1.2mm,,1
-Jack Output 1 Signal Pad,TP16,TestPoint_THTPad_D2.5mm_Drill1.2mm,,1
-Exp Jack Input 2 Signal,TP20,TestPoint_THTPad_D2.5mm_Drill1.2mm,,1
-Jack Input 2 Pad,TP8,TestPoint_THTPad_D2.5mm_Drill1.2mm,,1
-EXPR REF 1,TP22,TestPoint_THTPad_D2.5mm_Drill1.2mm,,1
-Jack Input 2 Pad GND,TP9,TestPoint_THTPad_D2.5mm_Drill1.2mm,,1
-Jack Output 2 GND Pad,TP12,TestPoint_THTPad_D2.5mm_Drill1.2mm,,1
-Jack Output 2 Signal Pad,TP11,TestPoint_THTPad_D2.5mm_Drill1.2mm,,1
 Micro_SD_Card,J12,microSD_HC_Molex_104031-0811,,1
