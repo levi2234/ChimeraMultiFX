@@ -686,7 +686,7 @@
         "uuid": "f52c2822-383d-4296-bc07-76547c2833aa"
       }
     ],
-    "used_designators": "FB2-3,TP22-23,R28,NT1,U1-4",
+    "used_designators": "FB2-3,TP22-23,R28,NT1,Card1-2,U1-4,#PWR3,#PWR20,#PWR72-73,#PWR82-91,C14,C18,C24-26,100nF1",
     "variants": []
   },
   "sheets": [
