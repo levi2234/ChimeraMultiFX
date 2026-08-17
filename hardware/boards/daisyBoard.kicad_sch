@@ -13474,7 +13474,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Capacitor_SMD:C_1206_3216Metric"
 			(at 493.0648 223.52 0)
 			(hide yes)
 			(show_name no)
@@ -13654,7 +13654,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Capacitor_SMD:C_1206_3216Metric"
 			(at 127.3048 97.79 0)
 			(hide yes)
 			(show_name no)
@@ -14460,7 +14460,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Capacitor_SMD:C_1206_3216Metric"
 			(at 197.1548 106.68 0)
 			(hide yes)
 			(show_name no)
@@ -16996,7 +16996,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Capacitor_SMD:C_1206_3216Metric"
 			(at 120.3452 30.48 0)
 			(hide yes)
 			(show_name no)
@@ -19169,7 +19169,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "6d8adfa4-9c37-43fc-a70a-69e97ce7fc56")
-		(property "Reference" "100nF1"
+		(property "Reference" "C32"
 			(at 423.164 45.72 90)
 			(show_name no)
 			(do_not_autoplace no)
@@ -19179,7 +19179,7 @@
 				)
 			)
 		)
-		(property "Value" "C26"
+		(property "Value" "100nF"
 			(at 426.72 42.926 90)
 			(show_name no)
 			(do_not_autoplace no)
@@ -19231,7 +19231,7 @@
 		(instances
 			(project "daisyBoard"
 				(path "/f52c2822-383d-4296-bc07-76547c2833aa"
-					(reference "100nF1")
+					(reference "C32")
 					(unit 1)
 				)
 			)
@@ -20521,7 +20521,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Capacitor_SMD:C_1206_3216Metric"
 			(at 385.1148 91.44 0)
 			(hide yes)
 			(show_name no)
@@ -22530,7 +22530,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Capacitor_SMD:C_1206_3216Metric"
 			(at 205.4352 24.13 0)
 			(hide yes)
 			(show_name no)
@@ -22730,7 +22730,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Capacitor_SMD:C_1206_3216Metric"
 			(at 517.8552 93.98 0)
 			(hide yes)
 			(show_name no)
