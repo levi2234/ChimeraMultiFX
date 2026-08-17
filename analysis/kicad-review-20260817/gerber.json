@@ -1,0 +1,1053 @@
+{
+  "analyzer_type": "gerber",
+  "schema_version": "1.4.0",
+  "directory": "analysis/kicad-review-20260817/gerbers",
+  "generator": "KiCad,Pcbnew,10.0.5",
+  "layer_count": 4,
+  "board_dimensions": {
+    "width_mm": 100.0,
+    "height_mm": 100.0,
+    "area_mm2": 10000.0,
+    "source": "edge_cuts_extents"
+  },
+  "statistics": {
+    "gerber_files": 11,
+    "drill_files": 2,
+    "total_holes": 242,
+    "total_flashes": 2371,
+    "total_draws": 57113
+  },
+  "completeness": {
+    "found_layers": [
+      "B.Cu",
+      "B.Mask",
+      "B.Paste",
+      "B.SilkS",
+      "Edge.Cuts",
+      "F.Cu",
+      "F.Mask",
+      "F.Paste",
+      "F.SilkS",
+      "In1.Cu",
+      "In2.Cu"
+    ],
+    "expected_layers": [],
+    "missing_required": [],
+    "missing_recommended": [],
+    "has_pth_drill": true,
+    "has_npth_drill": true,
+    "complete": true,
+    "source": "defaults"
+  },
+  "alignment": {
+    "aligned": false,
+    "issues": [
+      "Width varies by 6.6mm across copper/edge layers",
+      "Height varies by 6.3mm across copper/edge layers"
+    ],
+    "layer_extents": {
+      "B.Cu": {
+        "width": 93.363,
+        "height": 93.66
+      },
+      "In1.Cu": {
+        "width": 96.862,
+        "height": 98.999
+      },
+      "In2.Cu": {
+        "width": 98.999,
+        "height": 98.999
+      },
+      "F.Cu": {
+        "width": 93.363,
+        "height": 95.81
+      },
+      "Edge.Cuts": {
+        "width": 100.0,
+        "height": 100.0
+      },
+      "B.Mask": {
+        "width": 92.56,
+        "height": 93.66
+      },
+      "F.Mask": {
+        "width": 93.363,
+        "height": 95.81
+      },
+      "B.Paste": {
+        "width": 0,
+        "height": 0
+      },
+      "F.Paste": {
+        "width": 89.45,
+        "height": 91.7
+      },
+      "B.SilkS": {
+        "width": 92.56,
+        "height": 93.66
+      },
+      "F.SilkS": {
+        "width": 98.547,
+        "height": 99.875
+      },
+      "drill_NPTH": {
+        "width": 0,
+        "height": 0
+      },
+      "drill_PTH": {
+        "width": 93.363,
+        "height": 93.66
+      }
+    }
+  },
+  "drill_classification": {
+    "vias": {
+      "count": 84,
+      "tools": [
+        {
+          "diameter_mm": 0.3302,
+          "count": 84
+        }
+      ]
+    },
+    "component_holes": {
+      "count": 158,
+      "tools": [
+        {
+          "diameter_mm": 1.0008,
+          "count": 140
+        },
+        {
+          "diameter_mm": 1.1989,
+          "count": 16
+        },
+        {
+          "diameter_mm": 3.2004,
+          "count": 2
+        }
+      ]
+    },
+    "mounting_holes": {
+      "count": 0,
+      "tools": []
+    },
+    "classification_method": "x2_attributes"
+  },
+  "pad_summary": {
+    "smd_apertures": 195,
+    "via_apertures": 336,
+    "heatsink_apertures": 0,
+    "tht_holes": 158,
+    "smd_source": "x2_aperture_function",
+    "smd_ratio": 0.55
+  },
+  "trace_widths": {
+    "unique_widths_mm": [
+      0.127,
+      0.254,
+      0.3048,
+      0.508,
+      0.762
+    ],
+    "min_trace_mm": 0.127,
+    "max_trace_mm": 0.762,
+    "width_count": 5,
+    "min_feature_mm": 0.127
+  },
+  "component_analysis": {
+    "total_unique": 92,
+    "front_side": 91,
+    "back_side": 1,
+    "component_refs": [
+      "C1",
+      "C10",
+      "C11",
+      "C12",
+      "C13",
+      "C14",
+      "C15",
+      "C16",
+      "C17",
+      "C18",
+      "C19",
+      "C2",
+      "C20",
+      "C21",
+      "C22",
+      "C23",
+      "C3",
+      "C4",
+      "C5",
+      "C6",
+      "C7",
+      "C8",
+      "C9",
+      "FB1",
+      "FB2",
+      "FB3",
+      "G\\u002A\\u002A\\u002A",
+      "IC1",
+      "IC2",
+      "IC3",
+      "IC4",
+      "J1",
+      "J12",
+      "J13",
+      "J14",
+      "J15",
+      "J16",
+      "J2",
+      "J3",
+      "J4",
+      "J5",
+      "NT1",
+      "R1",
+      "R10",
+      "R11",
+      "R12",
+      "R13",
+      "R14",
+      "R15",
+      "R16",
+      "R17",
+      "R18",
+      "R19",
+      "R2",
+      "R20",
+      "R21",
+      "R22",
+      "R23",
+      "R24",
+      "R25",
+      "R26",
+      "R27",
+      "R3",
+      "R4",
+      "R5",
+      "R6",
+      "R7",
+      "R8",
+      "R9",
+      "REF\\u002A\\u002A",
+      "TP1",
+      "TP10",
+      "TP11",
+      "TP12",
+      "TP15",
+      "TP16",
+      "TP17",
+      "TP18",
+      "TP19",
+      "TP2",
+      "TP20",
+      "TP21",
+      "TP22",
+      "TP23",
+      "TP5",
+      "TP6",
+      "TP7",
+      "TP8",
+      "TP9",
+      "U1",
+      "U2",
+      "U3"
+    ],
+    "has_x2_data": true,
+    "pads_per_component": {
+      "C1": 2,
+      "C10": 2,
+      "C11": 2,
+      "C12": 2,
+      "C13": 2,
+      "C14": 2,
+      "C15": 2,
+      "C16": 2,
+      "C17": 2,
+      "C18": 2,
+      "C19": 2,
+      "C2": 2,
+      "C20": 2,
+      "C21": 2,
+      "C22": 2,
+      "C23": 2,
+      "C3": 2,
+      "C4": 2,
+      "C5": 2,
+      "C6": 2,
+      "C7": 2,
+      "C8": 2,
+      "C9": 2,
+      "FB1": 2,
+      "FB2": 2,
+      "FB3": 2,
+      "IC1": 8,
+      "IC2": 8,
+      "IC3": 8,
+      "IC4": 8,
+      "J1": 15,
+      "J12": 14,
+      "J13": 20,
+      "J14": 20,
+      "J15": 20,
+      "J16": 20,
+      "J2": 15,
+      "J3": 15,
+      "J4": 15,
+      "J5": 14,
+      "R1": 2,
+      "R10": 2,
+      "R11": 2,
+      "R12": 2,
+      "R13": 2,
+      "R14": 2,
+      "R15": 2,
+      "R16": 2,
+      "R17": 2,
+      "R18": 2,
+      "R19": 2,
+      "R2": 2,
+      "R20": 2,
+      "R21": 2,
+      "R22": 2,
+      "R23": 2,
+      "R24": 2,
+      "R25": 2,
+      "R26": 2,
+      "R27": 2,
+      "R3": 2,
+      "R4": 2,
+      "R5": 2,
+      "R6": 2,
+      "R7": 2,
+      "R8": 2,
+      "R9": 2,
+      "REF\\u002A\\u002A": 2,
+      "TP1": 1,
+      "TP10": 1,
+      "TP11": 1,
+      "TP12": 1,
+      "TP15": 1,
+      "TP16": 1,
+      "TP17": 1,
+      "TP18": 1,
+      "TP19": 1,
+      "TP2": 1,
+      "TP20": 1,
+      "TP21": 1,
+      "TP22": 1,
+      "TP23": 1,
+      "TP5": 1,
+      "TP6": 1,
+      "TP7": 1,
+      "TP8": 1,
+      "TP9": 1,
+      "U1": 8,
+      "U2": 8,
+      "U3": 8
+    },
+    "total_pads": 351
+  },
+  "net_analysis": {
+    "total_unique": 111,
+    "named_nets": 31,
+    "unnamed_nets": 80,
+    "power_nets": [
+      "+3.3VA",
+      "+3.3VD",
+      "+5V",
+      "GND",
+      "VCC_Daisy",
+      "VCC_ESP32"
+    ],
+    "signal_nets": [
+      "/ADC_EXP_IN_1",
+      "/ADC_EXP_IN_2",
+      "/AUDIO_IN_1",
+      "/AUDIO_IN_2",
+      "/AUDIO_OUT_1",
+      "/AUDIO_OUT_2",
+      "/DAISY_TO_ESP",
+      "/ESP_TO_DAISY",
+      "/EXPRESSION_REF_1",
+      "/EXPRESSION_REF_2",
+      "/SD_CLK_DAISY",
+      "/SD_CMD_DAISY",
+      "/SD_CS",
+      "/SD_DAT_0_DAISY",
+      "/SD_DAT_1_DAISY",
+      "/SD_DAT_2_DAISY",
+      "/SD_DAT_3_DAISY",
+      "/SD_MISO",
+      "/SD_MOSI",
+      "/SD_SCK",
+      "ESP-3.3V",
+      "GNDA",
+      "GNDD",
+      "N/C",
+      "VREF"
+    ],
+    "total_pins": 346
+  },
+  "gerbers": [
+    {
+      "filename": "daisyBoard-CuBottom.gbr",
+      "layer_type": "B.Cu",
+      "units": "mm",
+      "aperture_count": 9,
+      "flash_count": 242,
+      "draw_count": 65,
+      "region_count": 0,
+      "x2_attributes": {
+        "GenerationSoftware": "KiCad,Pcbnew,10.0.5",
+        "CreationDate": "2026-08-10T16:53:03+02:00",
+        "ProjectId": "daisyBoard,64616973-7942-46f6-9172-642e6b696361,rev?",
+        "SameCoordinates": "Original",
+        "FileFunction": "Copper,L4,Bot",
+        "FilePolarity": "Positive"
+      },
+      "aperture_analysis": {
+        "by_function": {
+          "ComponentPad": 4,
+          "ViaPad": 1,
+          "Conductor": 4
+        },
+        "by_function_flashes": {
+          "ComponentPad": 158,
+          "ViaPad": 84,
+          "Conductor": 0
+        },
+        "conductor_widths_mm": [
+          0.127,
+          0.254,
+          0.3048,
+          0.508
+        ],
+        "min_feature_mm": 0.127
+      },
+      "x2_component_count": 0,
+      "x2_net_count": 78,
+      "x2_pin_count": 158
+    },
+    {
+      "filename": "daisyBoard-CuIn1.gbr",
+      "layer_type": "In1.Cu",
+      "units": "mm",
+      "aperture_count": 8,
+      "flash_count": 242,
+      "draw_count": 3295,
+      "region_count": 3,
+      "x2_attributes": {
+        "GenerationSoftware": "KiCad,Pcbnew,10.0.5",
+        "CreationDate": "2026-08-10T16:53:02+02:00",
+        "ProjectId": "daisyBoard,64616973-7942-46f6-9172-642e6b696361,rev?",
+        "SameCoordinates": "Original",
+        "FileFunction": "Copper,L2,Inr",
+        "FilePolarity": "Positive"
+      },
+      "aperture_analysis": {
+        "by_function": {
+          "ComponentPad": 4,
+          "ViaPad": 1,
+          "Conductor": 3
+        },
+        "by_function_flashes": {
+          "ComponentPad": 158,
+          "ViaPad": 84,
+          "Conductor": 0
+        },
+        "conductor_widths_mm": [
+          0.127,
+          0.508,
+          0.762
+        ],
+        "min_feature_mm": 0.127
+      },
+      "x2_component_count": 25,
+      "x2_net_count": 78,
+      "x2_pin_count": 0
+    },
+    {
+      "filename": "daisyBoard-CuIn2.gbr",
+      "layer_type": "In2.Cu",
+      "units": "mm",
+      "aperture_count": 7,
+      "flash_count": 242,
+      "draw_count": 13225,
+      "region_count": 2,
+      "x2_attributes": {
+        "GenerationSoftware": "KiCad,Pcbnew,10.0.5",
+        "CreationDate": "2026-08-10T16:53:03+02:00",
+        "ProjectId": "daisyBoard,64616973-7942-46f6-9172-642e6b696361,rev?",
+        "SameCoordinates": "Original",
+        "FileFunction": "Copper,L3,Inr",
+        "FilePolarity": "Positive"
+      },
+      "aperture_analysis": {
+        "by_function": {
+          "ComponentPad": 4,
+          "ViaPad": 1,
+          "Conductor": 2
+        },
+        "by_function_flashes": {
+          "ComponentPad": 158,
+          "ViaPad": 84,
+          "Conductor": 0
+        },
+        "conductor_widths_mm": [
+          0.508,
+          0.762
+        ],
+        "min_feature_mm": 0.508
+      },
+      "x2_component_count": 25,
+      "x2_net_count": 78,
+      "x2_pin_count": 0
+    },
+    {
+      "filename": "daisyBoard-CuTop.gbr",
+      "layer_type": "F.Cu",
+      "units": "mm",
+      "aperture_count": 41,
+      "flash_count": 437,
+      "draw_count": 289,
+      "region_count": 1,
+      "x2_attributes": {
+        "GenerationSoftware": "KiCad,Pcbnew,10.0.5",
+        "CreationDate": "2026-08-10T16:53:02+02:00",
+        "ProjectId": "daisyBoard,64616973-7942-46f6-9172-642e6b696361,rev?",
+        "SameCoordinates": "Original",
+        "FileFunction": "Copper,L1,Top",
+        "FilePolarity": "Positive"
+      },
+      "aperture_analysis": {
+        "by_function": {
+          "SMDPad": 30,
+          "ComponentPad": 4,
+          "ViaPad": 1,
+          "Conductor": 5
+        },
+        "by_function_flashes": {
+          "SMDPad": 195,
+          "ComponentPad": 158,
+          "ViaPad": 84,
+          "Conductor": 0
+        },
+        "conductor_widths_mm": [
+          0.127,
+          0.254,
+          0.3048,
+          0.508,
+          0.762
+        ],
+        "min_feature_mm": 0.127
+      },
+      "x2_component_count": 1,
+      "x2_net_count": 111,
+      "x2_pin_count": 347
+    },
+    {
+      "filename": "daisyBoard-EdgeCuts.gbr",
+      "layer_type": "Edge.Cuts",
+      "units": "mm",
+      "aperture_count": 1,
+      "flash_count": 0,
+      "draw_count": 4,
+      "region_count": 0,
+      "x2_attributes": {
+        "GenerationSoftware": "KiCad,Pcbnew,10.0.5",
+        "CreationDate": "2026-08-10T16:53:03+02:00",
+        "ProjectId": "daisyBoard,64616973-7942-46f6-9172-642e6b696361,rev?",
+        "SameCoordinates": "Original",
+        "FileFunction": "Profile,NP"
+      },
+      "aperture_analysis": {
+        "by_function": {
+          "Profile": 1
+        },
+        "by_function_flashes": {
+          "Profile": 0
+        },
+        "min_feature_mm": 0.05
+      }
+    },
+    {
+      "filename": "daisyBoard-MaskBottom.gbr",
+      "layer_type": "B.Mask",
+      "units": "mm",
+      "aperture_count": 4,
+      "flash_count": 158,
+      "draw_count": 0,
+      "region_count": 0,
+      "x2_attributes": {
+        "GenerationSoftware": "KiCad,Pcbnew,10.0.5",
+        "CreationDate": "2026-08-10T16:53:03+02:00",
+        "ProjectId": "daisyBoard,64616973-7942-46f6-9172-642e6b696361,rev?",
+        "SameCoordinates": "Original",
+        "FileFunction": "Soldermask,Bot",
+        "FilePolarity": "Negative"
+      },
+      "aperture_analysis": {
+        "min_feature_mm": 1.7
+      },
+      "x2_component_count": 25,
+      "x2_net_count": 0,
+      "x2_pin_count": 0
+    },
+    {
+      "filename": "daisyBoard-MaskTop.gbr",
+      "layer_type": "F.Mask",
+      "units": "mm",
+      "aperture_count": 33,
+      "flash_count": 351,
+      "draw_count": 0,
+      "region_count": 0,
+      "x2_attributes": {
+        "GenerationSoftware": "KiCad,Pcbnew,10.0.5",
+        "CreationDate": "2026-08-10T16:53:02+02:00",
+        "ProjectId": "daisyBoard,64616973-7942-46f6-9172-642e6b696361,rev?",
+        "SameCoordinates": "Original",
+        "FileFunction": "Soldermask,Top",
+        "FilePolarity": "Negative"
+      },
+      "aperture_analysis": {
+        "min_feature_mm": 0.3
+      },
+      "x2_component_count": 90,
+      "x2_net_count": 0,
+      "x2_pin_count": 0
+    },
+    {
+      "filename": "daisyBoard-PasteBottom.gbr",
+      "layer_type": "B.Paste",
+      "units": "mm",
+      "aperture_count": 0,
+      "flash_count": 0,
+      "draw_count": 0,
+      "region_count": 0,
+      "x2_attributes": {
+        "GenerationSoftware": "KiCad,Pcbnew,10.0.5",
+        "CreationDate": "2026-08-10T16:53:03+02:00",
+        "ProjectId": "daisyBoard,64616973-7942-46f6-9172-642e6b696361,rev?",
+        "SameCoordinates": "Original",
+        "FileFunction": "Paste,Bot",
+        "FilePolarity": "Positive"
+      }
+    },
+    {
+      "filename": "daisyBoard-PasteTop.gbr",
+      "layer_type": "F.Paste",
+      "units": "mm",
+      "aperture_count": 28,
+      "flash_count": 190,
+      "draw_count": 0,
+      "region_count": 0,
+      "x2_attributes": {
+        "GenerationSoftware": "KiCad,Pcbnew,10.0.5",
+        "CreationDate": "2026-08-10T16:53:02+02:00",
+        "ProjectId": "daisyBoard,64616973-7942-46f6-9172-642e6b696361,rev?",
+        "SameCoordinates": "Original",
+        "FileFunction": "Paste,Top",
+        "FilePolarity": "Positive"
+      },
+      "aperture_analysis": {
+        "min_feature_mm": 0.3
+      },
+      "x2_component_count": 62,
+      "x2_net_count": 0,
+      "x2_pin_count": 0
+    },
+    {
+      "filename": "daisyBoard-SilkBottom.gbr",
+      "layer_type": "B.SilkS",
+      "units": "mm",
+      "aperture_count": 5,
+      "flash_count": 158,
+      "draw_count": 36839,
+      "region_count": 1013,
+      "x2_attributes": {
+        "GenerationSoftware": "KiCad,Pcbnew,10.0.5",
+        "CreationDate": "2026-08-10T16:53:03+02:00",
+        "ProjectId": "daisyBoard,64616973-7942-46f6-9172-642e6b696361,rev?",
+        "SameCoordinates": "Original",
+        "FileFunction": "Legend,Bot",
+        "FilePolarity": "Positive"
+      },
+      "aperture_analysis": {
+        "min_feature_mm": 1.7
+      },
+      "x2_component_count": 26,
+      "x2_net_count": 0,
+      "x2_pin_count": 0
+    },
+    {
+      "filename": "daisyBoard-SilkTop.gbr",
+      "layer_type": "F.SilkS",
+      "units": "mm",
+      "aperture_count": 37,
+      "flash_count": 351,
+      "draw_count": 3396,
+      "region_count": 7,
+      "x2_attributes": {
+        "GenerationSoftware": "KiCad,Pcbnew,10.0.5",
+        "CreationDate": "2026-08-10T16:53:02+02:00",
+        "ProjectId": "daisyBoard,64616973-7942-46f6-9172-642e6b696361,rev?",
+        "SameCoordinates": "Original",
+        "FileFunction": "Legend,Top",
+        "FilePolarity": "Positive"
+      },
+      "aperture_analysis": {
+        "min_feature_mm": 0.1
+      },
+      "x2_component_count": 90,
+      "x2_net_count": 0,
+      "x2_pin_count": 0
+    }
+  ],
+  "drills": [
+    {
+      "filename": "daisyBoard-NPTH.drl",
+      "type": "NPTH",
+      "units": "inch",
+      "hole_count": 0,
+      "tools": {},
+      "layer_span": [
+        1,
+        4
+      ],
+      "x2_attributes": {
+        "CreationDate": "2026-08-10T16:53:03+02:00",
+        "GenerationSoftware": "Kicad,Pcbnew,10.0.5",
+        "FileFunction": "NonPlated,1,4,NPTH"
+      }
+    },
+    {
+      "filename": "daisyBoard-PTH.drl",
+      "type": "PTH",
+      "units": "inch",
+      "hole_count": 242,
+      "tools": {
+        "T1": {
+          "diameter_mm": 0.3302,
+          "hole_count": 84,
+          "aper_function": "Plated,PTH,ViaDrill"
+        },
+        "T2": {
+          "diameter_mm": 1.0008,
+          "hole_count": 140,
+          "aper_function": "Plated,PTH,ComponentDrill"
+        },
+        "T3": {
+          "diameter_mm": 1.1989,
+          "hole_count": 16,
+          "aper_function": "Plated,PTH,ComponentDrill"
+        },
+        "T4": {
+          "diameter_mm": 3.2004,
+          "hole_count": 2,
+          "aper_function": "Plated,PTH,ComponentDrill"
+        }
+      },
+      "layer_span": [
+        1,
+        4
+      ],
+      "x2_attributes": {
+        "CreationDate": "2026-08-10T16:53:03+02:00",
+        "GenerationSoftware": "Kicad,Pcbnew,10.0.5",
+        "FileFunction": "Plated,1,4,PTH"
+      }
+    }
+  ],
+  "drill_tools": {
+    "0.3302mm": {
+      "diameter_mm": 0.3302,
+      "count": 84,
+      "type": "PTH"
+    },
+    "1.0008mm": {
+      "diameter_mm": 1.0008,
+      "count": 140,
+      "type": "PTH"
+    },
+    "1.1989mm": {
+      "diameter_mm": 1.1989,
+      "count": 16,
+      "type": "PTH"
+    },
+    "3.2004mm": {
+      "diameter_mm": 3.2004,
+      "count": 2,
+      "type": "PTH"
+    }
+  },
+  "findings": [
+    {
+      "detector": "analyze_gerbers",
+      "rule_id": "GR-002",
+      "category": "gerber_alignment",
+      "severity": "warning",
+      "confidence": "deterministic",
+      "evidence_source": "topology",
+      "summary": "Alignment: Width varies by 6.6mm across copper/edge layers",
+      "description": "Layer alignment issue: Width varies by 6.6mm across copper/edge layers",
+      "components": [],
+      "nets": [],
+      "pins": [],
+      "recommendation": "Re-export gerbers to ensure consistent layer alignment.",
+      "report_context": {
+        "section": "Gerber Alignment",
+        "impact": "Layer misregistration",
+        "standard_ref": ""
+      },
+      "stages": [
+        "pre_fab"
+      ],
+      "finding_id": "gerber:GR-002:a0008ec81524"
+    },
+    {
+      "detector": "analyze_gerbers",
+      "rule_id": "GR-002",
+      "category": "gerber_alignment",
+      "severity": "warning",
+      "confidence": "deterministic",
+      "evidence_source": "topology",
+      "summary": "Alignment: Height varies by 6.3mm across copper/edge layers",
+      "description": "Layer alignment issue: Height varies by 6.3mm across copper/edge layers",
+      "components": [],
+      "nets": [],
+      "pins": [],
+      "recommendation": "Re-export gerbers to ensure consistent layer alignment.",
+      "report_context": {
+        "section": "Gerber Alignment",
+        "impact": "Layer misregistration",
+        "standard_ref": ""
+      },
+      "stages": [
+        "pre_fab"
+      ],
+      "finding_id": "gerber:GR-002:9c405ce2e2e9"
+    },
+    {
+      "detector": "analyze_gerbers",
+      "rule_id": "GR-004",
+      "category": "gerber_completeness",
+      "severity": "warning",
+      "confidence": "heuristic",
+      "evidence_source": "topology",
+      "summary": "F paste layer: 190 flashes vs 437 copper (43%)",
+      "description": "F-side paste layer has significantly fewer flashes (190) than copper layer (437). This may indicate missing solder paste apertures.",
+      "components": [],
+      "nets": [],
+      "pins": [],
+      "recommendation": "Check solder paste aperture generation \u2014 missing apertures cause assembly defects.",
+      "report_context": {
+        "section": "Gerber Completeness",
+        "impact": "Assembly solder joint quality",
+        "standard_ref": ""
+      },
+      "stages": [
+        "pre_fab"
+      ],
+      "finding_id": "gerber:GR-004:91380115ef21"
+    }
+  ],
+  "assessments": [],
+  "summary": {
+    "total_findings": 3,
+    "by_severity": {
+      "error": 0,
+      "warning": 3,
+      "info": 0
+    }
+  },
+  "trust_summary": {
+    "total_findings": 3,
+    "trust_level": "mixed",
+    "by_confidence": {
+      "deterministic": 2,
+      "heuristic": 1,
+      "datasheet_backed": 0
+    },
+    "by_evidence_source": {
+      "datasheet": 0,
+      "topology": 3,
+      "heuristic_rule": 0,
+      "symbol_footprint": 0,
+      "bom": 0,
+      "geometry": 0,
+      "api_lookup": 0
+    },
+    "provenance_coverage_pct": 0.0
+  },
+  "inputs": {
+    "source_files": [
+      "analysis\\kicad-review-20260817\\gerbers\\daisyBoard-CuBottom.gbr",
+      "analysis\\kicad-review-20260817\\gerbers\\daisyBoard-CuIn1.gbr",
+      "analysis\\kicad-review-20260817\\gerbers\\daisyBoard-CuIn2.gbr",
+      "analysis\\kicad-review-20260817\\gerbers\\daisyBoard-CuTop.gbr",
+      "analysis\\kicad-review-20260817\\gerbers\\daisyBoard-EdgeCuts.gbr",
+      "analysis\\kicad-review-20260817\\gerbers\\daisyBoard-MaskBottom.gbr",
+      "analysis\\kicad-review-20260817\\gerbers\\daisyBoard-MaskTop.gbr",
+      "analysis\\kicad-review-20260817\\gerbers\\daisyBoard-NPTH.drl",
+      "analysis\\kicad-review-20260817\\gerbers\\daisyBoard-PasteBottom.gbr",
+      "analysis\\kicad-review-20260817\\gerbers\\daisyBoard-PasteTop.gbr",
+      "analysis\\kicad-review-20260817\\gerbers\\daisyBoard-PTH.drl",
+      "analysis\\kicad-review-20260817\\gerbers\\daisyBoard-SilkBottom.gbr",
+      "analysis\\kicad-review-20260817\\gerbers\\daisyBoard-SilkTop.gbr"
+    ],
+    "source_hashes": {
+      "analysis\\kicad-review-20260817\\gerbers\\daisyBoard-CuBottom.gbr": "0f0d3203a3c0b71373da6629dd6ee45708498d0d22abb63ba143d70c74342172",
+      "analysis\\kicad-review-20260817\\gerbers\\daisyBoard-CuIn1.gbr": "acf37af5afd95264c867eb6010c6455e9087f8ffe140cca69ba6b98bb81951df",
+      "analysis\\kicad-review-20260817\\gerbers\\daisyBoard-CuIn2.gbr": "845c2bc418a706d8410fb34d028e83d6f570b524d0d2442e6b1a4e894631c22e",
+      "analysis\\kicad-review-20260817\\gerbers\\daisyBoard-CuTop.gbr": "ca92379a7e17175a47ed064f226e5495c0ae96533d760eb08474ac301b6fcdd5",
+      "analysis\\kicad-review-20260817\\gerbers\\daisyBoard-EdgeCuts.gbr": "b139be76fa125f1d5e62f3433151b07437f0b5c87a557b54c128d94360600e44",
+      "analysis\\kicad-review-20260817\\gerbers\\daisyBoard-MaskBottom.gbr": "aa2fd87670810072269a80c8635e2c03efcd91f50ad2225d4ceee70c09a06a80",
+      "analysis\\kicad-review-20260817\\gerbers\\daisyBoard-MaskTop.gbr": "414b2bd443ac1e67f6a079b192142555977b8a5fcb060433ea11bf0e494ac33a",
+      "analysis\\kicad-review-20260817\\gerbers\\daisyBoard-NPTH.drl": "9985935aa4c4da427e341e7c7afa7cc0d26f4e272252a57bcbf846405e936802",
+      "analysis\\kicad-review-20260817\\gerbers\\daisyBoard-PasteBottom.gbr": "d1ee555ab166c66f3607e9879bce59cd10234265c9f11b29611f231cafdef119",
+      "analysis\\kicad-review-20260817\\gerbers\\daisyBoard-PasteTop.gbr": "39bcfa8b5863ab728ff916c88cd9495bd07917c5103c3509e9650a2948779a5a",
+      "analysis\\kicad-review-20260817\\gerbers\\daisyBoard-PTH.drl": "1eefbecf17b15454ce418f1cf685d02404607f5e9c9687f95ee5adc05250e479",
+      "analysis\\kicad-review-20260817\\gerbers\\daisyBoard-SilkBottom.gbr": "fdd6b820eb7f20b8174d5d7a5cf96946b1dc60132de2c172b7c1b33653b15a50",
+      "analysis\\kicad-review-20260817\\gerbers\\daisyBoard-SilkTop.gbr": "18afd484251fc1145f4272e244d3088ae0c21a67132892ae126b5fb27e224962"
+    },
+    "run_id": "20260817T121746Z-509aaa",
+    "config_hash": null,
+    "upstream_artifacts": {}
+  },
+  "compat": {
+    "minimum_consumer_version": "1.4.0",
+    "deprecated_fields": [],
+    "experimental_fields": []
+  },
+  "audience_summary": {
+    "designer": {
+      "total_findings": 3,
+      "by_severity": {
+        "error": 0,
+        "warning": 3,
+        "info": 0
+      },
+      "by_category": {
+        "gerber_alignment": 2,
+        "gerber_completeness": 1
+      },
+      "top_issues": [
+        {
+          "detector": "analyze_gerbers",
+          "rule_id": "GR-002",
+          "category": "gerber_alignment",
+          "severity": "warning",
+          "confidence": "deterministic",
+          "evidence_source": "topology",
+          "summary": "Alignment: Width varies by 6.6mm across copper/edge layers",
+          "description": "Layer alignment issue: Width varies by 6.6mm across copper/edge layers",
+          "components": [],
+          "nets": [],
+          "pins": [],
+          "recommendation": "Re-export gerbers to ensure consistent layer alignment.",
+          "report_context": {
+            "section": "Gerber Alignment",
+            "impact": "Layer misregistration",
+            "standard_ref": ""
+          },
+          "stages": [
+            "pre_fab"
+          ],
+          "finding_id": "gerber:GR-002:a0008ec81524"
+        },
+        {
+          "detector": "analyze_gerbers",
+          "rule_id": "GR-002",
+          "category": "gerber_alignment",
+          "severity": "warning",
+          "confidence": "deterministic",
+          "evidence_source": "topology",
+          "summary": "Alignment: Height varies by 6.3mm across copper/edge layers",
+          "description": "Layer alignment issue: Height varies by 6.3mm across copper/edge layers",
+          "components": [],
+          "nets": [],
+          "pins": [],
+          "recommendation": "Re-export gerbers to ensure consistent layer alignment.",
+          "report_context": {
+            "section": "Gerber Alignment",
+            "impact": "Layer misregistration",
+            "standard_ref": ""
+          },
+          "stages": [
+            "pre_fab"
+          ],
+          "finding_id": "gerber:GR-002:9c405ce2e2e9"
+        },
+        {
+          "detector": "analyze_gerbers",
+          "rule_id": "GR-004",
+          "category": "gerber_completeness",
+          "severity": "warning",
+          "confidence": "heuristic",
+          "evidence_source": "topology",
+          "summary": "F paste layer: 190 flashes vs 437 copper (43%)",
+          "description": "F-side paste layer has significantly fewer flashes (190) than copper layer (437). This may indicate missing solder paste apertures.",
+          "components": [],
+          "nets": [],
+          "pins": [],
+          "recommendation": "Check solder paste aperture generation \u2014 missing apertures cause assembly defects.",
+          "report_context": {
+            "section": "Gerber Completeness",
+            "impact": "Assembly solder joint quality",
+            "standard_ref": ""
+          },
+          "stages": [
+            "pre_fab"
+          ],
+          "finding_id": "gerber:GR-004:91380115ef21"
+        }
+      ]
+    },
+    "reviewer": {
+      "total_findings": 3,
+      "by_category": {
+        "gerber_alignment": 2,
+        "gerber_completeness": 1
+      },
+      "top_issues": [
+        {
+          "rule_id": "GR-002",
+          "severity": "warning",
+          "summary": "Alignment: Width varies by 6.6mm across copper/edge layers",
+          "recommendation": "Re-export gerbers to ensure consistent layer alignment.",
+          "category": "gerber_alignment"
+        },
+        {
+          "rule_id": "GR-002",
+          "severity": "warning",
+          "summary": "Alignment: Height varies by 6.3mm across copper/edge layers",
+          "recommendation": "Re-export gerbers to ensure consistent layer alignment.",
+          "category": "gerber_alignment"
+        },
+        {
+          "rule_id": "GR-004",
+          "severity": "warning",
+          "summary": "F paste layer: 190 flashes vs 437 copper (43%)",
+          "recommendation": "Check solder paste aperture generation \u2014 missing apertures cause assembly defects.",
+          "category": "gerber_completeness"
+        }
+      ]
+    },
+    "manager": {
+      "risk_level": "low",
+      "blocker_count": 0,
+      "warning_count": 3,
+      "stage_readiness": {
+        "schematic": "pass",
+        "layout": "pass",
+        "pre_fab": "needs_review",
+        "bring_up": "pass"
+      },
+      "one_liner": "3 warnings across 2 categories."
+    }
+  },
+  "capability_mode_ref": {
+    "source": "analysis/capability_mode.json",
+    "run_id": "20260817T121746Z-509aaa"
+  }
+}
