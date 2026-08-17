@@ -1597,6 +1597,7 @@
 		(property "Value" "GOAT EYE 2 - YELLOW"
 			(at 2.025 2.63 90)
 			(layer "F.Fab")
+			(hide yes)
 			(uuid "71ec76ae-7d36-44c1-9dba-33a55d62daa8")
 			(effects
 				(font
@@ -3205,6 +3206,7 @@
 				(pins "1")
 			)
 		)
+		(attr exclude_from_bom)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
 			(start -1.2 -1.2)
@@ -6089,6 +6091,7 @@
 		(property "Value" "GOAT EYE 1 - YELLOW"
 			(at -1.505 1.24 90)
 			(layer "F.Fab")
+			(hide yes)
 			(uuid "a75c0a9d-4aa7-46f3-a1bb-649f0ef7c3b7")
 			(effects
 				(font
@@ -9933,8 +9936,9 @@
 			)
 		)
 		(property "Value" "Reference voltage for the op amps - Probe"
-			(at 49.55 -6.125 0)
+			(at -1.29 19.66 90)
 			(layer "F.Fab")
+			(hide yes)
 			(uuid "cec89079-953b-46e6-bb37-85f7b69fe41b")
 			(effects
 				(font
@@ -9979,6 +9983,7 @@
 				(pins "1")
 			)
 		)
+		(attr exclude_from_bom)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
 			(start -1.2 -1.2)
@@ -21172,7 +21177,7 @@
 			)
 		)
 		(property "Value" "MountingHole_3.2mm_M3_DIN965_Pad"
-			(at 18.5 0.5 0)
+			(at 30.39 0.5 0)
 			(layer "F.Fab")
 			(uuid "4c4cc3ee-0608-4299-8d05-a83018406948")
 			(effects
