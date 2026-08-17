@@ -7932,6 +7932,16 @@
 	)
 	(wire
 		(pts
+			(xy 344.17 215.9) (xy 344.17 223.52)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "4e5ff34c-8d20-4179-a09f-01096e4b2c7a")
+	)
+	(wire
+		(pts
 			(xy 223.52 91.44) (xy 226.06 91.44)
 		)
 		(stroke
@@ -7999,16 +8009,6 @@
 			(type default)
 		)
 		(uuid "523de6b0-b92d-4512-9a4e-0bba53d16cde")
-	)
-	(wire
-		(pts
-			(xy 353.06 215.9) (xy 353.06 231.14)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "547fe477-04fc-4846-8fa2-31fd26d5e0be")
 	)
 	(wire
 		(pts
@@ -8442,16 +8442,6 @@
 	)
 	(wire
 		(pts
-			(xy 344.17 215.9) (xy 344.17 231.14)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "789dfca6-2997-4558-a2c0-39fbc04ba795")
-	)
-	(wire
-		(pts
 			(xy 353.06 238.76) (xy 353.06 254)
 		)
 		(stroke
@@ -8649,16 +8639,6 @@
 			(type default)
 		)
 		(uuid "8ab45aca-84d8-4629-9926-584513df94be")
-	)
-	(wire
-		(pts
-			(xy 332.74 215.9) (xy 332.74 231.14)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "8d70a5c2-8eae-421a-9361-b241b6d86c91")
 	)
 	(wire
 		(pts
@@ -9102,16 +9082,6 @@
 	)
 	(wire
 		(pts
-			(xy 307.34 215.9) (xy 307.34 231.14)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "ab3e85f0-1537-4715-9b59-2e3fb4768cdc")
-	)
-	(wire
-		(pts
 			(xy 393.7 154.94) (xy 393.7 160.02)
 		)
 		(stroke
@@ -9502,6 +9472,16 @@
 	)
 	(wire
 		(pts
+			(xy 307.34 215.9) (xy 307.34 223.52)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "c33e0679-6e05-4fa0-bc03-a97b8124d7a5")
+	)
+	(wire
+		(pts
 			(xy 472.44 116.84) (xy 480.06 116.84)
 		)
 		(stroke
@@ -9562,6 +9542,16 @@
 	)
 	(wire
 		(pts
+			(xy 353.06 215.9) (xy 353.06 223.52)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "c8f14f1d-08f5-4eb1-be7d-610ad22e425d")
+	)
+	(wire
+		(pts
 			(xy 78.74 187.96) (xy 83.82 187.96)
 		)
 		(stroke
@@ -9599,6 +9589,16 @@
 			(type default)
 		)
 		(uuid "ce886a60-05bf-4e29-8c22-242cb0e9eef4")
+	)
+	(wire
+		(pts
+			(xy 332.74 215.9) (xy 332.74 223.52)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "cfca57e2-1a09-4a5c-bac4-87361483c978")
 	)
 	(wire
 		(pts
@@ -9842,6 +9842,16 @@
 	)
 	(wire
 		(pts
+			(xy 322.58 215.9) (xy 322.58 223.52)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "ec1b9134-2f92-4479-8c36-0d9469da5af8")
+	)
+	(wire
+		(pts
 			(xy 344.17 36.83) (xy 351.79 36.83)
 		)
 		(stroke
@@ -9989,16 +9999,6 @@
 			(type default)
 		)
 		(uuid "f2a3044b-75ea-4fd9-b68e-565060fbb0be")
-	)
-	(wire
-		(pts
-			(xy 322.58 215.9) (xy 322.58 231.14)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "f525aaef-6089-4943-b25c-adcf6e15ec31")
 	)
 	(wire
 		(pts
@@ -12376,7 +12376,7 @@
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
-		(in_bom yes)
+		(in_bom no)
 		(on_board yes)
 		(in_pos_files yes)
 		(dnp no)
@@ -12454,7 +12454,7 @@
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
-		(in_bom yes)
+		(in_bom no)
 		(on_board yes)
 		(in_pos_files yes)
 		(dnp no)
@@ -12709,7 +12709,7 @@
 				(justify right)
 			)
 		)
-		(property "Value" "LION EYE 2 - YELLOW"
+		(property "Value" "LION EYE 2 - RED"
 			(at 326.39 237.8074 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -12863,7 +12863,7 @@
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
-		(in_bom yes)
+		(in_bom no)
 		(on_board yes)
 		(in_pos_files yes)
 		(dnp no)
@@ -13704,7 +13704,7 @@
 				(justify left)
 			)
 		)
-		(property "Value" "Processed input power at 5V ESP32 - Probe"
+		(property "Value" "VCC_ESP32_Probe"
 			(at 302.26 166.3699 90)
 			(show_name no)
 			(do_not_autoplace no)
@@ -14333,6 +14333,7 @@
 	(symbol
 		(lib_id "power:VCC")
 		(at 307.34 215.9 0)
+		(mirror y)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -14353,7 +14354,7 @@
 			)
 		)
 		(property "Value" "ESP-3.3V"
-			(at 309.372 223.774 90)
+			(at 305.308 223.774 90)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -14906,7 +14907,7 @@
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
-		(in_bom yes)
+		(in_bom no)
 		(on_board yes)
 		(in_pos_files yes)
 		(dnp no)
@@ -15836,6 +15837,88 @@
 		)
 	)
 	(symbol
+		(lib_id "Device:R")
+		(at 322.58 227.33 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "3cd0275a-c92d-45b3-b761-fa0404c7899b")
+		(property "Reference" "R28"
+			(at 325.12 226.0599 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "150"
+			(at 325.12 228.5999 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "Resistor_SMD:R_0805_2012Metric"
+			(at 320.802 227.33 90)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 322.58 227.33 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "Resistor"
+			(at 322.58 227.33 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "0dd0c5e6-7e58-4cc0-a89e-8c666c615627")
+		)
+		(pin "2"
+			(uuid "f58f7f10-2874-43a1-a95a-7efd5b3069e6")
+		)
+		(instances
+			(project "daisyBoard"
+				(path "/f52c2822-383d-4296-bc07-76547c2833aa"
+					(reference "R28")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
 		(lib_id "power:GND")
 		(at 60.96 92.71 0)
 		(unit 1)
@@ -16204,12 +16287,94 @@
 		)
 	)
 	(symbol
+		(lib_id "Device:R")
+		(at 307.34 227.33 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "40138e21-28b0-4bd7-b4c7-892a9fa117d2")
+		(property "Reference" "R32"
+			(at 309.88 226.0599 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "27"
+			(at 309.88 228.5999 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "Resistor_SMD:R_0805_2012Metric"
+			(at 305.562 227.33 90)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 307.34 227.33 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "Resistor"
+			(at 307.34 227.33 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "684ff079-8731-4595-b58d-d5faa71db9fd")
+		)
+		(pin "2"
+			(uuid "69e52ce3-f49c-4cb7-9014-56edee949469")
+		)
+		(instances
+			(project "daisyBoard"
+				(path "/f52c2822-383d-4296-bc07-76547c2833aa"
+					(reference "R32")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
 		(lib_id "Connector:TestPoint")
 		(at 35.56 99.06 180)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
-		(in_bom yes)
+		(in_bom no)
 		(on_board yes)
 		(in_pos_files yes)
 		(dnp no)
@@ -16365,7 +16530,7 @@
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
-		(in_bom yes)
+		(in_bom no)
 		(on_board yes)
 		(in_pos_files yes)
 		(dnp no)
@@ -16701,7 +16866,7 @@
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
-		(in_bom yes)
+		(in_bom no)
 		(on_board yes)
 		(in_pos_files yes)
 		(dnp no)
@@ -18245,7 +18410,7 @@
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
-		(in_bom yes)
+		(in_bom no)
 		(on_board yes)
 		(in_pos_files yes)
 		(dnp no)
@@ -19092,7 +19257,7 @@
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
-		(in_bom yes)
+		(in_bom no)
 		(on_board yes)
 		(in_pos_files yes)
 		(dnp no)
@@ -20043,7 +20208,7 @@
 				(justify right)
 			)
 		)
-		(property "Value" "LION EYE 1 - YELLOW"
+		(property "Value" "LION EYE 1 - RED"
 			(at 336.55 237.8074 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -20437,7 +20602,7 @@
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
-		(in_bom yes)
+		(in_bom no)
 		(on_board yes)
 		(in_pos_files yes)
 		(dnp no)
@@ -21637,8 +21802,8 @@
 				(justify right)
 			)
 		)
-		(property "Value" "GOAT EYE 1 - RED"
-			(at 349.25 236.728 0)
+		(property "Value" "GOAT EYE 1 - YELLOW"
+			(at 349.25 238.252 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -22689,7 +22854,7 @@
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
-		(in_bom yes)
+		(in_bom no)
 		(on_board yes)
 		(in_pos_files yes)
 		(dnp no)
@@ -23487,7 +23652,7 @@
 				)
 			)
 		)
-		(property "Value" "3R3"
+		(property "Value" "3K3"
 			(at 173.99 34.29 90)
 			(show_name no)
 			(do_not_autoplace no)
@@ -24201,6 +24366,88 @@
 		)
 	)
 	(symbol
+		(lib_id "Device:R")
+		(at 344.17 227.33 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "bc6009a8-1977-4a9d-bc28-257072b145e1")
+		(property "Reference" "R30"
+			(at 346.71 226.0599 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "120"
+			(at 346.71 228.5999 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "Resistor_SMD:R_0805_2012Metric"
+			(at 342.392 227.33 90)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 344.17 227.33 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "Resistor"
+			(at 344.17 227.33 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "2627d32a-5e4f-4094-9a9d-93183fb865ed")
+		)
+		(pin "2"
+			(uuid "296a53de-b33e-4f67-8e20-0e7228ead14d")
+		)
+		(instances
+			(project "daisyBoard"
+				(path "/f52c2822-383d-4296-bc07-76547c2833aa"
+					(reference "R30")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
 		(lib_id "Amplifier_Operational:TL072")
 		(at 257.81 110.49 0)
 		(unit 2)
@@ -24304,7 +24551,7 @@
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
-		(in_bom yes)
+		(in_bom no)
 		(on_board yes)
 		(in_pos_files yes)
 		(dnp no)
@@ -24480,7 +24727,7 @@
 				(justify right)
 			)
 		)
-		(property "Value" "GOAT EYE 2 - RED"
+		(property "Value" "GOAT EYE 2 - YELLOW"
 			(at 357.886 236.982 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -24556,7 +24803,7 @@
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
-		(in_bom yes)
+		(in_bom no)
 		(on_board yes)
 		(in_pos_files yes)
 		(dnp no)
@@ -24749,7 +24996,7 @@
 				)
 			)
 		)
-		(property "Value" "3R3"
+		(property "Value" "3K3"
 			(at 170.18 85.09 90)
 			(show_name no)
 			(do_not_autoplace no)
@@ -25198,6 +25445,88 @@
 			(project "daisyBoard"
 				(path "/f52c2822-383d-4296-bc07-76547c2833aa"
 					(reference "#PWR049")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:R")
+		(at 353.06 227.33 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "c9b0855b-aac3-4831-99bd-84d6bb06b9ca")
+		(property "Reference" "R31"
+			(at 355.6 226.0599 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "120"
+			(at 355.6 228.5999 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "Resistor_SMD:R_0805_2012Metric"
+			(at 351.282 227.33 90)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 353.06 227.33 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "Resistor"
+			(at 353.06 227.33 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "0416118f-2210-464d-9026-2d6ff21ec9a1")
+		)
+		(pin "2"
+			(uuid "13e79591-67ff-48e4-8ce1-eee3e432b1ad")
+		)
+		(instances
+			(project "daisyBoard"
+				(path "/f52c2822-383d-4296-bc07-76547c2833aa"
+					(reference "R31")
 					(unit 1)
 				)
 			)
@@ -26297,7 +26626,7 @@
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
-		(in_bom yes)
+		(in_bom no)
 		(on_board yes)
 		(in_pos_files yes)
 		(dnp no)
@@ -26375,7 +26704,7 @@
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
-		(in_bom yes)
+		(in_bom no)
 		(on_board yes)
 		(in_pos_files yes)
 		(dnp no)
@@ -27568,7 +27897,7 @@
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
-		(in_bom yes)
+		(in_bom no)
 		(on_board yes)
 		(in_pos_files yes)
 		(dnp no)
@@ -27796,6 +28125,88 @@
 			(project "daisyBoard"
 				(path "/f52c2822-383d-4296-bc07-76547c2833aa"
 					(reference "R17")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:R")
+		(at 332.74 227.33 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "eb75c808-595a-4f36-b1f1-18bced270714")
+		(property "Reference" "R29"
+			(at 335.28 226.0599 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "150"
+			(at 335.28 228.5999 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "Resistor_SMD:R_0805_2012Metric"
+			(at 330.962 227.33 90)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 332.74 227.33 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "Resistor"
+			(at 332.74 227.33 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "0e5e8e9c-820b-43de-abad-df0885f511ff")
+		)
+		(pin "2"
+			(uuid "a42733d3-15e1-48b2-8c13-eee42f879c9a")
+		)
+		(instances
+			(project "daisyBoard"
+				(path "/f52c2822-383d-4296-bc07-76547c2833aa"
+					(reference "R29")
 					(unit 1)
 				)
 			)
@@ -28062,7 +28473,7 @@
 				(justify left)
 			)
 		)
-		(property "Value" "Processed input power at 5V Daisy- Probe"
+		(property "Value" "VCC Daisy Probe"
 			(at 302.26 160.0199 90)
 			(show_name no)
 			(do_not_autoplace no)
