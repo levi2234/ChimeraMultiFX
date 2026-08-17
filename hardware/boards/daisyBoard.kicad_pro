@@ -686,7 +686,7 @@
         "uuid": "f52c2822-383d-4296-bc07-76547c2833aa"
       }
     ],
-    "used_designators": "FB2-3,TP22-23,R28,NT1,Card1-2,U1-4,#PWR3,#PWR20,#PWR23-24,#PWR57-60,#PWR72-73,#PWR82-95,JACK_2\\-OUT1,C14,C18,C24-26,100nF1,JACK_2\\-GND1,+5V1,GND1,VCC_Daisy1,VREF1,5V_IN1,EXP_2\\-GNDIN1,EXP_2\\-IN1,JACK_1\\-GNDIN1,JACK_1\\-GNDOUT1,JACK_1\\-OUT1,JACK_2\\-GNDOUT1,JACK_2\\-IN1,VCC_Dais\\-TP1,VCC_ESP32\\-TP1,D1-5",
+    "used_designators": "",
     "variants": []
   },
   "sheets": [

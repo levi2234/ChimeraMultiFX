@@ -12709,7 +12709,7 @@
 				(justify right)
 			)
 		)
-		(property "Value" "LION EYE 2"
+		(property "Value" "LION EYE 2 - YELLOW"
 			(at 326.39 237.8074 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -18169,7 +18169,7 @@
 				(justify right)
 			)
 		)
-		(property "Value" "SNAKE EYE"
+		(property "Value" "SNAKE EYE - GREEN"
 			(at 311.15 237.8074 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -20043,7 +20043,7 @@
 				(justify right)
 			)
 		)
-		(property "Value" "LION EYE 1"
+		(property "Value" "LION EYE 1 - YELLOW"
 			(at 336.55 237.8074 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -21637,7 +21637,7 @@
 				(justify right)
 			)
 		)
-		(property "Value" "GOAT EYE 1"
+		(property "Value" "GOAT EYE 1 - RED"
 			(at 349.25 236.728 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -24480,7 +24480,7 @@
 				(justify right)
 			)
 		)
-		(property "Value" "GOAT EYE 2"
+		(property "Value" "GOAT EYE 2 - RED"
 			(at 357.886 236.982 0)
 			(show_name no)
 			(do_not_autoplace no)
