@@ -63,3 +63,7 @@ desktop.ini
 
 # Logs
 *.log
+
+
+#agents
+.agents/
