@@ -35,6 +35,7 @@ __pycache__/
 *.pyc
 *.pyo
 venv/
+.venv/
 Lib/
 firmware/esp32/Scripts/
 

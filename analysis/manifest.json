@@ -1,0 +1,28 @@
+{
+  "version": 1,
+  "project": "daisyBoard.kicad_pro",
+  "current": "2026-08-17_1502",
+  "runs": {
+    "2026-08-17_1502": {
+      "source_hashes": {
+        "daisyBoard.kicad_sch": "sha256:0b7a835bbd891e345498cf11d9229c1a1fcc5d19521eddaf6578890a9dcec17a",
+        "daisyBoard.kicad_pcb": "sha256:4768469f93702b6eb8f0b6ad3af1475fa836e71ffa365fbfafd3cd5229a4ed61",
+        "schematic.json": "sha256:3f068d6a0f13e131b8bc85414864cb0da202edf2d363583281be34190cecda93",
+        "pcb.json": "sha256:eab92c04c9a8b17cbb73798f1dfea630df9efff206176eb91902b8718e7f9ea6"
+      },
+      "outputs": {
+        "schematic": "schematic.json",
+        "pcb": "pcb.json",
+        "cross_analysis": "cross_analysis.json",
+        "emc": "emc.json",
+        "thermal": "thermal.json",
+        "gerber": "gerber.json"
+      },
+      "scripts": {
+        "schematic": "analyze_schematic.py daisyBoard.kicad_sch"
+      },
+      "generated": "2026-08-17T15:30:12+02:00",
+      "pinned": false
+    }
+  }
+}
