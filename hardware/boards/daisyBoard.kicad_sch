@@ -28029,7 +28029,7 @@
 				)
 			)
 		)
-		(property "Value" "60R @ 100MHz"
+		(property "Value" "600 Ω @ 100 MHz"
 			(at 444.4492 167.64 90)
 			(show_name no)
 			(do_not_autoplace no)
