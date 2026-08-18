@@ -7779,6 +7779,16 @@
 	)
 	(wire
 		(pts
+			(xy 297.18 152.4) (xy 295.91 152.4)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "45fc27cb-42c7-464e-8d1f-ac59bc29956b")
+	)
+	(wire
+		(pts
 			(xy 137.16 252.73) (xy 168.91 252.73)
 		)
 		(stroke
@@ -9369,6 +9379,16 @@
 	)
 	(wire
 		(pts
+			(xy 297.18 146.05) (xy 295.91 146.05)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "b4e5cd8f-93cc-4438-a3bb-fdaf628ed876")
+	)
+	(wire
+		(pts
 			(xy 166.37 38.1) (xy 170.18 38.1)
 		)
 		(stroke
@@ -10727,7 +10747,7 @@
 		)
 		(uuid "390e7987-4ff8-4c3f-89f8-49e655f0bc16")
 	)
-	(label "EXPRESSION_REF"
+	(label "EXPRESSION_REF_1"
 		(at 337.82 111.76 0)
 		(effects
 			(font
@@ -11617,7 +11637,7 @@
 		)
 		(uuid "e47011f0-60f0-428d-8cd9-5fbd43569bdc")
 	)
-	(label "EXPRESSION_REF"
+	(label "EXPRESSION_REF_2"
 		(at 473.71 111.76 0)
 		(effects
 			(font
@@ -12219,7 +12239,7 @@
 				)
 			)
 		)
-		(property "Value" "MCP6002-xSN"
+		(property "Value" "MCP6002-I/SN"
 			(at 490.22 201.93 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -15166,7 +15186,7 @@
 				)
 			)
 		)
-		(property "Value" "MCP6002-xSN"
+		(property "Value" "MCP6002-I/SN"
 			(at 511.81 104.14 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -17526,7 +17546,7 @@
 				)
 			)
 		)
-		(property "Value" "MCP6002-xSN"
+		(property "Value" "MCP6002-I/SN"
 			(at 401.32 86.36 90)
 			(show_name no)
 			(do_not_autoplace no)
@@ -19817,7 +19837,7 @@
 				)
 			)
 		)
-		(property "Value" "MCP6002-xSN"
+		(property "Value" "MCP6002-I/SN"
 			(at 467.36 86.36 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -20152,7 +20172,7 @@
 				)
 			)
 		)
-		(property "Value" "MCP6002-xSN"
+		(property "Value" "MCP6002-I/SN"
 			(at 502.666 219.202 90)
 			(show_name no)
 			(do_not_autoplace no)
@@ -20230,7 +20250,7 @@
 	)
 	(symbol
 		(lib_id "Connector:TestPoint")
-		(at 295.91 152.4 270)
+		(at 297.18 152.4 270)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -20238,10 +20258,9 @@
 		(on_board yes)
 		(in_pos_files yes)
 		(dnp no)
-		(fields_autoplaced yes)
 		(uuid "74ea3bbe-b7e5-4966-8dc1-7c40c5397e15")
 		(property "Reference" "TP2"
-			(at 300.99 151.1299 90)
+			(at 302.514 151.384 90)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -20252,7 +20271,7 @@
 			)
 		)
 		(property "Value" "5V IN"
-			(at 300.99 153.6699 90)
+			(at 302.26 153.6699 90)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -20263,7 +20282,7 @@
 			)
 		)
 		(property "Footprint" "TestPoint:TestPoint_THTPad_D2.5mm_Drill1.2mm"
-			(at 295.91 157.48 0)
+			(at 297.18 157.48 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -20274,7 +20293,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 295.91 157.48 0)
+			(at 297.18 157.48 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -20285,7 +20304,7 @@
 			)
 		)
 		(property "Description" "test point"
-			(at 295.91 152.4 0)
+			(at 297.18 152.4 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -23663,7 +23682,7 @@
 				)
 			)
 		)
-		(property "Value" "MCP6002-xSN"
+		(property "Value" "MCP6002-I/SN"
 			(at 375.92 104.14 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -23760,7 +23779,7 @@
 				)
 			)
 		)
-		(property "Value" "MCP6002-xSN"
+		(property "Value" "MCP6002-I/SN"
 			(at 533.4 91.186 90)
 			(show_name no)
 			(do_not_autoplace no)
@@ -25667,7 +25686,7 @@
 				)
 			)
 		)
-		(property "Value" "MCP6002-xSN"
+		(property "Value" "MCP6002-I/SN"
 			(at 535.94 207.01 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -26177,7 +26196,7 @@
 	)
 	(symbol
 		(lib_id "Connector:TestPoint")
-		(at 295.91 146.05 270)
+		(at 297.18 146.05 270)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -26188,7 +26207,7 @@
 		(fields_autoplaced yes)
 		(uuid "c0b5060c-fe9c-4352-a7f8-a6abcfc31a55")
 		(property "Reference" "TP1"
-			(at 300.99 144.7799 90)
+			(at 302.26 144.7799 90)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -26199,7 +26218,7 @@
 			)
 		)
 		(property "Value" "GND IN"
-			(at 300.99 147.3199 90)
+			(at 302.26 147.3199 90)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -26210,7 +26229,7 @@
 			)
 		)
 		(property "Footprint" "TestPoint:TestPoint_THTPad_D2.5mm_Drill1.2mm"
-			(at 295.91 151.13 0)
+			(at 297.18 151.13 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -26221,7 +26240,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 295.91 151.13 0)
+			(at 297.18 151.13 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -26232,7 +26251,7 @@
 			)
 		)
 		(property "Description" "test point"
-			(at 295.91 146.05 0)
+			(at 297.18 146.05 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -26276,7 +26295,7 @@
 				)
 			)
 		)
-		(property "Value" "MCP6002-xSN"
+		(property "Value" "MCP6002-I/SN"
 			(at 331.47 86.36 0)
 			(show_name no)
 			(do_not_autoplace no)
