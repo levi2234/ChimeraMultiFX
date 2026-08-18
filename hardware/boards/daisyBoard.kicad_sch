@@ -6274,12 +6274,6 @@
 		(uuid "1cbcea32-3ac2-47ea-acf3-1b20b47b8404")
 	)
 	(junction
-		(at 497.84 209.55)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "21a817e4-f350-4bb7-8f47-26339226c6bd")
-	)
-	(junction
 		(at 234.95 91.44)
 		(diameter 0)
 		(color 0 0 0 0)
@@ -6584,6 +6578,12 @@
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "db0166ed-982a-47eb-8e9a-415e720fe4b9")
+	)
+	(junction
+		(at 497.84 209.55)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "db558ba2-ec0c-4ac8-972a-70a9fd62fc9a")
 	)
 	(junction
 		(at 252.73 91.44)
@@ -8549,7 +8549,7 @@
 	)
 	(wire
 		(pts
-			(xy 497.84 209.55) (xy 505.46 209.55)
+			(xy 497.84 209.55) (xy 500.38 209.55)
 		)
 		(stroke
 			(width 0)
@@ -8736,6 +8736,16 @@
 			(type default)
 		)
 		(uuid "8ab45aca-84d8-4629-9926-584513df94be")
+	)
+	(wire
+		(pts
+			(xy 508 209.55) (xy 509.27 209.55)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "8d1a5aa8-a3d8-4bfb-a754-13903729e784")
 	)
 	(wire
 		(pts
@@ -17931,7 +17941,7 @@
 	)
 	(symbol
 		(lib_id "power:+5V")
-		(at 505.46 209.55 270)
+		(at 509.27 209.55 270)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -17939,10 +17949,9 @@
 		(on_board yes)
 		(in_pos_files yes)
 		(dnp no)
-		(fields_autoplaced yes)
 		(uuid "5010ef29-18d9-4e38-93fb-d3670897fcd2")
 		(property "Reference" "#PWR043"
-			(at 501.65 209.55 0)
+			(at 505.46 209.55 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -17953,7 +17962,7 @@
 			)
 		)
 		(property "Value" "VREF"
-			(at 509.27 209.5499 90)
+			(at 510.032 207.01 90)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -17964,7 +17973,7 @@
 			)
 		)
 		(property "Footprint" ""
-			(at 505.46 209.55 0)
+			(at 509.27 209.55 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -17975,7 +17984,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 505.46 209.55 0)
+			(at 509.27 209.55 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -17986,7 +17995,7 @@
 			)
 		)
 		(property "Description" "Power symbol creates a global label with name \"+5V\""
-			(at 505.46 209.55 0)
+			(at 509.27 209.55 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -18938,6 +18947,86 @@
 			(project "daisyBoard"
 				(path "/f52c2822-383d-4296-bc07-76547c2833aa"
 					(reference "TP5")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:R")
+		(at 504.19 209.55 90)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "66407360-deee-443a-8d8a-f88965c31a8d")
+		(property "Reference" "R24"
+			(at 504.19 203.2 90)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "100"
+			(at 504.19 205.74 90)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Resistor_SMD:R_0805_2012Metric"
+			(at 504.19 211.328 90)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 504.19 209.55 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "Resistor"
+			(at 504.19 209.55 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "9451ee28-3495-475e-beb4-f616803474ff")
+		)
+		(pin "2"
+			(uuid "06be369b-3b6e-428f-80a0-de1d04d13631")
+		)
+		(instances
+			(project "daisyBoard"
+				(path "/f52c2822-383d-4296-bc07-76547c2833aa"
+					(reference "R24")
 					(unit 1)
 				)
 			)
