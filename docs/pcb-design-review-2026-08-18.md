@@ -10,7 +10,7 @@ The board combines a Daisy Seed audio engine, ESP32 network/control processor, d
 
 ## Verdict
 
-**Not ready for fabrication yet, but materially improved.** `IC1`-`IC4` are now the 4.5 V-qualified `TL072HIDR`, and the broad analog via-in-pad issue is almost completely resolved. Remaining pre-fabrication concerns are floating unused amplifier channels, the missing ESP32 antenna keepout, two residual analog pad/via overlaps, long VREF routing, unqualified ferrites/bulk capacitors, absent structured MPN fields, and no current native DRC/ERC or Gerber release.
+**Not ready for fabrication yet, but materially improved.** `IC1`-`IC4` are now the 4.5 V-qualified `TL072HIDR`, all unused amplifier channels are safely biased, and the broad analog via-in-pad issue is almost completely resolved. Remaining pre-fabrication concerns are the missing ESP32 antenna keepout, two residual analog pad/via overlaps, long VREF routing, unqualified ferrites/bulk capacitors, absent structured MPN fields, and no current native DRC/ERC or Gerber release.
 
 ## Previous Review Delta
 
@@ -19,11 +19,11 @@ The board combines a Daisy Seed audio engine, ESP32 network/control processor, d
 | Fixed | Local op-amp bypassing | All seven analog ICs now have a same-side 100 nF supply bypass about 2.2-3.1 mm from the package center. |
 | Fixed | Layer order | `In1.Cu` is now the GND plane and `In2.Cu` is the power layer. The stored GND fill is one region with about 85.6% area coverage. |
 | Fixed | TL072 supply range | `IC1`-`IC4` now specify `TL072HIDR`, whose 4.5 V minimum total supply includes the nominal 5 V rail. Pin 8 is VCC+ and pin 4 is GND in the selected SOIC-8 package. |
+| Fixed | Unused op-amp channels | `IC1B`-`IC4B` pin 5 is on buffered VREF and each pin 6/7 pair shares a local feedback net. `U3B` pin 5 is on the filtered 2.5 V divider node and pins 6/7 share a local feedback net. |
 | Improved | Analog via-in-pad | Analog-related VP-001 findings fell from 23 to 2; all four TL072H supply-pad overlaps were removed. |
 | Improved | Overall via-in-pad | VP-001 findings fell from 84 to 13. Most remaining cases are in the ESP power cluster; `C29:1` and `U3:8` are the two remaining analog cases. |
 | New | Analog rail ferrite | `FB2` replaces `NT1` between +5 V and VCC_Daisy. Connectivity is correct, but its current rating and DCR are unspecified. |
 | Improved | EMC static score | Analyzer score increased from 13/100 to 37/100. This is a relative risk metric, not a compliance prediction. |
-| Open | Unused op-amp channels | `IC1B`-`IC4B` and `U3B` still have pins 5, 6, and 7 unconnected. |
 | Open | ESP32 antenna implementation | ESP32 remains two 1x15 headers with no body, antenna outline, courtyard, or copper/routing keepout. |
 | Open | VREF distribution | About 118.7 mm long, six layer changes, and about 52.7 mm routed on the inner power layer. |
 | Open | Sourcing/verification | MPN coverage remains 0%; exact pinout, ratings, capacitor derating, and ferrite suitability cannot be fully verified. |
@@ -33,7 +33,6 @@ The board combines a Daisy Seed audio engine, ESP32 network/control processor, d
 
 | Severity | Issue | Action before fabrication |
 |---|---|---|
-| High | Five unused amplifier channels float | Configure each unused channel according to the selected op amp datasheet, normally as a follower biased at VREF. |
 | High | No enforced ESP32 antenna keepout | Use the exact module/dev-board footprint and clear copper, tracks, vias, components, wiring, and enclosure metal around the antenna. Prefer antenna overhang. |
 | High | No exact MPNs | Add MPN/manufacturer fields for ICs, modules, ferrites, LEDs, bulk capacitors, connectors, and SD sockets. |
 | Warning | Two analog pad/via overlaps remain | Move the GND via out of `C29:1` and the supply via out of `U3:8`, or specify filled/capped via-in-pad. |
@@ -131,7 +130,7 @@ Microchip identifies MCP6002 as an in-production 1 MHz low-power op amp operatin
 
 ### Unused channels
 
-`IC1B`-`IC4B` and `U3B` remain floating. For a common unity-gain-stable dual op amp, a typical treatment is non-inverting input to VREF and output tied to inverting input. Apply the selected manufacturer's guidance; do not ground an input if that violates common-mode range, and do not short an output to a rail.
+All unused channels are now configured as followers at a valid 2.5 V bias. `IC1B`-`IC4B` have pin 5 on VREF and pins 6/7 on one local feedback net. `U3B` has pin 5 on the filtered divider node shared with `U3A` pin 3, `R22`, `R23`, `C15`, `C19`, and `C20`; pins 6/7 share one local feedback net. The unused outputs are not paralleled with VREF, which is correct.
 
 ## PCB Layout Analysis
 
@@ -158,6 +157,49 @@ Microchip identifies MCP6002 as an in-production 1 MHz low-power op amp operatin
 ## EMC / Cross-Domain Analysis
 
 The static FCC Class B-oriented risk score improved to 37/100 after the GND-first stack and local bypass changes. The remaining deterministic concerns are layer transitions without adjacent GND vias, outer-layer SD clocks, SD clock proximity to `J13`, and the absent ESP32 antenna keepout. The score cannot predict compliance or account for the final enclosure and cable harnesses; use it to prioritize bench and pre-compliance measurements.
+
+### How impactful the 37/100 score is
+
+The score is a conservative layout-risk index, not a percentage chance of passing, a 37% compliance result, or a measured dB margin. A value below 50 means the analyzer found enough common EMC failure patterns to justify another layout pass and bench testing. It does not by itself prove that this pedal will fail FCC or CE testing.
+
+For this board, the score is more pessimistic than the raw layout evidence supports:
+
+- 69 of 117 findings are `GP-001` reference-plane coverage findings: 59 errors and 10 warnings.
+- The raw `In1.Cu` GND zone is filled as one region at about 85.8% board-area coverage, so the reported signal-by-signal plane gaps and 10 GND islands are not accepted literally.
+- The scoring algorithm caps repeated findings from one rule, but `GP-001` still dominates the report and should be visually checked rather than counted as 69 independent faults.
+- Only 7 of the analyzer's 18 EMC categories ran with useful data. The generated frequency-band plan reports no identified sources because exact module clocks, edge rates, switching frequencies, cable lengths, and enclosure geometry are unavailable. That is a coverage gap, not evidence of no emissions.
+
+The credible residual risk is **moderate for a one-off enclosed prototype and significant for a product intended for sale or formal FCC/CE testing**. The likely first symptom is not necessarily a regulatory failure. For a guitar pedal, RF susceptibility and internal coupling can become audible before radiated emissions exceed a legal limit:
+
+- Wi-Fi or SD activity can be demodulated by high-impedance audio inputs or VREF and appear as ticking, buzz, or a raised noise floor.
+- Long guitar, amplifier, expression, USB, and power cables can carry common-mode current and become much better antennas than the 100 mm PCB itself.
+- A metal enclosure can reduce direct electric-field radiation, but cable exits, unbonded jack grounds, seams, and the ESP32 antenna opening remain important.
+- The ESP32 is an intentional 2.4 GHz radiator. Module approval helps only when the approved antenna/layout conditions are preserved; it does not certify the complete carrier, cables, clocks, or power network.
+
+The highest-risk nets from the current analysis are `/SD_CLK_DAISY` with four rule hits and `/SD_SCK` with three. They combine outer-layer routing, reference-plane concerns, and missing return vias at layer changes. VREF, audio channel 2, expression inputs, and other SD signals have lower-severity transition findings that matter primarily because they can couple RF into the audio path.
+
+### EMC improvement priority
+
+1. **Implement the exact ESP32 antenna keepout.** Use the real module footprint, place the antenna at or beyond the board edge, and prohibit copper, traces, vias, components, wiring, and enclosure metal in the vendor-defined volume on every layer.
+2. **Verify a continuous return plane under both SD clock routes.** Keep `/SD_CLK_DAISY` and `/SD_SCK` on one outer layer over uninterrupted `In1.Cu` GND where practical. Do not cross plane slots, power-zone boundaries, or antenna keepouts.
+3. **Add return vias at every high-speed transition.** Put a GND via within about 1 mm of each SD/UART signal via. Also add nearby return vias for VREF, audio, and expression transitions to reduce RF loop area.
+4. **Provide source-series damping footprints.** Place optional `22-47 ohm` resistors at the driving end of each SD clock and other fast single-ended lines. Start unpopulated or around 33 ohm, then select the value from oscilloscope edge/ringing measurements rather than treating one value as universal.
+5. **Separate clocks from analog and connectors.** Increase spacing between SD clocks and VREF, audio inputs, expression inputs, and cable/header regions. The current `/SD_CLK_DAISY` proximity to `J13` is a credible coupling path.
+6. **Finish the bypass-via cleanup.** Move `C29:1` and `U3:8` vias out of the lands and put the `C18` and `C31` GND vias directly beside their capacitor pads. Compact supply loops reduce both emissions and RF susceptibility.
+7. **Control cable common mode.** Route each off-board audio/expression signal with an adjacent return conductor, preferably as shielded cable or twisted signal/ground. Add low-capacitance ESD protection at the connector and preserve the existing input RF filtering. Bond jack sleeves and enclosure deliberately instead of relying on incidental mechanical contact.
+8. **Qualify `FB1` and `FB2`.** Select exact ferrites using impedance-versus-frequency, current rating, and DCR. Place local bulk plus 100 nF capacitance on the load side and verify that ESP32 transmit or Daisy load steps do not modulate analog rails.
+9. **Add targeted ground stitching.** Stitch around connector regions and digital/analog boundaries. Near a 2.4 GHz antenna keepout boundary, approximately 3 mm spacing is a conservative RF fence target, but never place stitching inside the antenna keepout.
+10. **Keep explicit net classes.** Give clocks, analog, and power intentional width/clearance rules rather than relying on the permissive default class.
+
+### Practical EMC and audio-noise test plan
+
+- Compare the audio FFT/noise floor with Wi-Fi disabled, associated but idle, continuous transmit, and maximum configured transmit power.
+- Repeat while reading and writing both SD interfaces. Listen and measure specifically for clock-correlated tones and periodic bursts.
+- Probe VREF, VCC_Daisy, VCC_ESP32, and the op-amp outputs simultaneously during Wi-Fi and SD load steps.
+- Use a small H-field probe around the ESP power branch, SD clocks, FB1/FB2, VREF buffer, and audio input stages. Start with 30-300 MHz and inspect 2.4 GHz behavior with suitable equipment.
+- Attach the final guitar, amplifier, expression, USB, and power cables during testing; cable radiation and susceptibility cannot be evaluated with the board alone.
+- Test inside the final enclosure with all jack hardware and shields installed. Compare lid open/closed and antenna near/far from enclosure metal.
+- Before commercial release, perform radiated and conducted pre-compliance scans. The static score is useful for prioritization but cannot replace measurement.
 
 ### Analyzer overrides
 
@@ -245,20 +287,19 @@ The only complete fabrication archive is dated 2026-08-10 and predates the prese
 
 ## Priority Order
 
-1. Terminate all unused op-amp channels correctly.
-2. Create the exact ESP32 module footprint and all-layer antenna keepout/overhang.
-3. Move the remaining `C29:1` and `U3:8` vias; place the `C18` and `C31` GND vias adjacent to, but outside, their pads.
-4. Add exact Manufacturer/MPN/LCSC/datasheet properties for TL072HIDR and qualify `FB2` current/DCR.
-5. Shorten VREF, keep it off the inner power layer where practical, and add adjacent GND return vias.
-6. Correct `D1` current and select exact bulk capacitors/ferrite/LED/module MPNs.
-7. Add explicit net classes, fiducials, test points, and off-board harness documentation.
-8. Refill zones, run native ERC/DRC, regenerate Gerbers/CPL/BOM, and inspect in CAM.
-9. Perform bench noise, clipping, startup-pop, Wi-Fi transmit, RSSI, and final-enclosure tests.
+1. Create the exact ESP32 module footprint and all-layer antenna keepout/overhang.
+2. Move the remaining `C29:1` and `U3:8` vias; place the `C18` and `C31` GND vias adjacent to, but outside, their pads.
+3. Add exact Manufacturer/MPN/LCSC/datasheet properties for TL072HIDR and qualify `FB2` current/DCR.
+4. Shorten VREF, keep it off the inner power layer where practical, and add adjacent GND return vias.
+5. Correct `D1` current and select exact bulk capacitors/ferrite/LED/module MPNs.
+6. Add explicit net classes, fiducials, test points, and off-board harness documentation.
+7. Refill zones, run native ERC/DRC, regenerate Gerbers/CPL/BOM, and inspect in CAM.
+8. Perform bench noise, clipping, startup-pop, Wi-Fi transmit, RSSI, and final-enclosure tests.
 
 ## Final Readiness Checklist
 
 - [x] TL072H supply range and SOIC-8 pin mapping valid at nominal 5 V
-- [ ] All unused amplifier channels safely biased
+- [x] All unused amplifier channels safely biased
 - [x] One local 100 nF bypass per analog IC
 - [x] GND plane adjacent to F.Cu
 - [ ] Exact ESP32 footprint and enforced antenna keepout
