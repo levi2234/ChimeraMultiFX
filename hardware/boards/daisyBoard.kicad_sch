@@ -5770,6 +5770,17 @@
 		)
 		(uuid "45f16662-16c9-4ad7-b3c3-68a0f5790f26")
 	)
+	(text "DOIT ESP32 DevKit V1- Pin Headers\nWATCH THE PINOUT ON THE \nESP32 YOU ARE BUYING"
+		(exclude_from_sim no)
+		(at 25.146 219.964 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "4c7b131a-0354-4f1b-a3d5-bd76cb4ccbf9")
+	)
 	(text "Antenna Side\n"
 		(exclude_from_sim no)
 		(at 122.936 222.758 0)
