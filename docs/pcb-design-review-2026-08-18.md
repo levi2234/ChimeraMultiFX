@@ -10,7 +10,7 @@ The board combines a Daisy Seed audio engine, ESP32 network/control processor, d
 
 ## Verdict
 
-**Not ready for fabrication yet.** The latest changes materially improve local analog decoupling and correct the four-layer stack so that the top signal layer now sees a GND plane first. Those are worthwhile fixes. The standard TL072 choice at 5 V, floating unused amplifier channels, missing ESP32 antenna keepout, open via-in-pad usage, and absent part-number verification remain pre-fabrication concerns.
+**Not ready for fabrication yet, but materially improved.** `IC1`-`IC4` are now the 4.5 V-qualified `TL072HIDR`, and the broad analog via-in-pad issue is almost completely resolved. Remaining pre-fabrication concerns are floating unused amplifier channels, the missing ESP32 antenna keepout, two residual analog pad/via overlaps, long VREF routing, unqualified ferrites/bulk capacitors, absent structured MPN fields, and no current native DRC/ERC or Gerber release.
 
 ## Previous Review Delta
 
@@ -18,8 +18,11 @@ The board combines a Daisy Seed audio engine, ESP32 network/control processor, d
 |---|---|---|
 | Fixed | Local op-amp bypassing | All seven analog ICs now have a same-side 100 nF supply bypass about 2.2-3.1 mm from the package center. |
 | Fixed | Layer order | `In1.Cu` is now the GND plane and `In2.Cu` is the power layer. The stored GND fill is one region with about 85.6% area coverage. |
+| Fixed | TL072 supply range | `IC1`-`IC4` now specify `TL072HIDR`, whose 4.5 V minimum total supply includes the nominal 5 V rail. Pin 8 is VCC+ and pin 4 is GND in the selected SOIC-8 package. |
+| Improved | Analog via-in-pad | Analog-related VP-001 findings fell from 23 to 2; all four TL072H supply-pad overlaps were removed. |
+| Improved | Overall via-in-pad | VP-001 findings fell from 84 to 13. Most remaining cases are in the ESP power cluster; `C29:1` and `U3:8` are the two remaining analog cases. |
+| New | Analog rail ferrite | `FB2` replaces `NT1` between +5 V and VCC_Daisy. Connectivity is correct, but its current rating and DCR are unspecified. |
 | Improved | EMC static score | Analyzer score increased from 13/100 to 37/100. This is a relative risk metric, not a compliance prediction. |
-| Open | TL072 supply range | `IC1`-`IC4` remain standard TL072s on nominal 5 V. TI specifies 7 V minimum total supply. |
 | Open | Unused op-amp channels | `IC1B`-`IC4B` and `U3B` still have pins 5, 6, and 7 unconnected. |
 | Open | ESP32 antenna implementation | ESP32 remains two 1x15 headers with no body, antenna outline, courtyard, or copper/routing keepout. |
 | Open | VREF distribution | About 118.7 mm long, six layer changes, and about 52.7 mm routed on the inner power layer. |
@@ -30,11 +33,12 @@ The board combines a Daisy Seed audio engine, ESP32 network/control processor, d
 
 | Severity | Issue | Action before fabrication |
 |---|---|---|
-| Critical | Standard TL072 is outside its guaranteed supply range at 5 V | Select an exact 5 V-capable dual op amp and recalculate common-mode, output swing, noise, gain-bandwidth, and load stability. |
 | High | Five unused amplifier channels float | Configure each unused channel according to the selected op amp datasheet, normally as a follower biased at VREF. |
 | High | No enforced ESP32 antenna keepout | Use the exact module/dev-board footprint and clear copper, tracks, vias, components, wiring, and enclosure metal around the antenna. Prefer antenna overhang. |
-| High | Open vias overlap many SMD pads | Move vias just outside pads or specify filled/capped via-in-pad. Do not send ordinary open vias in paste-bearing pads without assembler approval. |
 | High | No exact MPNs | Add MPN/manufacturer fields for ICs, modules, ferrites, LEDs, bulk capacitors, connectors, and SD sockets. |
+| Warning | Two analog pad/via overlaps remain | Move the GND via out of `C29:1` and the supply via out of `U3:8`, or specify filled/capped via-in-pad. |
+| Warning | `C18` and `C31` return vias are about 3.1/3.0 mm away | Bring each true bypass return via adjacent to the capacitor ground pad without putting the drill inside the solder land. |
+| Warning | `FB2` is unqualified | Select an exact 0805 ferrite with sufficient current rating, low DCR, and impedance curve for the Daisy plus analog load. |
 | Warning | VREF is long and changes layers six times | Keep it on an outer layer where practical, shorten the trunk, and place a GND return via beside each unavoidable transition. |
 | Warning | Four nominal 100 uF capacitors use generic 1206 footprints | Select exact parts and validate package, polarity, voltage rating, effective capacitance under DC bias, leakage, and assembly orientation. |
 | Warning | `D1` current is excessive | Recalculate for the chosen LED. A status LED usually needs roughly 1-5 mA, not about 41 mA. |
@@ -42,15 +46,15 @@ The board combines a Daisy Seed audio engine, ESP32 network/control processor, d
 
 ## Component Summary
 
-The schematic analyzer found 113 non-power components: 7 ICs, 32 resistors, 34 capacitors, 14 connectors, 19 test points, 5 LEDs, 1 ferrite bead, and 1 net tie across 174 schematic nets. The PCB contains 119 footprints, including intentional module/header and mechanical content. Exact sourcing data are absent for all 35 unique BOM parts.
+The schematic analyzer found 113 non-power components: 7 ICs, 32 resistors, 34 capacitors, 14 connectors, 19 test points, 5 LEDs, and 2 ferrite beads across 174 schematic nets. The PCB contains 119 footprints, including intentional module/header and mechanical content. Exact sourcing data remain absent from structured MPN properties for all 35 unique BOM parts.
 
 ## Power Tree
 
 ```text
 External +5 V
-├── NT1 → VCC_Daisy
+├── FB2, 600 ohm @ 100 MHz → VCC_Daisy
 │   ├── Daisy Seed/module rails
-│   ├── IC1-IC4 audio op amps
+│   ├── IC1-IC4 TL072HIDR audio op amps
 │   └── U1-U2 expression buffers
 ├── U3 MCP6002
 │   └── 100k/100k midpoint → U3A buffer → 100R → VREF
@@ -84,7 +88,7 @@ Do not add a large capacitor directly to the MCP6002 output by default. A capaci
 
 ### VREF layout observations
 
-- Total routed length is about 118.7 mm: 55.8 mm on B.Cu, 10.1 mm on F.Cu, and 52.7 mm on `In2.Cu`.
+- Total routed length is about 118.7 mm: 51.4 mm on B.Cu, 14.9 mm on F.Cu, and 52.4 mm on `In2.Cu`.
 - Six VREF transitions have no GND stitching via within 1 mm.
 - Routing VREF on the power layer cuts and constrains power copper. Prefer a short outer-layer trunk over continuous `In1.Cu` GND.
 - Keep VREF away from ESP32 antenna/current-burst paths and SD clocks.
@@ -109,15 +113,17 @@ For the next layout pass:
 - Prefer 0402 or 0603 for 100 nF high-frequency bypassing unless hand assembly dictates otherwise. A 1206 has higher connection inductance and is physically harder to place tight to SOIC supply pins.
 - Route supply pin to capacitor first, then into the rail; connect the ground pad immediately to `In1.Cu` with an adjacent via.
 - Avoid open vias centered in IC or capacitor lands. Tented opposite-side vias still can wick solder unless the fabricator fills/caps them.
+- The revised layout clears this condition for nearly every analog IC and bypass capacitor. Move the remaining `C29:1` and `U3:8` vias as well.
+- `C18` and `C31` are close to their ICs, but their nearest vias are now about 3.1 mm and 3.0 mm away. Put a GND via immediately beside each capacitor ground pad.
 - Keep one local 1 uF per analog cluster and bulk capacitance at the rail entry.
 
 ## Op-Amp Suitability
 
-### TL072
+### TL072HIDR
 
-TI lists the standard TL072 at 7-30 V total supply, 3 MHz typical GBW, 13 V/us typical slew rate, and non-rail-to-rail behavior. The board provides nominal 5 V single-supply operation. This is outside the guaranteed range and can produce clipping, distortion, startup variation, or unit-to-unit inconsistency even if a prototype appears to work.
+`IC1`-`IC4` now specify TI `TL072HIDR`. TI rates TL07xH for 4.5-40 V total supply, so nominal 5 V operation is valid. The selected `D` package is SOIC-8 and matches the existing footprint and pin map: pin 8 VCC+, pin 4 VCC-. The part is not rail-to-rail output, so clean input/output headroom around the 2.5 V reference still requires bench verification with worst-case boosted guitar levels.
 
-Shortlist replacements only after checking the complete signal range and load. Candidate families worth comparing include TLV9062, OPA1652, OPA1678, and OPA2192; they are not automatic drop-ins for performance. Confirm SOIC-8 pinout, 5 V operation, input bias current for the 1 Mohm guitar input, input common-mode at VREF, output swing into the Daisy input network, stability, noise, current consumption, and availability.
+The current schematic value identifies the exact part, but the structured MPN field remains empty and the Datasheet property incorrectly points to `tl074a`. Set Manufacturer=`Texas Instruments`, MPN=`TL072HIDR`, LCSC=`C4370389`, and Datasheet=`https://www.ti.com/lit/gpn/TL072H` on `IC1`-`IC4`.
 
 ### MCP6002
 
@@ -136,6 +142,7 @@ Microchip identifies MCP6002 as an in-production 1 MHz low-power op amp operatin
 - ESP32 power remains isolated through `FB1` with local bulk and ceramic capacitance.
 - Analog and digital regions are physically separated to a useful degree.
 - Parser reports all routed nets complete.
+- Analog-related via-in-pad findings dropped from 23 to 2; all TL072H solder lands are now clear of drilled vias.
 
 ### Remaining risks
 
@@ -146,6 +153,7 @@ Microchip identifies MCP6002 as an in-production 1 MHz low-power op amp operatin
 - `Card2` is reported about 0.32 mm from the board edge. Verify the connector body, card insertion geometry, and fabricator copper-to-edge rules.
 - No front-side fiducials were detected for 83 SMD parts. Add three global fiducials if using automated assembly.
 - Test coverage is about 10%. Add accessible points for all rails, VREF, UART, SD clocks, and audio stage inputs/outputs.
+- Two analog overlaps remain: `C29:1` and `U3:8`. Eleven additional VP-001 cases remain in the ESP power/reference cluster and should be reviewed before stencil assembly.
 
 ## EMC / Cross-Domain Analysis
 
@@ -153,9 +161,9 @@ The static FCC Class B-oriented risk score improved to 37/100 after the GND-firs
 
 ### Analyzer overrides
 
-- The reported 45 GND islands are not accepted literally. The raw stored zone has one filled `In1.Cu` GND region. The connectivity graph appears to count isolated pads/tracks as islands.
+- The reported 10 GND islands are not accepted literally. The raw stored zone has one filled `In1.Cu` GND region at about 85.8% fill. The connectivity graph appears to count isolated pads/tracks as islands.
 - Many GP-001 findings are similarly inflated. The corrected GND-first stack is real; local void crossings still need KiCad DRC and visual inspection.
-- Via-in-pad warnings are geometric and real, but severity depends on the fabrication process. They are acceptable only with intentional filled/capped construction or explicit assembler approval.
+- The two remaining analog via-in-pad warnings are geometric and real. Most prior findings were resolved by moving the vias beside the pads.
 - Six schematic jacks (`J6`-`J11`) missing from the PCB appear to be off-board hardware. Mark them excluded from board and document the harness so this is intentional rather than ambiguous.
 
 ## Audio/Product Insights
@@ -171,8 +179,10 @@ The static FCC Class B-oriented risk score improved to 37/100 after the GND-firs
 ## Manufacturing and Sourcing
 
 - MPN coverage is 0%, so the lifecycle audit and full pin/rating verification are blocked.
+- `IC1`-`IC4` contain the correct `TL072HIDR` text value but still need Manufacturer/MPN/LCSC properties and the correct TI datasheet URL.
 - `C13`, `C15`, `C19`, and `C21` are nominal 100 uF polarized capacitors assigned to generic 1206 footprints. Select real parts before relying on those values.
 - `FB1` needs an exact impedance curve, current rating, saturation behavior, and DCR suitable for ESP32 transmit peaks.
+- `FB2` needs the same qualification for the complete Daisy/analog branch. Its connectivity from +5 V to VCC_Daisy is correct.
 - Set the intended copper finish; the KiCad stack currently records `None`.
 - Add assembly notes for socketed Daisy/ESP32 modules, SD sockets, off-board jacks, and polarity/orientation-sensitive parts.
 
@@ -198,7 +208,7 @@ Nineteen test points cover 13 nets, including +5 V, VCC_Daisy, VCC_ESP32, VREF, 
 
 ## Assembly Complexity
 
-The analyzer rates assembly complexity low at 26/100: 111 SMD and 16 THT placements, mostly 0805, 1206, and SOIC. Five 0201-class parts are the hard placements. The larger practical risk is not density but open via-in-pad, ambiguous module geometry, generic 100 uF footprints, missing fiducials, and absent exact assembly part numbers.
+The analyzer rates assembly complexity low at 26/100: 111 SMD and 16 THT placements, mostly 0805, 1206, and SOIC. Five 0201-class parts are the hard placements. The via moves substantially reduce assembly risk; the residual concerns are 13 pad/via overlaps, ambiguous module geometry, generic 100 uF footprints, missing fiducials, and absent exact assembly part numbers.
 
 ## BOM Optimization
 
@@ -217,9 +227,9 @@ The only complete fabrication archive is dated 2026-08-10 and predates the prese
 ### Analyses performed
 
 - Current schematic analyzer: 113 components, 174 nets, 78 findings.
-- Current full PCB analyzer with proximity: 119 footprints, 115 PCB nets, 501 track segments, 108 vias, 146 findings.
-- Schematic/PCB cross-analysis: 11 findings.
-- FCC Class B-oriented EMC risk analysis: 110 findings, static risk score 37/100.
+- Current full PCB analyzer with proximity: 119 footprints, 115 PCB nets, 620 track segments, 98 vias, 72 findings.
+- Schematic/PCB cross-analysis: 8 findings.
+- FCC Class B-oriented EMC risk analysis: 117 findings, static risk score 37/100.
 - Thermal analyzer at 40 C ambient: ran but skipped modeling because no MPN/power data were available.
 - Archived Gerber/drill analyzer: three warnings; package is dated 2026-08-10 and predates this revision.
 - Raw schematic, PCB, project settings, Git delta, firmware architecture, and manufacturer product pages inspected.
@@ -235,10 +245,10 @@ The only complete fabrication archive is dated 2026-08-10 and predates the prese
 
 ## Priority Order
 
-1. Replace the TL072s with an exact 5 V-qualified part and verify every stage's headroom and stability.
-2. Terminate all unused op-amp channels correctly.
-3. Create the exact ESP32 module footprint and all-layer antenna keepout/overhang.
-4. Remove ordinary open vias from SMD lands or specify filled/capped via-in-pad construction.
+1. Terminate all unused op-amp channels correctly.
+2. Create the exact ESP32 module footprint and all-layer antenna keepout/overhang.
+3. Move the remaining `C29:1` and `U3:8` vias; place the `C18` and `C31` GND vias adjacent to, but outside, their pads.
+4. Add exact Manufacturer/MPN/LCSC/datasheet properties for TL072HIDR and qualify `FB2` current/DCR.
 5. Shorten VREF, keep it off the inner power layer where practical, and add adjacent GND return vias.
 6. Correct `D1` current and select exact bulk capacitors/ferrite/LED/module MPNs.
 7. Add explicit net classes, fiducials, test points, and off-board harness documentation.
@@ -247,12 +257,12 @@ The only complete fabrication archive is dated 2026-08-10 and predates the prese
 
 ## Final Readiness Checklist
 
-- [ ] All op amps guaranteed at the actual supply and signal range
+- [x] TL072H supply range and SOIC-8 pin mapping valid at nominal 5 V
 - [ ] All unused amplifier channels safely biased
 - [x] One local 100 nF bypass per analog IC
 - [x] GND plane adjacent to F.Cu
 - [ ] Exact ESP32 footprint and enforced antenna keepout
-- [ ] No unapproved open via-in-pad construction
+- [ ] No unapproved open via-in-pad construction (`C29:1` and `U3:8` still open in analog section)
 - [ ] VREF transitions have adjacent return vias and reduced route length
 - [ ] LED currents recalculated
 - [ ] Exact MPNs and ratings populated
