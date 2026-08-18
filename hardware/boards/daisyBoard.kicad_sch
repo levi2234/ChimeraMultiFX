@@ -11899,7 +11899,7 @@
 				)
 			)
 		)
-		(property "Value" "TL072"
+		(property "Value" "TL072HIDR"
 			(at 135.89 95.25 90)
 			(show_name no)
 			(do_not_autoplace no)
@@ -11920,7 +11920,7 @@
 				)
 			)
 		)
-		(property "Datasheet" "http://www.ti.com/lit/ds/symlink/tl071.pdf"
+		(property "Datasheet" "https://www.ti.com/cn/lit/gpn/tl074a"
 			(at 135.89 95.25 0)
 			(hide yes)
 			(show_name no)
@@ -13532,7 +13532,6 @@
 		(on_board yes)
 		(in_pos_files yes)
 		(dnp no)
-		(fields_autoplaced yes)
 		(uuid "1885c652-ab23-4649-a227-d4844590341e")
 		(property "Reference" "IC1"
 			(at 128.27 25.4 90)
@@ -13544,8 +13543,8 @@
 				)
 			)
 		)
-		(property "Value" "TL072"
-			(at 128.27 27.94 90)
+		(property "Value" "TL072HIDR"
+			(at 128.016 22.098 90)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -13565,7 +13564,7 @@
 				)
 			)
 		)
-		(property "Datasheet" "http://www.ti.com/lit/ds/symlink/tl071.pdf"
+		(property "Datasheet" "https://www.ti.com/cn/lit/gpn/tl074a"
 			(at 128.27 27.94 0)
 			(hide yes)
 			(show_name no)
@@ -13879,7 +13878,7 @@
 				)
 			)
 		)
-		(property "Value" "TL072"
+		(property "Value" "TL072HIDR"
 			(at 207.01 48.26 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -13900,7 +13899,7 @@
 				)
 			)
 		)
-		(property "Datasheet" "http://www.ti.com/lit/ds/symlink/tl071.pdf"
+		(property "Datasheet" "https://www.ti.com/cn/lit/gpn/tl074a"
 			(at 207.01 55.88 0)
 			(hide yes)
 			(show_name no)
@@ -14530,7 +14529,7 @@
 				)
 			)
 		)
-		(property "Value" "TL072"
+		(property "Value" "TL072HIDR"
 			(at 106.68 74.93 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -14551,7 +14550,7 @@
 				)
 			)
 		)
-		(property "Datasheet" "http://www.ti.com/lit/ds/symlink/tl071.pdf"
+		(property "Datasheet" "https://www.ti.com/cn/lit/gpn/tl074a"
 			(at 106.68 82.55 0)
 			(hide yes)
 			(show_name no)
@@ -17558,7 +17557,7 @@
 				)
 			)
 		)
-		(property "Value" "TL072"
+		(property "Value" "TL072HIDR"
 			(at 106.68 49.53 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -17579,7 +17578,7 @@
 				)
 			)
 		)
-		(property "Datasheet" "http://www.ti.com/lit/ds/symlink/tl071.pdf"
+		(property "Datasheet" "https://www.ti.com/cn/lit/gpn/tl074a"
 			(at 106.68 57.15 0)
 			(hide yes)
 			(show_name no)
@@ -18912,7 +18911,7 @@
 				)
 			)
 		)
-		(property "Value" "TL072"
+		(property "Value" "TL072HIDR"
 			(at 212.09 21.59 90)
 			(show_name no)
 			(do_not_autoplace no)
@@ -18933,7 +18932,7 @@
 				)
 			)
 		)
-		(property "Datasheet" "http://www.ti.com/lit/ds/symlink/tl071.pdf"
+		(property "Datasheet" "https://www.ti.com/cn/lit/gpn/tl074a"
 			(at 212.09 21.59 0)
 			(hide yes)
 			(show_name no)
@@ -19339,7 +19338,7 @@
 				)
 			)
 		)
-		(property "Value" "TL072"
+		(property "Value" "TL072HIDR"
 			(at 204.47 83.82 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -19360,7 +19359,7 @@
 				)
 			)
 		)
-		(property "Datasheet" "http://www.ti.com/lit/ds/symlink/tl071.pdf"
+		(property "Datasheet" "https://www.ti.com/cn/lit/gpn/tl074a"
 			(at 204.47 91.44 0)
 			(hide yes)
 			(show_name no)
@@ -22106,7 +22105,7 @@
 				)
 			)
 		)
-		(property "Value" "TL072"
+		(property "Value" "TL072HIDR"
 			(at 205.74 104.14 90)
 			(show_name no)
 			(do_not_autoplace no)
@@ -22127,7 +22126,7 @@
 				)
 			)
 		)
-		(property "Datasheet" "http://www.ti.com/lit/ds/symlink/tl071.pdf"
+		(property "Datasheet" "https://www.ti.com/cn/lit/gpn/tl074a"
 			(at 205.74 104.14 0)
 			(hide yes)
 			(show_name no)
@@ -25466,7 +25465,7 @@
 				)
 			)
 		)
-		(property "Value" "TL072"
+		(property "Value" "TL072HIDR"
 			(at 257.81 102.87 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -25487,7 +25486,7 @@
 				)
 			)
 		)
-		(property "Datasheet" "http://www.ti.com/lit/ds/symlink/tl071.pdf"
+		(property "Datasheet" "https://www.ti.com/cn/lit/gpn/tl074a"
 			(at 257.81 110.49 0)
 			(hide yes)
 			(show_name no)
@@ -27620,7 +27619,7 @@
 				)
 			)
 		)
-		(property "Value" "TL072"
+		(property "Value" "TL072HIDR"
 			(at 106.68 97.79 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -27641,7 +27640,7 @@
 				)
 			)
 		)
-		(property "Datasheet" "http://www.ti.com/lit/ds/symlink/tl071.pdf"
+		(property "Datasheet" "https://www.ti.com/cn/lit/gpn/tl074a"
 			(at 106.68 105.41 0)
 			(hide yes)
 			(show_name no)
@@ -28347,7 +28346,7 @@
 				)
 			)
 		)
-		(property "Value" "TL072"
+		(property "Value" "TL072HIDR"
 			(at 106.68 33.02 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -28368,7 +28367,7 @@
 				)
 			)
 		)
-		(property "Datasheet" "http://www.ti.com/lit/ds/symlink/tl071.pdf"
+		(property "Datasheet" "https://www.ti.com/cn/lit/gpn/tl074a"
 			(at 106.68 40.64 0)
 			(hide yes)
 			(show_name no)
@@ -28523,7 +28522,7 @@
 				)
 			)
 		)
-		(property "Value" "TL072"
+		(property "Value" "TL072HIDR"
 			(at 208.28 33.02 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -28544,7 +28543,7 @@
 				)
 			)
 		)
-		(property "Datasheet" "http://www.ti.com/lit/ds/symlink/tl071.pdf"
+		(property "Datasheet" "https://www.ti.com/cn/lit/gpn/tl074a"
 			(at 208.28 40.64 0)
 			(hide yes)
 			(show_name no)
