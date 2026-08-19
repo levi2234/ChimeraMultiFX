@@ -1,0 +1,198 @@
+{
+  "cross_verify_version": 1,
+  "schematic_file": "",
+  "pcb_file": "",
+  "component_matching": {
+    "schematic_count": 113,
+    "pcb_count": 109,
+    "matched": 107,
+    "orphans": [
+      {
+        "ref": "G***",
+        "pcb_value": "LOGO",
+        "status": "fail",
+        "message": "G*** in PCB but not in schematic (stale placement?)"
+      },
+      {
+        "ref": "REF**",
+        "pcb_value": "MountingHole_3.2mm_M3_DIN965_Pad",
+        "status": "fail",
+        "message": "REF** in PCB but not in schematic (stale placement?)"
+      }
+    ],
+    "missing": [
+      {
+        "ref": "J10",
+        "sch_value": "AudioJack_OUT_2",
+        "sch_type": "connector",
+        "status": "fail",
+        "message": "J10 (AudioJack_OUT_2) in schematic but not placed in PCB"
+      },
+      {
+        "ref": "J11",
+        "sch_value": "AudioJack_OUT_2",
+        "sch_type": "connector",
+        "status": "fail",
+        "message": "J11 (AudioJack_OUT_2) in schematic but not placed in PCB"
+      },
+      {
+        "ref": "J6",
+        "sch_value": "AudioJack3",
+        "sch_type": "connector",
+        "status": "fail",
+        "message": "J6 (AudioJack3) in schematic but not placed in PCB"
+      },
+      {
+        "ref": "J7",
+        "sch_value": "AudioJack3",
+        "sch_type": "connector",
+        "status": "fail",
+        "message": "J7 (AudioJack3) in schematic but not placed in PCB"
+      },
+      {
+        "ref": "J8",
+        "sch_value": "AudioJack_IN_1",
+        "sch_type": "connector",
+        "status": "fail",
+        "message": "J8 (AudioJack_IN_1) in schematic but not placed in PCB"
+      },
+      {
+        "ref": "J9",
+        "sch_value": "AudioJack_IN_2",
+        "sch_type": "connector",
+        "status": "fail",
+        "message": "J9 (AudioJack_IN_2) in schematic but not placed in PCB"
+      }
+    ],
+    "value_mismatches": [],
+    "dnp_conflicts": []
+  },
+  "decoupling_placement": [
+    {
+      "ic_ref": "VCC_Daisy",
+      "cap_ref": "C27",
+      "cap_value": "100nF",
+      "status": "info",
+      "message": "C27 or VCC_Daisy not found in PCB placement"
+    },
+    {
+      "ic_ref": "VCC_Daisy",
+      "cap_ref": "C28",
+      "cap_value": "100nF",
+      "status": "info",
+      "message": "C28 or VCC_Daisy not found in PCB placement"
+    },
+    {
+      "ic_ref": "VCC_Daisy",
+      "cap_ref": "C17",
+      "cap_value": "100n",
+      "status": "info",
+      "message": "C17 or VCC_Daisy not found in PCB placement"
+    },
+    {
+      "ic_ref": "VCC_Daisy",
+      "cap_ref": "C18",
+      "cap_value": "100nF",
+      "status": "info",
+      "message": "C18 or VCC_Daisy not found in PCB placement"
+    },
+    {
+      "ic_ref": "VCC_Daisy",
+      "cap_ref": "C13",
+      "cap_value": "100u",
+      "status": "info",
+      "message": "C13 or VCC_Daisy not found in PCB placement"
+    },
+    {
+      "ic_ref": "VCC_Daisy",
+      "cap_ref": "C16",
+      "cap_value": "100n",
+      "status": "info",
+      "message": "C16 or VCC_Daisy not found in PCB placement"
+    },
+    {
+      "ic_ref": "VCC_Daisy",
+      "cap_ref": "C26",
+      "cap_value": "100nF",
+      "status": "info",
+      "message": "C26 or VCC_Daisy not found in PCB placement"
+    },
+    {
+      "ic_ref": "VCC_Daisy",
+      "cap_ref": "C29",
+      "cap_value": "100nF",
+      "status": "info",
+      "message": "C29 or VCC_Daisy not found in PCB placement"
+    },
+    {
+      "ic_ref": "VCC_Daisy",
+      "cap_ref": "C30",
+      "cap_value": "100nF",
+      "status": "info",
+      "message": "C30 or VCC_Daisy not found in PCB placement"
+    },
+    {
+      "ic_ref": "+3.3VD",
+      "cap_ref": "C14",
+      "cap_value": "10uF",
+      "status": "info",
+      "message": "C14 or +3.3VD not found in PCB placement"
+    },
+    {
+      "ic_ref": "+3.3VD",
+      "cap_ref": "C32",
+      "cap_value": "100nF",
+      "status": "info",
+      "message": "C32 or +3.3VD not found in PCB placement"
+    },
+    {
+      "ic_ref": "VCC_ESP32",
+      "cap_ref": "C21",
+      "cap_value": "100u",
+      "status": "info",
+      "message": "C21 or VCC_ESP32 not found in PCB placement"
+    },
+    {
+      "ic_ref": "VCC_ESP32",
+      "cap_ref": "C22",
+      "cap_value": "100n",
+      "status": "info",
+      "message": "C22 or VCC_ESP32 not found in PCB placement"
+    },
+    {
+      "ic_ref": "VCC_ESP32",
+      "cap_ref": "C23",
+      "cap_value": "100n",
+      "status": "info",
+      "message": "C23 or VCC_ESP32 not found in PCB placement"
+    },
+    {
+      "ic_ref": "ESP-3.3V",
+      "cap_ref": "C24",
+      "cap_value": "10uF",
+      "status": "info",
+      "message": "C24 or ESP-3.3V not found in PCB placement"
+    },
+    {
+      "ic_ref": "ESP-3.3V",
+      "cap_ref": "C25",
+      "cap_value": "100nF",
+      "status": "info",
+      "message": "C25 or ESP-3.3V not found in PCB placement"
+    },
+    {
+      "ic_ref": "+5V",
+      "cap_ref": "C31",
+      "cap_value": "100nF",
+      "status": "info",
+      "message": "C31 or +5V not found in PCB placement"
+    }
+  ],
+  "summary": {
+    "total_checks": 2,
+    "pass": 0,
+    "warning": 0,
+    "fail": 8,
+    "info": 17
+  }
+}

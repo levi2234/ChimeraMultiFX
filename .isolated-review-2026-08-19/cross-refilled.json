@@ -1,0 +1,316 @@
+{
+  "analyzer_type": "cross_analysis",
+  "schema_version": "1.4.0",
+  "inputs": {
+    "source_files": [
+      ".isolated-review-2026-08-19\\schematic.json",
+      ".isolated-review-2026-08-19\\pcb-refilled.json"
+    ],
+    "source_hashes": {
+      ".isolated-review-2026-08-19\\schematic.json": "5662a6ef15bb8aacbce4b1bfe9fe2ccba5e7413073dc663e5b03bdaaf3817512",
+      ".isolated-review-2026-08-19\\pcb-refilled.json": "86cbf430fdcc5eb620ddef47558dbb6921c19be2de6a00c8f1d732c25e4fd2b1"
+    },
+    "run_id": "20260818T235733Z-f8deaa",
+    "config_hash": null,
+    "upstream_artifacts": {
+      "schematic": {
+        "path": ".isolated-review-2026-08-19\\schematic.json",
+        "sha256": "5662a6ef15bb8aacbce4b1bfe9fe2ccba5e7413073dc663e5b03bdaaf3817512",
+        "schema_version": "1.4.0",
+        "run_id": "20260818T235733Z-f8deaa"
+      },
+      "pcb": {
+        "path": ".isolated-review-2026-08-19\\pcb-refilled.json",
+        "sha256": "86cbf430fdcc5eb620ddef47558dbb6921c19be2de6a00c8f1d732c25e4fd2b1",
+        "schema_version": "1.4.0",
+        "run_id": "20260818T235733Z-f8deaa"
+      }
+    }
+  },
+  "compat": {
+    "minimum_consumer_version": "1.4.0",
+    "deprecated_fields": [],
+    "experimental_fields": []
+  },
+  "elapsed_s": 0.025,
+  "summary": {
+    "total_findings": 5,
+    "by_severity": {
+      "error": 0,
+      "warning": 2,
+      "info": 3
+    }
+  },
+  "findings": [
+    {
+      "detector": "check_cross_validation",
+      "rule_id": "XV-001",
+      "category": "design_sync",
+      "summary": "6 component(s) in schematic but not PCB",
+      "description": "Missing from PCB: J10, J11, J6, J7, J8, J9.",
+      "components": [
+        "J10",
+        "J11",
+        "J6",
+        "J7",
+        "J8",
+        "J9"
+      ],
+      "nets": [],
+      "pins": [],
+      "severity": "warning",
+      "confidence": "deterministic",
+      "evidence_source": "topology",
+      "recommendation": "Update PCB from schematic (Tools > Update PCB from Schematic).",
+      "report_context": {
+        "section": "Design Sync",
+        "impact": "Missing components on manufactured board",
+        "standard_ref": ""
+      },
+      "finding_id": "cross_analysis:XV-001:j10",
+      "stages": [
+        "pre_fab"
+      ]
+    },
+    {
+      "detector": "check_cross_validation",
+      "rule_id": "XV-001",
+      "category": "design_sync",
+      "summary": "1 component(s) in PCB but not schematic",
+      "description": "Extra in PCB: REF**.",
+      "components": [
+        "REF**"
+      ],
+      "nets": [],
+      "pins": [],
+      "severity": "info",
+      "confidence": "deterministic",
+      "evidence_source": "topology",
+      "recommendation": "Verify these are intentional (mounting holes, test points, fiducials).",
+      "report_context": {
+        "section": "Design Sync",
+        "impact": "",
+        "standard_ref": ""
+      },
+      "finding_id": "cross_analysis:XV-001:ref",
+      "stages": [
+        "pre_fab"
+      ]
+    },
+    {
+      "detector": "check_plane_splits",
+      "rule_id": "PS-002",
+      "category": "plane_integrity",
+      "summary": "VCC_ESP32 plane split: 2 islands",
+      "description": "VCC_ESP32 plane has 2 disconnected islands.",
+      "components": [],
+      "nets": [
+        "VCC_ESP32"
+      ],
+      "pins": [],
+      "severity": "info",
+      "confidence": "deterministic",
+      "evidence_source": "topology",
+      "recommendation": "Bridge the plane gap with copper pour or stitching vias. If zones were modified after the last fill, run KiCad Edit \u2192 Fill All Zones (B) and re-run the analyzer first \u2014 stale zone fills are a common cause of apparent plane splits.",
+      "report_context": {
+        "section": "Plane Integrity",
+        "impact": "Return path discontinuity increases EMI",
+        "standard_ref": ""
+      },
+      "finding_id": "cross_analysis:PS-002:vcc_esp32",
+      "stages": [
+        "layout"
+      ]
+    },
+    {
+      "detector": "check_plane_splits",
+      "rule_id": "PS-002",
+      "category": "plane_integrity",
+      "summary": "+5V plane split: 2 islands",
+      "description": "+5V plane has 2 disconnected islands.",
+      "components": [],
+      "nets": [
+        "+5V"
+      ],
+      "pins": [],
+      "severity": "info",
+      "confidence": "deterministic",
+      "evidence_source": "topology",
+      "recommendation": "Bridge the plane gap with copper pour or stitching vias. If zones were modified after the last fill, run KiCad Edit \u2192 Fill All Zones (B) and re-run the analyzer first \u2014 stale zone fills are a common cause of apparent plane splits.",
+      "report_context": {
+        "section": "Plane Integrity",
+        "impact": "Return path discontinuity increases EMI",
+        "standard_ref": ""
+      },
+      "finding_id": "cross_analysis:PS-002:+5v",
+      "stages": [
+        "layout"
+      ]
+    },
+    {
+      "detector": "check_plane_splits",
+      "rule_id": "PS-002",
+      "category": "plane_integrity",
+      "summary": "+3.3VA plane split: 2 islands, 8 signals crossing",
+      "description": "+3.3VA plane has 2 disconnected islands. Signals crossing: /AUDIO_OUT_2, /AUDIO_OUT_1, /AUDIO_IN_2, /AUDIO_IN_1, /ESP_TO_DAISY.",
+      "components": [],
+      "nets": [
+        "+3.3VA",
+        "/AUDIO_OUT_2",
+        "/AUDIO_OUT_1",
+        "/AUDIO_IN_2",
+        "/AUDIO_IN_1",
+        "/ESP_TO_DAISY"
+      ],
+      "pins": [],
+      "severity": "warning",
+      "confidence": "deterministic",
+      "evidence_source": "topology",
+      "recommendation": "Bridge the plane gap with copper pour or stitching vias. If zones were modified after the last fill, run KiCad Edit \u2192 Fill All Zones (B) and re-run the analyzer first \u2014 stale zone fills are a common cause of apparent plane splits.",
+      "report_context": {
+        "section": "Plane Integrity",
+        "impact": "Return path discontinuity increases EMI",
+        "standard_ref": ""
+      },
+      "finding_id": "cross_analysis:PS-002:+3.3va",
+      "stages": [
+        "layout"
+      ]
+    }
+  ],
+  "assessments": [],
+  "trust_summary": {
+    "total_findings": 5,
+    "trust_level": "high",
+    "by_confidence": {
+      "deterministic": 5,
+      "heuristic": 0,
+      "datasheet_backed": 0
+    },
+    "by_evidence_source": {
+      "datasheet": 0,
+      "topology": 5,
+      "heuristic_rule": 0,
+      "symbol_footprint": 0,
+      "bom": 0,
+      "geometry": 0,
+      "api_lookup": 0
+    },
+    "provenance_coverage_pct": 0.0
+  },
+  "audience_summary": {
+    "designer": {
+      "total_findings": 5,
+      "by_severity": {
+        "error": 0,
+        "warning": 2,
+        "info": 3
+      },
+      "by_category": {
+        "design_sync": 2,
+        "plane_integrity": 3
+      },
+      "top_issues": [
+        {
+          "detector": "check_cross_validation",
+          "rule_id": "XV-001",
+          "category": "design_sync",
+          "summary": "6 component(s) in schematic but not PCB",
+          "description": "Missing from PCB: J10, J11, J6, J7, J8, J9.",
+          "components": [
+            "J10",
+            "J11",
+            "J6",
+            "J7",
+            "J8",
+            "J9"
+          ],
+          "nets": [],
+          "pins": [],
+          "severity": "warning",
+          "confidence": "deterministic",
+          "evidence_source": "topology",
+          "recommendation": "Update PCB from schematic (Tools > Update PCB from Schematic).",
+          "report_context": {
+            "section": "Design Sync",
+            "impact": "Missing components on manufactured board",
+            "standard_ref": ""
+          },
+          "finding_id": "cross_analysis:XV-001:j10",
+          "stages": [
+            "pre_fab"
+          ]
+        },
+        {
+          "detector": "check_plane_splits",
+          "rule_id": "PS-002",
+          "category": "plane_integrity",
+          "summary": "+3.3VA plane split: 2 islands, 8 signals crossing",
+          "description": "+3.3VA plane has 2 disconnected islands. Signals crossing: /AUDIO_OUT_2, /AUDIO_OUT_1, /AUDIO_IN_2, /AUDIO_IN_1, /ESP_TO_DAISY.",
+          "components": [],
+          "nets": [
+            "+3.3VA",
+            "/AUDIO_OUT_2",
+            "/AUDIO_OUT_1",
+            "/AUDIO_IN_2",
+            "/AUDIO_IN_1",
+            "/ESP_TO_DAISY"
+          ],
+          "pins": [],
+          "severity": "warning",
+          "confidence": "deterministic",
+          "evidence_source": "topology",
+          "recommendation": "Bridge the plane gap with copper pour or stitching vias. If zones were modified after the last fill, run KiCad Edit \u2192 Fill All Zones (B) and re-run the analyzer first \u2014 stale zone fills are a common cause of apparent plane splits.",
+          "report_context": {
+            "section": "Plane Integrity",
+            "impact": "Return path discontinuity increases EMI",
+            "standard_ref": ""
+          },
+          "finding_id": "cross_analysis:PS-002:+3.3va",
+          "stages": [
+            "layout"
+          ]
+        }
+      ]
+    },
+    "reviewer": {
+      "total_findings": 2,
+      "by_category": {
+        "design_sync": 1,
+        "plane_integrity": 1
+      },
+      "top_issues": [
+        {
+          "rule_id": "XV-001",
+          "severity": "warning",
+          "summary": "6 component(s) in schematic but not PCB",
+          "recommendation": "Update PCB from schematic (Tools > Update PCB from Schematic).",
+          "category": "design_sync"
+        },
+        {
+          "rule_id": "PS-002",
+          "severity": "warning",
+          "summary": "+3.3VA plane split: 2 islands, 8 signals crossing",
+          "recommendation": "Bridge the plane gap with copper pour or stitching vias. If zones were modified after the last fill, run KiCad Edit \u2192 Fill All Zones (B) and re-run the analyzer first \u2014 stale zone fills are a common cause of apparent plane splits.",
+          "category": "plane_integrity"
+        }
+      ]
+    },
+    "manager": {
+      "risk_level": "low",
+      "blocker_count": 0,
+      "warning_count": 2,
+      "stage_readiness": {
+        "schematic": "pass",
+        "layout": "needs_review",
+        "pre_fab": "needs_review",
+        "bring_up": "pass"
+      },
+      "one_liner": "2 warnings across 2 categories."
+    }
+  },
+  "capability_mode_ref": {
+    "source": "analysis/capability_mode.json",
+    "run_id": "20260818T235733Z-f8deaa"
+  }
+}

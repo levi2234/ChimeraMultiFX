@@ -1,0 +1,221 @@
+{
+    "$schema": "https://schemas.kicad.org/drc.v1.json",
+    "coordinate_units": "mm",
+    "date": "2026-08-19T01:59:52",
+    "ignored_checks": [
+        {
+            "description": "Footprint has no courtyard defined",
+            "key": "missing_courtyard"
+        },
+        {
+            "description": "Track endpoint not centered on via",
+            "key": "track_not_centered_on_via"
+        },
+        {
+            "description": "Tuning profile track geometries",
+            "key": "tuning_profile_track_geometries"
+        },
+        {
+            "description": "Footprint doesn't match symbol's footprint filters",
+            "key": "footprint_filters_mismatch"
+        },
+        {
+            "description": "Silkscreen clearance",
+            "key": "silk_overlap"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "key": "silk_over_copper"
+        },
+        {
+            "description": "Footprint component type doesn't match footprint pads",
+            "key": "footprint_type_mismatch"
+        }
+    ],
+    "included_severities": [
+        "error",
+        "warning",
+        "exclusion"
+    ],
+    "kicad_version": "10.0.3",
+    "schematic_parity": [
+        {
+            "description": "Duplicate footprints",
+            "items": [
+                {
+                    "description": "Footprint REF**",
+                    "pos": {
+                        "x": 53.5,
+                        "y": 53.5
+                    },
+                    "uuid": "740bbfc0-6657-40e5-ad3d-d5fcd2bb3687"
+                },
+                {
+                    "description": "Footprint REF**",
+                    "pos": {
+                        "x": 53.5,
+                        "y": 146.5
+                    },
+                    "uuid": "346675f6-f026-49a6-a114-a12e58c40c13"
+                }
+            ],
+            "severity": "warning",
+            "type": "duplicate_footprints"
+        },
+        {
+            "description": "Duplicate footprints",
+            "items": [
+                {
+                    "description": "Footprint REF**",
+                    "pos": {
+                        "x": 134.21,
+                        "y": 132.45
+                    },
+                    "uuid": "ec5294a5-f0f5-4642-ad87-a3de69bdb0b6"
+                },
+                {
+                    "description": "Footprint REF**",
+                    "pos": {
+                        "x": 53.5,
+                        "y": 146.5
+                    },
+                    "uuid": "346675f6-f026-49a6-a114-a12e58c40c13"
+                }
+            ],
+            "severity": "warning",
+            "type": "duplicate_footprints"
+        },
+        {
+            "description": "Duplicate footprints",
+            "items": [
+                {
+                    "description": "Footprint REF**",
+                    "pos": {
+                        "x": 146.5,
+                        "y": 53.5
+                    },
+                    "uuid": "f3681b95-5422-4326-9b58-e2c775e054ac"
+                },
+                {
+                    "description": "Footprint REF**",
+                    "pos": {
+                        "x": 53.5,
+                        "y": 146.5
+                    },
+                    "uuid": "346675f6-f026-49a6-a114-a12e58c40c13"
+                }
+            ],
+            "severity": "warning",
+            "type": "duplicate_footprints"
+        },
+        {
+            "description": "Extra footprint",
+            "items": [
+                {
+                    "description": "Footprint REF**",
+                    "pos": {
+                        "x": 53.5,
+                        "y": 146.5
+                    },
+                    "uuid": "346675f6-f026-49a6-a114-a12e58c40c13"
+                }
+            ],
+            "severity": "warning",
+            "type": "extra_footprint"
+        },
+        {
+            "description": "Extra footprint",
+            "items": [
+                {
+                    "description": "Footprint REF**",
+                    "pos": {
+                        "x": 53.5,
+                        "y": 53.5
+                    },
+                    "uuid": "740bbfc0-6657-40e5-ad3d-d5fcd2bb3687"
+                }
+            ],
+            "severity": "warning",
+            "type": "extra_footprint"
+        },
+        {
+            "description": "Extra footprint",
+            "items": [
+                {
+                    "description": "Footprint REF**",
+                    "pos": {
+                        "x": 134.21,
+                        "y": 132.45
+                    },
+                    "uuid": "ec5294a5-f0f5-4642-ad87-a3de69bdb0b6"
+                }
+            ],
+            "severity": "warning",
+            "type": "extra_footprint"
+        },
+        {
+            "description": "Extra footprint",
+            "items": [
+                {
+                    "description": "Footprint REF**",
+                    "pos": {
+                        "x": 146.5,
+                        "y": 53.5
+                    },
+                    "uuid": "f3681b95-5422-4326-9b58-e2c775e054ac"
+                }
+            ],
+            "severity": "warning",
+            "type": "extra_footprint"
+        }
+    ],
+    "source": "daisyBoard.kicad_pcb",
+    "unconnected_items": [],
+    "violations": [
+        {
+            "description": "Via is not connected or connected on only one layer",
+            "items": [
+                {
+                    "description": "Via [GND] on Front - Back",
+                    "pos": {
+                        "x": 118.6,
+                        "y": 140.2
+                    },
+                    "uuid": "0dd88f28-59d5-4562-8585-2603756dae8b"
+                }
+            ],
+            "severity": "warning",
+            "type": "via_dangling"
+        },
+        {
+            "description": "Footprint 'C91145_TF-SMD_TF-01A' does not match copy in library 'lcsc_footprints'",
+            "items": [
+                {
+                    "description": "Footprint Card2",
+                    "pos": {
+                        "x": 76.9,
+                        "y": 64.475
+                    },
+                    "uuid": "24773a6e-e4e5-4320-83e7-626325996c52"
+                }
+            ],
+            "severity": "warning",
+            "type": "lib_footprint_mismatch"
+        },
+        {
+            "description": "Footprint 'C91145_TF-SMD_TF-01A' does not match copy in library 'lcsc_footprints'",
+            "items": [
+                {
+                    "description": "Footprint Card1",
+                    "pos": {
+                        "x": 139.6125,
+                        "y": 84.0
+                    },
+                    "uuid": "dfcab4d6-dbe0-49d9-a408-a66eb172f128"
+                }
+            ],
+            "severity": "warning",
+            "type": "lib_footprint_mismatch"
+        }
+    ]
+}

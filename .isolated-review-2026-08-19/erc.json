@@ -1,0 +1,1081 @@
+{
+    "$schema": "https://schemas.kicad.org/erc.v1.json",
+    "coordinate_units": "mm",
+    "date": "2026-08-19T01:59:43",
+    "ignored_checks": [
+        {
+            "description": "Global label only appears once in the schematic",
+            "key": "single_global_label"
+        },
+        {
+            "description": "Four connection points are joined together",
+            "key": "four_way_junction"
+        },
+        {
+            "description": "SPICE model issue",
+            "key": "simulation_model_issue"
+        },
+        {
+            "description": "Assigned footprint doesn't match footprint filters",
+            "key": "footprint_filter"
+        }
+    ],
+    "included_severities": [
+        "error",
+        "warning",
+        "exclusion"
+    ],
+    "kicad_version": "10.0.3",
+    "sheets": [
+        {
+            "path": "/",
+            "uuid_path": "/f52c2822-383d-4296-bc07-76547c2833aa",
+            "violations": [
+                {
+                    "description": "Label not connected",
+                    "items": [
+                        {
+                            "description": "Label '3v3A Daisy'",
+                            "pos": {
+                                "x": 0.889,
+                                "y": 1.397
+                            },
+                            "uuid": "cff2721e-e9f7-4af5-bdaf-959966d7a200"
+                        }
+                    ],
+                    "severity": "error",
+                    "type": "label_dangling"
+                },
+                {
+                    "description": "Label not connected",
+                    "items": [
+                        {
+                            "description": "Label 'D16'",
+                            "pos": {
+                                "x": 0.889,
+                                "y": 1.4478
+                            },
+                            "uuid": "7200545f-7be4-4fe7-8067-4add1b46598f"
+                        }
+                    ],
+                    "severity": "error",
+                    "type": "label_dangling"
+                },
+                {
+                    "description": "Label not connected",
+                    "items": [
+                        {
+                            "description": "Label 'D20'",
+                            "pos": {
+                                "x": 0.889,
+                                "y": 1.5494
+                            },
+                            "uuid": "06e9c6a9-85a4-4e77-b5b0-7abf98f325b3"
+                        }
+                    ],
+                    "severity": "error",
+                    "type": "label_dangling"
+                },
+                {
+                    "description": "Label not connected",
+                    "items": [
+                        {
+                            "description": "Label 'D21'",
+                            "pos": {
+                                "x": 0.889,
+                                "y": 1.5748
+                            },
+                            "uuid": "2985103a-4b9a-4d2c-9b2e-d5ef75b6dfaf"
+                        }
+                    ],
+                    "severity": "error",
+                    "type": "label_dangling"
+                },
+                {
+                    "description": "Label not connected",
+                    "items": [
+                        {
+                            "description": "Label 'D22'",
+                            "pos": {
+                                "x": 0.889,
+                                "y": 1.6002
+                            },
+                            "uuid": "5847a520-c972-4e4f-b88a-7affe2561da0"
+                        }
+                    ],
+                    "severity": "error",
+                    "type": "label_dangling"
+                },
+                {
+                    "description": "Label not connected",
+                    "items": [
+                        {
+                            "description": "Label 'D24'",
+                            "pos": {
+                                "x": 0.889,
+                                "y": 1.651
+                            },
+                            "uuid": "2ae2ad38-f003-4a49-840e-de39db3d364e"
+                        }
+                    ],
+                    "severity": "error",
+                    "type": "label_dangling"
+                },
+                {
+                    "description": "Label not connected",
+                    "items": [
+                        {
+                            "description": "Label 'D25'",
+                            "pos": {
+                                "x": 0.889,
+                                "y": 1.6764
+                            },
+                            "uuid": "525a9644-4f11-47ac-9e54-fa40d5a1150b"
+                        }
+                    ],
+                    "severity": "error",
+                    "type": "label_dangling"
+                },
+                {
+                    "description": "Label not connected",
+                    "items": [
+                        {
+                            "description": "Label 'D26'",
+                            "pos": {
+                                "x": 0.889,
+                                "y": 1.7018
+                            },
+                            "uuid": "df697253-3f2d-42ca-98d6-259be0280905"
+                        }
+                    ],
+                    "severity": "error",
+                    "type": "label_dangling"
+                },
+                {
+                    "description": "Label not connected",
+                    "items": [
+                        {
+                            "description": "Label 'D28'",
+                            "pos": {
+                                "x": 0.889,
+                                "y": 1.7526
+                            },
+                            "uuid": "b9855056-12c1-411f-a29e-767792db0367"
+                        }
+                    ],
+                    "severity": "error",
+                    "type": "label_dangling"
+                },
+                {
+                    "description": "Label not connected",
+                    "items": [
+                        {
+                            "description": "Label 'D29'",
+                            "pos": {
+                                "x": 0.889,
+                                "y": 1.778
+                            },
+                            "uuid": "57bcab1b-f409-442b-ba64-04796fa89dd1"
+                        }
+                    ],
+                    "severity": "error",
+                    "type": "label_dangling"
+                },
+                {
+                    "description": "Label not connected",
+                    "items": [
+                        {
+                            "description": "Label 'D30'",
+                            "pos": {
+                                "x": 0.889,
+                                "y": 1.8034
+                            },
+                            "uuid": "327ad090-c524-4fc6-aba4-160a674ca5af"
+                        }
+                    ],
+                    "severity": "error",
+                    "type": "label_dangling"
+                },
+                {
+                    "description": "Label not connected",
+                    "items": [
+                        {
+                            "description": "Label '3v3D Daisy'",
+                            "pos": {
+                                "x": 0.889,
+                                "y": 1.8288
+                            },
+                            "uuid": "1e190647-6811-4bfb-b63e-f98e31e9e9e3"
+                        }
+                    ],
+                    "severity": "error",
+                    "type": "label_dangling"
+                },
+                {
+                    "description": "Label not connected",
+                    "items": [
+                        {
+                            "description": "Label 'VIN Daisy'",
+                            "pos": {
+                                "x": 0.889,
+                                "y": 1.8542
+                            },
+                            "uuid": "fa882aff-b057-486e-97bb-99aa206177a9"
+                        }
+                    ],
+                    "severity": "error",
+                    "type": "label_dangling"
+                },
+                {
+                    "description": "Label not connected",
+                    "items": [
+                        {
+                            "description": "Label 'DGND Daisy'",
+                            "pos": {
+                                "x": 0.889,
+                                "y": 1.8796
+                            },
+                            "uuid": "ff37e6bd-8795-4072-b852-2babd2414e26"
+                        }
+                    ],
+                    "severity": "error",
+                    "type": "label_dangling"
+                },
+                {
+                    "description": "Input Power pin not driven by any Output Power pins",
+                    "items": [
+                        {
+                            "description": "Symbol IC1 Pin 5 [+, Input, Line]",
+                            "pos": {
+                                "x": 0.9906,
+                                "y": 0.5461
+                            },
+                            "uuid": "497a6b4f-5c7c-4ea7-8327-05c096675124"
+                        }
+                    ],
+                    "severity": "error",
+                    "type": "power_pin_not_driven"
+                },
+                {
+                    "description": "Input Power pin not driven by any Output Power pins",
+                    "items": [
+                        {
+                            "description": "Symbol #PWR053 Pin 1 [Power input, Line]",
+                            "pos": {
+                                "x": 1.0414,
+                                "y": 2.6543
+                            },
+                            "uuid": "bd967c01-f618-46ae-93fc-b115a5cd4bc5"
+                        }
+                    ],
+                    "severity": "error",
+                    "type": "power_pin_not_driven"
+                },
+                {
+                    "description": "Label not connected",
+                    "items": [
+                        {
+                            "description": "Label 'AGND Daisy'",
+                            "pos": {
+                                "x": 1.1176,
+                                "y": 1.397
+                            },
+                            "uuid": "6638ced5-3058-452a-b3a8-06e8d29380a4"
+                        }
+                    ],
+                    "severity": "error",
+                    "type": "label_dangling"
+                },
+                {
+                    "description": "Label not connected",
+                    "items": [
+                        {
+                            "description": "Label 'Audio Out 2'",
+                            "pos": {
+                                "x": 1.1176,
+                                "y": 1.4224
+                            },
+                            "uuid": "da164de3-afe3-46e0-aaca-fb69ede074ab"
+                        }
+                    ],
+                    "severity": "error",
+                    "type": "label_dangling"
+                },
+                {
+                    "description": "Label not connected",
+                    "items": [
+                        {
+                            "description": "Label 'Audio Out 1'",
+                            "pos": {
+                                "x": 1.1176,
+                                "y": 1.4478
+                            },
+                            "uuid": "f95b5cb0-d3d1-4408-8490-912ff1125410"
+                        }
+                    ],
+                    "severity": "error",
+                    "type": "label_dangling"
+                },
+                {
+                    "description": "Label not connected",
+                    "items": [
+                        {
+                            "description": "Label 'Audio In 2'",
+                            "pos": {
+                                "x": 1.1176,
+                                "y": 1.4732
+                            },
+                            "uuid": "270edf31-f281-4643-a638-7c5900dd1788"
+                        }
+                    ],
+                    "severity": "error",
+                    "type": "label_dangling"
+                },
+                {
+                    "description": "Label not connected",
+                    "items": [
+                        {
+                            "description": "Label 'Audio In 1'",
+                            "pos": {
+                                "x": 1.1176,
+                                "y": 1.4986
+                            },
+                            "uuid": "5e4a43cd-5eb5-490a-b5a0-5587e1d0c8d0"
+                        }
+                    ],
+                    "severity": "error",
+                    "type": "label_dangling"
+                },
+                {
+                    "description": "Label not connected",
+                    "items": [
+                        {
+                            "description": "Label 'D14/Rx'",
+                            "pos": {
+                                "x": 1.1176,
+                                "y": 1.524
+                            },
+                            "uuid": "1960980c-34fb-44ee-b33c-1044e9da32b1"
+                        }
+                    ],
+                    "severity": "error",
+                    "type": "label_dangling"
+                },
+                {
+                    "description": "Label not connected",
+                    "items": [
+                        {
+                            "description": "Label 'D13/Tx'",
+                            "pos": {
+                                "x": 1.1176,
+                                "y": 1.5494
+                            },
+                            "uuid": "cf9cd4b2-20df-436c-a8f1-6cc31a88f6a1"
+                        }
+                    ],
+                    "severity": "error",
+                    "type": "label_dangling"
+                },
+                {
+                    "description": "Label not connected",
+                    "items": [
+                        {
+                            "description": "Label 'D12'",
+                            "pos": {
+                                "x": 1.1176,
+                                "y": 1.5748
+                            },
+                            "uuid": "736358bc-d6db-43d8-86dd-129aeb1259c7"
+                        }
+                    ],
+                    "severity": "error",
+                    "type": "label_dangling"
+                },
+                {
+                    "description": "Label not connected",
+                    "items": [
+                        {
+                            "description": "Label 'D11'",
+                            "pos": {
+                                "x": 1.1176,
+                                "y": 1.6002
+                            },
+                            "uuid": "adb32e67-ff60-45fb-ada2-7f1ffbec15ce"
+                        }
+                    ],
+                    "severity": "error",
+                    "type": "label_dangling"
+                },
+                {
+                    "description": "Label not connected",
+                    "items": [
+                        {
+                            "description": "Label 'D10'",
+                            "pos": {
+                                "x": 1.1176,
+                                "y": 1.6256
+                            },
+                            "uuid": "220f10c2-7336-4e11-8479-992f6dfe9746"
+                        }
+                    ],
+                    "severity": "error",
+                    "type": "label_dangling"
+                },
+                {
+                    "description": "Label not connected",
+                    "items": [
+                        {
+                            "description": "Label 'D9'",
+                            "pos": {
+                                "x": 1.1176,
+                                "y": 1.651
+                            },
+                            "uuid": "8e949200-2e6c-4aeb-a20a-2f429b1cf13d"
+                        }
+                    ],
+                    "severity": "error",
+                    "type": "label_dangling"
+                },
+                {
+                    "description": "Label not connected",
+                    "items": [
+                        {
+                            "description": "Label 'D8'",
+                            "pos": {
+                                "x": 1.1176,
+                                "y": 1.6764
+                            },
+                            "uuid": "a11da40d-3ce0-43ef-8a5b-5d28b1ffca22"
+                        }
+                    ],
+                    "severity": "error",
+                    "type": "label_dangling"
+                },
+                {
+                    "description": "Label not connected",
+                    "items": [
+                        {
+                            "description": "Label 'D7'",
+                            "pos": {
+                                "x": 1.1176,
+                                "y": 1.7018
+                            },
+                            "uuid": "9ef4cbdd-814c-41c7-aa78-9f3c4f195ddc"
+                        }
+                    ],
+                    "severity": "error",
+                    "type": "label_dangling"
+                },
+                {
+                    "description": "Label not connected",
+                    "items": [
+                        {
+                            "description": "Label 'D6'",
+                            "pos": {
+                                "x": 1.1176,
+                                "y": 1.7272
+                            },
+                            "uuid": "b6187c01-97e4-4fa3-895f-539036abf757"
+                        }
+                    ],
+                    "severity": "error",
+                    "type": "label_dangling"
+                },
+                {
+                    "description": "Label not connected",
+                    "items": [
+                        {
+                            "description": "Label 'D5'",
+                            "pos": {
+                                "x": 1.1176,
+                                "y": 1.7526
+                            },
+                            "uuid": "464df1af-9567-459f-a315-6dda63c851c0"
+                        }
+                    ],
+                    "severity": "error",
+                    "type": "label_dangling"
+                },
+                {
+                    "description": "Label not connected",
+                    "items": [
+                        {
+                            "description": "Label 'D4'",
+                            "pos": {
+                                "x": 1.1176,
+                                "y": 1.778
+                            },
+                            "uuid": "e22cbf3c-653d-4b78-b54a-0310ec3882c7"
+                        }
+                    ],
+                    "severity": "error",
+                    "type": "label_dangling"
+                },
+                {
+                    "description": "Label not connected",
+                    "items": [
+                        {
+                            "description": "Label 'D3'",
+                            "pos": {
+                                "x": 1.1176,
+                                "y": 1.8034
+                            },
+                            "uuid": "1f409d39-bff5-4484-939d-45f72d84823b"
+                        }
+                    ],
+                    "severity": "error",
+                    "type": "label_dangling"
+                },
+                {
+                    "description": "Label not connected",
+                    "items": [
+                        {
+                            "description": "Label 'D1'",
+                            "pos": {
+                                "x": 1.1176,
+                                "y": 1.8542
+                            },
+                            "uuid": "e32b284b-0577-4617-bc52-b22ed2c35c1b"
+                        }
+                    ],
+                    "severity": "error",
+                    "type": "label_dangling"
+                },
+                {
+                    "description": "Label not connected",
+                    "items": [
+                        {
+                            "description": "Label 'D0'",
+                            "pos": {
+                                "x": 1.1176,
+                                "y": 1.8796
+                            },
+                            "uuid": "4a236e87-52bf-4f68-8030-dd11e2630e45"
+                        }
+                    ],
+                    "severity": "error",
+                    "type": "label_dangling"
+                },
+                {
+                    "description": "Label not connected",
+                    "items": [
+                        {
+                            "description": "Label 'EN'",
+                            "pos": {
+                                "x": 1.143,
+                                "y": 2.2606
+                            },
+                            "uuid": "390e7987-4ff8-4c3f-89f8-49e655f0bc16"
+                        }
+                    ],
+                    "severity": "error",
+                    "type": "label_dangling"
+                },
+                {
+                    "description": "Label not connected",
+                    "items": [
+                        {
+                            "description": "Label 'VP'",
+                            "pos": {
+                                "x": 1.143,
+                                "y": 2.286
+                            },
+                            "uuid": "2ab76dd9-c509-44e5-b6fe-26ed80cd367b"
+                        }
+                    ],
+                    "severity": "error",
+                    "type": "label_dangling"
+                },
+                {
+                    "description": "Label not connected",
+                    "items": [
+                        {
+                            "description": "Label 'VN'",
+                            "pos": {
+                                "x": 1.143,
+                                "y": 2.3114
+                            },
+                            "uuid": "9a42d22d-3697-49c5-98f5-217b597c37b6"
+                        }
+                    ],
+                    "severity": "error",
+                    "type": "label_dangling"
+                },
+                {
+                    "description": "Label not connected",
+                    "items": [
+                        {
+                            "description": "Label 'D34'",
+                            "pos": {
+                                "x": 1.143,
+                                "y": 2.3368
+                            },
+                            "uuid": "f69905a8-e654-48ac-8cb3-b726d8b24279"
+                        }
+                    ],
+                    "severity": "error",
+                    "type": "label_dangling"
+                },
+                {
+                    "description": "Label not connected",
+                    "items": [
+                        {
+                            "description": "Label 'D35'",
+                            "pos": {
+                                "x": 1.143,
+                                "y": 2.3622
+                            },
+                            "uuid": "a6195d74-c339-4a7f-9732-4a5e32f61116"
+                        }
+                    ],
+                    "severity": "error",
+                    "type": "label_dangling"
+                },
+                {
+                    "description": "Label not connected",
+                    "items": [
+                        {
+                            "description": "Label 'D32'",
+                            "pos": {
+                                "x": 1.143,
+                                "y": 2.3876
+                            },
+                            "uuid": "ef723c5d-f0c4-44f3-a7d4-8921c6c26a18"
+                        }
+                    ],
+                    "severity": "error",
+                    "type": "label_dangling"
+                },
+                {
+                    "description": "Label not connected",
+                    "items": [
+                        {
+                            "description": "Label 'D33'",
+                            "pos": {
+                                "x": 1.143,
+                                "y": 2.413
+                            },
+                            "uuid": "b3b10de1-0c6e-41a7-8d65-e19b0e7aa584"
+                        }
+                    ],
+                    "severity": "error",
+                    "type": "label_dangling"
+                },
+                {
+                    "description": "Label not connected",
+                    "items": [
+                        {
+                            "description": "Label 'D27'",
+                            "pos": {
+                                "x": 1.143,
+                                "y": 2.4892
+                            },
+                            "uuid": "1485a255-f145-4e33-9b63-b083b3b1b661"
+                        }
+                    ],
+                    "severity": "error",
+                    "type": "label_dangling"
+                },
+                {
+                    "description": "Label not connected",
+                    "items": [
+                        {
+                            "description": "Label 'D14'",
+                            "pos": {
+                                "x": 1.143,
+                                "y": 2.5146
+                            },
+                            "uuid": "2dd9c364-1167-485a-b68e-b6e63caca4d1"
+                        }
+                    ],
+                    "severity": "error",
+                    "type": "label_dangling"
+                },
+                {
+                    "description": "Label not connected",
+                    "items": [
+                        {
+                            "description": "Label 'D13'",
+                            "pos": {
+                                "x": 1.143,
+                                "y": 2.5654
+                            },
+                            "uuid": "5b40d3bd-71dc-49b6-a91f-fea4d42cb296"
+                        }
+                    ],
+                    "severity": "error",
+                    "type": "label_dangling"
+                },
+                {
+                    "description": "Label not connected",
+                    "items": [
+                        {
+                            "description": "Label 'VIN'",
+                            "pos": {
+                                "x": 1.143,
+                                "y": 2.6162
+                            },
+                            "uuid": "4e12d188-554e-4374-8670-1d4cc878d369"
+                        }
+                    ],
+                    "severity": "error",
+                    "type": "label_dangling"
+                },
+                {
+                    "description": "Input Power pin not driven by any Output Power pins",
+                    "items": [
+                        {
+                            "description": "Symbol IC1 Pin 8 [V+, Power input, Line]",
+                            "pos": {
+                                "x": 1.2065,
+                                "y": 0.3048
+                            },
+                            "uuid": "18cbcb79-2c32-4e1b-a9f0-543b5273d9c5"
+                        }
+                    ],
+                    "severity": "error",
+                    "type": "power_pin_not_driven"
+                },
+                {
+                    "description": "Label not connected",
+                    "items": [
+                        {
+                            "description": "Label 'D23'",
+                            "pos": {
+                                "x": 1.3081,
+                                "y": 2.2733
+                            },
+                            "uuid": "2a28523a-5ff9-49c1-b91a-7bca81b668e9"
+                        }
+                    ],
+                    "severity": "error",
+                    "type": "label_dangling"
+                },
+                {
+                    "description": "Label not connected",
+                    "items": [
+                        {
+                            "description": "Label 'TX0'",
+                            "pos": {
+                                "x": 1.3081,
+                                "y": 2.3241
+                            },
+                            "uuid": "14808d09-c1ad-460e-bbc0-b5984b705a5c"
+                        }
+                    ],
+                    "severity": "error",
+                    "type": "label_dangling"
+                },
+                {
+                    "description": "Label not connected",
+                    "items": [
+                        {
+                            "description": "Label 'RX0'",
+                            "pos": {
+                                "x": 1.3081,
+                                "y": 2.3495
+                            },
+                            "uuid": "3a68d7c0-b3c1-43a6-8bdb-98d84daab6f1"
+                        }
+                    ],
+                    "severity": "error",
+                    "type": "label_dangling"
+                },
+                {
+                    "description": "Label not connected",
+                    "items": [
+                        {
+                            "description": "Label 'D19'",
+                            "pos": {
+                                "x": 1.3081,
+                                "y": 2.4003
+                            },
+                            "uuid": "17c47dff-2792-450b-b345-2f99ffd59632"
+                        }
+                    ],
+                    "severity": "error",
+                    "type": "label_dangling"
+                },
+                {
+                    "description": "Label not connected",
+                    "items": [
+                        {
+                            "description": "Label 'D18'",
+                            "pos": {
+                                "x": 1.3081,
+                                "y": 2.4257
+                            },
+                            "uuid": "877dd68f-0021-49dc-93fd-6dcd28e17850"
+                        }
+                    ],
+                    "severity": "error",
+                    "type": "label_dangling"
+                },
+                {
+                    "description": "Label not connected",
+                    "items": [
+                        {
+                            "description": "Label 'D17'",
+                            "pos": {
+                                "x": 1.3081,
+                                "y": 2.4765
+                            },
+                            "uuid": "975903a5-8b78-48a2-9230-6b8a4e396528"
+                        }
+                    ],
+                    "severity": "error",
+                    "type": "label_dangling"
+                },
+                {
+                    "description": "Label not connected",
+                    "items": [
+                        {
+                            "description": "Label 'D2'",
+                            "pos": {
+                                "x": 1.3081,
+                                "y": 2.5527
+                            },
+                            "uuid": "10454143-edfa-4890-9401-e8b8bbc46c00"
+                        }
+                    ],
+                    "severity": "error",
+                    "type": "label_dangling"
+                },
+                {
+                    "description": "Label not connected",
+                    "items": [
+                        {
+                            "description": "Label 'D15'",
+                            "pos": {
+                                "x": 1.3081,
+                                "y": 2.5781
+                            },
+                            "uuid": "42f03660-240f-4dd5-9d22-5767a5da8520"
+                        }
+                    ],
+                    "severity": "error",
+                    "type": "label_dangling"
+                },
+                {
+                    "description": "Label not connected",
+                    "items": [
+                        {
+                            "description": "Label 'GND'",
+                            "pos": {
+                                "x": 1.3081,
+                                "y": 2.6035
+                            },
+                            "uuid": "881c44ce-d004-4f1f-9269-b57ad7a2dce5"
+                        }
+                    ],
+                    "severity": "error",
+                    "type": "label_dangling"
+                },
+                {
+                    "description": "Label not connected",
+                    "items": [
+                        {
+                            "description": "Label '3V3'",
+                            "pos": {
+                                "x": 1.3081,
+                                "y": 2.6289
+                            },
+                            "uuid": "5fd854fe-be25-40be-bf92-0ae6574f1f63"
+                        }
+                    ],
+                    "severity": "error",
+                    "type": "label_dangling"
+                },
+                {
+                    "description": "Input Power pin not driven by any Output Power pins",
+                    "items": [
+                        {
+                            "description": "Symbol Card2 Pin 4 [VDD, Input, Line]",
+                            "pos": {
+                                "x": 1.3716,
+                                "y": 2.9718
+                            },
+                            "uuid": "102a8c95-1f7b-4689-b2ba-9346de2c606b"
+                        }
+                    ],
+                    "severity": "error",
+                    "type": "power_pin_not_driven"
+                },
+                {
+                    "description": "Input Power pin not driven by any Output Power pins",
+                    "items": [
+                        {
+                            "description": "Symbol U1 Pin 3 [+, Input, Line]",
+                            "pos": {
+                                "x": 3.2385,
+                                "y": 0.9144
+                            },
+                            "uuid": "8a73086a-4268-42ad-acff-5facdf5a3c92"
+                        }
+                    ],
+                    "severity": "error",
+                    "type": "power_pin_not_driven"
+                },
+                {
+                    "description": "Input Power pin not driven by any Output Power pins",
+                    "items": [
+                        {
+                            "description": "Symbol Card1 Pin 4 [VDD, Input, Line]",
+                            "pos": {
+                                "x": 4.1275,
+                                "y": 0.4699
+                            },
+                            "uuid": "b8a2b57e-8fc1-43a2-aad8-fe2137d4007c"
+                        }
+                    ],
+                    "severity": "error",
+                    "type": "power_pin_not_driven"
+                },
+                {
+                    "description": "Input Power pin not driven by any Output Power pins",
+                    "items": [
+                        {
+                            "description": "Symbol Card1 Pin 6 [VSS, Input, Line]",
+                            "pos": {
+                                "x": 4.1275,
+                                "y": 0.6223
+                            },
+                            "uuid": "bd484e9e-c239-428e-952c-0b87a862cd0c"
+                        }
+                    ],
+                    "severity": "error",
+                    "type": "power_pin_not_driven"
+                },
+                {
+                    "description": "Input Power pin not driven by any Output Power pins",
+                    "items": [
+                        {
+                            "description": "Symbol U3 Pin 8 [V+, Power input, Line]",
+                            "pos": {
+                                "x": 4.953,
+                                "y": 2.2352
+                            },
+                            "uuid": "25c80f49-ce9a-4682-8916-03902051ba65"
+                        }
+                    ],
+                    "severity": "error",
+                    "type": "power_pin_not_driven"
+                },
+                {
+                    "description": "Unconnected \"no connection\" flag",
+                    "items": [
+                        {
+                            "description": "No Connect",
+                            "pos": {
+                                "x": 0.6731,
+                                "y": 3.2639
+                            },
+                            "uuid": "a83e0593-2173-4f6d-abf8-8a12599d3270"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "no_connect_dangling"
+                },
+                {
+                    "description": "Both GND and GNDA are attached to the same items; GND will be used in the netlist",
+                    "items": [
+                        {
+                            "description": "Symbol #PWR01 Pin 1 [Power input, Line]",
+                            "pos": {
+                                "x": 2.9591,
+                                "y": 1.4605
+                            },
+                            "uuid": "5b4a7262-3f60-456c-8890-3f1d0fca1ce3"
+                        },
+                        {
+                            "description": "Symbol #PWR098 Pin 1 [Power input, Line]",
+                            "pos": {
+                                "x": 1.2827,
+                                "y": 1.0541
+                            },
+                            "uuid": "1b0de1ee-c6da-4182-9134-290e5c5558d7"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "multiple_net_names"
+                },
+                {
+                    "description": "Unconnected wire endpoint",
+                    "items": [
+                        {
+                            "description": "Horizontal Wire, length 0,0254 mm",
+                            "pos": {
+                                "x": 1.3716,
+                                "y": 2.9718
+                            },
+                            "uuid": "47879bd8-f856-472d-8fff-4cc858c74ecc"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "unconnected_wire_endpoint"
+                },
+                {
+                    "description": "Unconnected \"no connection\" flag",
+                    "items": [
+                        {
+                            "description": "No Connect",
+                            "pos": {
+                                "x": 2.0447,
+                                "y": 3.0734
+                            },
+                            "uuid": "be94d4c9-fdf3-42dd-b237-384bfc24bb85"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "no_connect_dangling"
+                },
+                {
+                    "description": "Symbol 'MCP6002-xSN' doesn't match copy in library 'Amplifier_Operational'",
+                    "items": [
+                        {
+                            "description": "Symbol U3 [MCP6002-xSN]",
+                            "pos": {
+                                "x": 4.9022,
+                                "y": 2.0955
+                            },
+                            "uuid": "05e5f710-75d8-48c9-ac49-9d98b30b3b25"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "lib_symbol_mismatch"
+                },
+                {
+                    "description": "Symbol 'MCP6002-xSN' doesn't match copy in library 'Amplifier_Operational'",
+                    "items": [
+                        {
+                            "description": "Symbol U3 [MCP6002-xSN]",
+                            "pos": {
+                                "x": 5.0292,
+                                "y": 2.2098
+                            },
+                            "uuid": "747b0a8c-e08d-4929-ae3c-7e2c9461ec29"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "lib_symbol_mismatch"
+                },
+                {
+                    "description": "Symbol 'MCP6002-xSN' doesn't match copy in library 'Amplifier_Operational'",
+                    "items": [
+                        {
+                            "description": "Symbol U3 [MCP6002-xSN]",
+                            "pos": {
+                                "x": 5.3594,
+                                "y": 2.1463
+                            },
+                            "uuid": "bba974f7-a808-46c6-85a4-d2e085886ed3"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "lib_symbol_mismatch"
+                }
+            ]
+        }
+    ],
+    "source": "daisyBoard.kicad_sch"
+}
