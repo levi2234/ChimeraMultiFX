@@ -172,9 +172,6 @@ private:
     static constexpr int MAX_TOKENS  = 8;
     static constexpr int TX_BUF_LEN  = 256;
     static constexpr int JSON_BUF_LEN = 32768;
-    static constexpr uint32_t CPU_GUARD_PREFLIGHT_HUNDREDTHS = 6000;
-    static constexpr uint32_t CPU_GUARD_POSTFLIGHT_HUNDREDTHS = 6000;
-    static constexpr uint32_t CPU_GUARD_SETTLE_MS = 100;
     Router* router_ = nullptr;
     float   sample_rate_ = 48000.f;
     daisy::UsbHandle* usb_ = nullptr;
@@ -239,14 +236,8 @@ private:
         Effect* fx = CreateFromName(t[2]);
         if (!fx) { Reply("ERR unknown effect: %s\n", t[2]); return; }
 
-        const bool enable_effect = CpuBudgetAvailable();
-        fx->SetEnabled(enable_effect);
         router_->lanes[lane].Add(fx);
         const int slot = router_->lanes[lane].count - 1;
-        if (!enable_effect || !KeepEffectWithinCpuBudget(lane, slot)) {
-            Reply("OK added %s to lane %d slot %d bypassed cpu_limit\n", t[2], lane, slot);
-            return;
-        }
         Reply("OK added %s to lane %d slot %d\n", t[2], lane, slot);
     }
 
@@ -265,13 +256,7 @@ private:
         Effect* fx = CreateFromName(t[3]);
         if (!fx) { Reply("ERR unknown effect: %s\n", t[3]); return; }
 
-        const bool enable_effect = CpuBudgetAvailable();
-        fx->SetEnabled(enable_effect);
         router_->lanes[lane].Insert(slot, fx);
-        if (!enable_effect || !KeepEffectWithinCpuBudget(lane, slot)) {
-            Reply("OK inserted %s at lane %d slot %d bypassed cpu_limit\n", t[3], lane, slot);
-            return;
-        }
         Reply("OK inserted %s at lane %d slot %d\n", t[3], lane, slot);
     }
 
@@ -360,28 +345,8 @@ private:
         if (!ValidLane(lane) || !ValidSlot(lane, slot)) return;
 
         bool enabled = (atoi(t[3]) != 0);
-        if (enabled && !CpuBudgetAvailable()) {
-            router_->lanes[lane].SetEffectEnabled(slot, false);
-            Reply("CPU Limit Reached; lane %d slot %d kept bypassed\n", lane, slot);
-            return;
-        }
         router_->lanes[lane].SetEffectEnabled(slot, enabled);
-        if (enabled && !KeepEffectWithinCpuBudget(lane, slot)) {
-            Reply("CPU Limit Reached; lane %d slot %d kept bypassed\n", lane, slot);
-            return;
-        }
         Reply("OK bypass lane %d slot %d = %s\n", lane, slot, enabled ? "on" : "off");
-    }
-
-    bool CpuBudgetAvailable() const {
-        return audio_cpu_usage_hundredths_ < CPU_GUARD_PREFLIGHT_HUNDREDTHS;
-    }
-
-    bool KeepEffectWithinCpuBudget(int lane, int slot) {
-        daisy::System::Delay(CPU_GUARD_SETTLE_MS);
-        if (audio_cpu_usage_hundredths_ < CPU_GUARD_POSTFLIGHT_HUNDREDTHS) return true;
-        router_->lanes[lane].SetEffectEnabled(slot, false);
-        return false;
     }
 
     // ─── clear <lane> ────────────────────────────────────────────────────────

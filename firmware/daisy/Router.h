@@ -98,8 +98,8 @@ public:
 
         float ProcessChain(float in) {
             float s = in;
-            for (int i = 0; i < enabled_count; i++) {
-                s = enabled_slots[i]->Process(s);
+            for (int i = 0; i < count; i++) {
+                s = slots[i]->Tick(s);
             }
             last_out = s * level;
             return last_out;

@@ -1,12 +1,37 @@
 #include "../include/effects/distortion/FulltoneOCD.h"
 #include "../include/effects/distortion/BossBD2.h"
 #include "../include/effects/modulation/TCSubNUp.h"
+#include "../Router.h"
 #include <cassert>
 #include <cmath>
 #include <cstdio>
 
 static constexpr float SAMPLE_RATE = 48000.0f;
 static constexpr float PI = 3.14159265359f;
+
+class GainEffect : public Effect {
+public:
+	void Init(float sample_rate) override { (void)sample_rate; }
+	float Process(float input) override { return input * 2.0f; }
+	const char* GetName() const override { return "gain_test"; }
+	EffectCategory GetCategory() const override { return EffectCategory::Dynamics; }
+};
+
+void CheckRouterActivation() {
+	Router router;
+	GainEffect effect;
+	effect.Init(SAMPLE_RATE);
+	router.lanes[0].Add(&effect);
+
+	auto wet = router.Process(0.125f, -0.25f);
+	assert(wet.out1 == 0.25f);
+	assert(wet.out2 == 0.25f);
+
+	router.lanes[0].SetEffectEnabled(0, false);
+	auto dry = router.Process(0.125f, -0.25f);
+	assert(dry.out1 == 0.125f);
+	assert(dry.out2 == 0.125f);
+}
 
 template <typename EffectType>
 void CheckMetadataAndBypass(EffectType& effect) {
@@ -70,6 +95,7 @@ void CheckOctaver() {
 }
 
 int main() {
+	CheckRouterActivation();
 	FulltoneOCD ocd;
 	BossBD2 bd2;
 	CheckDrive(ocd, "drive");
